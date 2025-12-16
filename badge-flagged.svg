@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="200" height="35" role="img" aria-label="Credence: Flagged">
+    <title>Credence: Flagged</title>
+    <linearGradient id="badge-gradient" x2="0" y2="100%">
+        <stop offset="0" stop-color="#bbb" stop-opacity=".1"/>
+        <stop offset="1" stop-opacity=".1"/>
+    </linearGradient>
+    <clipPath id="badge-clip">
+        <rect width="200" height="35" rx="3" fill="#fff"/>
+    </clipPath>
+    <g clip-path="url(#badge-clip)">
+        <rect width="85" height="35" fill="#555"/>
+        <rect x="85" width="115" height="35" fill="#ff9800"/>
+        <rect width="200" height="35" fill="url(#badge-gradient)"/>
+    </g>
+    <g fill="#fff" text-anchor="middle" font-family="Verdana,Geneva,DejaVu Sans,sans-serif" font-size="12">
+        <text x="42.5" y="21" fill="#010101" fill-opacity=".3">Credence</text>
+        <text x="42.5" y="20">Credence</text>
+        <text x="142.5" y="21" fill="#010101" fill-opacity=".3">⚠ Flagged</text>
+        <text x="142.5" y="20">⚠ Flagged</text>
+    </g>
+</svg>

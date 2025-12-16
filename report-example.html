@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Security Analysis Report - Example MCP Server</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #f5f5f5;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 2rem;
+        }
+        
+        .header-content {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        
+        .header h1 {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .header .server-id {
+            font-family: 'Courier New', monospace;
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+        
+        .summary-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+        }
+        
+        .status-banner {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin-bottom: 2rem;
+        }
+        
+        .status-verified {
+            background: #d4edda;
+            border-left: 4px solid #28a745;
+        }
+        
+        .status-icon {
+            font-size: 3rem;
+        }
+        
+        .status-text h2 {
+            color: #155724;
+            margin-bottom: 0.5rem;
+        }
+        
+        .status-text p {
+            color: #155724;
+        }
+        
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+        
+        .metric {
+            padding: 1.5rem;
+            background: #f8f9fa;
+            border-radius: 8px;
+            text-align: center;
+        }
+        
+        .metric-value {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 0.5rem;
+        }
+        
+        .metric-label {
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        .section {
+            background: white;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+        }
+        
+        .section h2 {
+            color: #667eea;
+            margin-bottom: 1.5rem;
+            font-size: 1.5rem;
+            border-bottom: 2px solid #e0e0e0;
+            padding-bottom: 0.5rem;
+        }
+        
+        .section h3 {
+            color: #333;
+            margin-top: 1.5rem;
+            margin-bottom: 1rem;
+            font-size: 1.2rem;
+        }
+        
+        .check-item {
+            display: flex;
+            align-items: start;
+            gap: 1rem;
+            padding: 1rem;
+            margin: 0.5rem 0;
+            background: #f8f9fa;
+            border-radius: 4px;
+        }
+        
+        .check-icon {
+            font-size: 1.5rem;
+            min-width: 2rem;
+        }
+        
+        .check-pass {
+            color: #28a745;
+        }
+        
+        .check-warn {
+            color: #ffc107;
+        }
+        
+        .check-fail {
+            color: #dc3545;
+        }
+        
+        .agent-summary {
+            padding: 1.5rem;
+            background: #f8f9fa;
+            border-radius: 8px;
+            margin: 1rem 0;
+        }
+        
+        .agent-votes {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+            margin: 1.5rem 0;
+        }
+        
+        .vote-box {
+            padding: 1rem;
+            border-radius: 4px;
+            text-align: center;
+        }
+        
+        .vote-believer {
+            background: #d4edda;
+            border: 2px solid #28a745;
+        }
+        
+        .vote-skeptic {
+            background: #f8d7da;
+            border: 2px solid #dc3545;
+        }
+        
+        .vote-neutral {
+            background: #fff3cd;
+            border: 2px solid #ffc107;
+        }
+        
+        .vote-count {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+        
+        .consensus-text {
+            padding: 1.5rem;
+            background: white;
+            border-left: 4px solid #667eea;
+            margin: 1rem 0;
+            border-radius: 4px;
+        }
+        
+        code {
+            background: #f4f4f4;
+            padding: 0.2rem 0.4rem;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+        }
+        
+        pre {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            padding: 1rem;
+            border-radius: 4px;
+            overflow-x: auto;
+            margin: 1rem 0;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1rem 0;
+        }
+        
+        th {
+            background: #f8f9fa;
+            padding: 0.75rem;
+            text-align: left;
+            font-weight: 600;
+            border-bottom: 2px solid #e0e0e0;
+        }
+        
+        td {
+            padding: 0.75rem;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        .attestation {
+            font-family: 'Courier New', monospace;
+            font-size: 0.85rem;
+            background: #f8f9fa;
+            padding: 1rem;
+            border-radius: 4px;
+            word-break: break-all;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="header-content">
+            <h1>🔐 Security Analysis Report</h1>
+            <div class="server-id">example/mcp-server v1.0.0</div>
+            <p style="margin-top: 0.5rem; opacity: 0.9;">Analyzed: December 16, 2024</p>
+        </div>
+    </div>
+    
+    <div class="container">
+        <div class="status-banner status-verified">
+            <div class="status-icon">✓</div>
+            <div class="status-text">
+                <h2>VERIFIED</h2>
+                <p>This MCP server passed all security checks and received approval from the ThinkTank multi-agent swarm.</p>
+            </div>
+        </div>
+        
+        <div class="summary-card">
+            <h2 style="margin-bottom: 1.5rem;">Analysis Summary</h2>
+            <div class="metrics-grid">
+                <div class="metric">
+                    <div class="metric-value">95%</div>
+                    <div class="metric-label">Trust Score</div>
+                </div>
+                <div class="metric">
+                    <div class="metric-value" style="color: #28a745;">0</div>
+                    <div class="metric-label">Critical Issues</div>
+                </div>
+                <div class="metric">
+                    <div class="metric-value" style="color: #ffc107;">2</div>
+                    <div class="metric-label">Warnings</div>
+                </div>
+                <div class="metric">
+                    <div class="metric-value">127</div>
+                    <div class="metric-label">Dependencies</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="section">
+            <h2>🔍 Security Checks</h2>
+            
+            <h3>Static Code Analysis</h3>
+            <div class="check-item">
+                <span class="check-icon check-pass">✓</span>
+                <div>
+                    <strong>Semgrep Analysis</strong>
+                    <p>No security issues detected. Code follows security best practices.</p>
+                </div>
+            </div>
+            
+            <div class="check-item">
+                <span class="check-icon check-pass">✓</span>
+                <div>
+                    <strong>Bandit (Python Security)</strong>
+                    <p>Passed with confidence level HIGH. No hardcoded secrets or SQL injection vectors.</p>
+                </div>
+            </div>
+            
+            <h3>Dependency Analysis</h3>
+            <div class="check-item">
+                <span class="check-icon check-pass">✓</span>
+                <div>
+                    <strong>Vulnerability Scan (Trivy)</strong>
+                    <p>0 critical, 0 high, 2 medium vulnerabilities. All dependencies up to date.</p>
+                </div>
+            </div>
+            
+            <div class="check-item">
+                <span class="check-icon check-warn">⚠</span>
+                <div>
+                    <strong>Outdated Dependencies</strong>
+                    <p>2 dependencies have newer versions available: <code>requests</code> (2.28.0 → 2.31.0), <code>pydantic</code> (1.10.0 → 2.5.0)</p>
+                </div>
+            </div>
+            
+            <h3>Secrets Detection</h3>
+            <div class="check-item">
+                <span class="check-icon check-pass">✓</span>
+                <div>
+                    <strong>GitLeaks Scan</strong>
+                    <p>No hardcoded secrets, API keys, or credentials detected.</p>
+                </div>
+            </div>
+            
+            <h3>Software Bill of Materials (SBOM)</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Package</th>
+                        <th>Version</th>
+                        <th>License</th>
+                        <th>Vulnerabilities</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code>anthropic-sdk</code></td>
+                        <td>0.8.1</td>
+                        <td>MIT</td>
+                        <td style="color: #28a745;">0</td>
+                    </tr>
+                    <tr>
+                        <td><code>requests</code></td>
+                        <td>2.28.0</td>
+                        <td>Apache-2.0</td>
+                        <td style="color: #ffc107;">1 (Medium)</td>
+                    </tr>
+                    <tr>
+                        <td><code>pydantic</code></td>
+                        <td>1.10.0</td>
+                        <td>MIT</td>
+                        <td style="color: #28a745;">0</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        
+        <div class="section">
+            <h2>🤖 ThinkTank Multi-Agent Analysis</h2>
+            
+            <div class="agent-summary">
+                <h3>Consensus Verdict</h3>
+                <p><strong>Result:</strong> APPROVED with high confidence</p>
+                <p><strong>Confidence:</strong> 94.2%</p>
+                
+                <div class="agent-votes">
+                    <div class="vote-box vote-believer">
+                        <div class="vote-count">7/7</div>
+                        <div>Believers Approve</div>
+                    </div>
+                    <div class="vote-box vote-skeptic">
+                        <div class="vote-count">5/7</div>
+                        <div>Skeptics Approve</div>
+                    </div>
+                    <div class="vote-box vote-neutral">
+                        <div class="vote-count">5/5</div>
+                        <div>Neutrals Approve</div>
+                    </div>
+                </div>
+                
+                <div class="consensus-text">
+                    <h4>Foreperson Synthesis</h4>
+                    <p>This MCP server demonstrates strong security practices with well-structured code, proper input validation, and no critical vulnerabilities. The believer agents highlighted the server's clear documentation and defensive programming patterns. Skeptic agents raised minor concerns about dependency updates and error handling edge cases, but concluded these do not pose immediate security risks.</p>
+                    
+                    <p>The neutral agents synthesized these perspectives and noted that while the server is production-ready, maintainers should prioritize updating <code>requests</code> to address the medium-severity CVE and consider implementing rate limiting for API calls.</p>
+                    
+                    <p><strong>Recommendation:</strong> Approved for production use with standard monitoring. Schedule dependency updates within 30 days.</p>
+                </div>
+            </div>
+            
+            <h3>Key Findings from Agent Deliberation</h3>
+            <ul style="margin-left: 2rem; margin-top: 1rem;">
+                <li><strong>Strength:</strong> Comprehensive input validation using Pydantic models</li>
+                <li><strong>Strength:</strong> Clear separation of concerns with modular architecture</li>
+                <li><strong>Concern:</strong> Missing rate limiting on external API calls</li>
+                <li><strong>Concern:</strong> Error messages could leak implementation details</li>
+                <li><strong>Recommendation:</strong> Add circuit breaker pattern for external service calls</li>
+                <li><strong>Recommendation:</strong> Implement structured logging for security events</li>
+            </ul>
+        </div>
+        
+        <div class="section">
+            <h2>🔐 Cryptographic Attestation</h2>
+            
+            <p>This analysis has been cryptographically signed and logged to Rekor's transparency log for independent verification.</p>
+            
+            <h3>Signature</h3>
+            <div class="attestation">
+MEUCIQDXvK8rR7Fj3mF2x9L4wN6yT5eR8pS3qW7vK9mN4jL1xAIgH5kJ2dF7nW8qR3tY6uP9mL4zN7xS5eV8wK2fG1hC4yQ=
+            </div>
+            
+            <h3>Rekor Entry</h3>
+            <div class="attestation">
+UUID: 24296fb24b8ad77a5bfa4c8b76d042a3e5e72b0f4b0e8e3c9a1d6f2e7b5a9c3d
+Log Index: 142857693
+Integrated Time: 2024-12-16T23:15:42Z
+            </div>
+            
+            <h3>Verification Commands</h3>
+            <pre><code># Verify signature with cosign
+cosign verify-blob \
+  --signature signature.sig \
+  --certificate cert.pem \
+  analysis-report.json
+
+# Query Rekor transparency log
+rekor-cli get \
+  --uuid 24296fb24b8ad77a5bfa4c8b76d042a3e5e72b0f4b0e8e3c9a1d6f2e7b5a9c3d</code></pre>
+        </div>
+        
+        <div class="section">
+            <h2>📋 Recommendations</h2>
+            
+            <h3>Immediate Actions</h3>
+            <ul style="margin-left: 2rem; margin-top: 1rem;">
+                <li>Update <code>requests</code> to version 2.31.0 to address CVE-2023-32681</li>
+                <li>Add badge to README to display verification status</li>
+            </ul>
+            
+            <h3>Within 30 Days</h3>
+            <ul style="margin-left: 2rem; margin-top: 1rem;">
+                <li>Update <code>pydantic</code> to v2.x for performance improvements</li>
+                <li>Implement rate limiting for external API calls</li>
+                <li>Add structured logging for security-relevant events</li>
+            </ul>
+            
+            <h3>Future Enhancements</h3>
+            <ul style="margin-left: 2rem; margin-top: 1rem;">
+                <li>Consider adding circuit breaker pattern for resilience</li>
+                <li>Implement more granular error handling</li>
+                <li>Add comprehensive integration tests for security scenarios</li>
+            </ul>
+        </div>
+        
+        <div style="text-align: center; margin: 3rem 0; padding: 2rem; background: white; border-radius: 8px;">
+            <h3 style="margin-bottom: 1rem;">Display Your Verification</h3>
+            <p style="margin-bottom: 1.5rem;">Add this badge to your README:</p>
+            <img src="badge-verified.svg" alt="Credence Verified" style="margin-bottom: 1rem;">
+            <pre style="display: inline-block; text-align: left;"><code>[![Credence Verified](https://registry.credence.security/badge/example/mcp-server.svg)](https://registry.credence.security/reports/analysis-id.html)</code></pre>
+        </div>
+    </div>
+</body>
+</html>

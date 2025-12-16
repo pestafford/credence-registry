@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Submit for Verification - Credence Registry</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #f5f5f5;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 3rem 2rem;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+        
+        .content {
+            background: white;
+            padding: 3rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        h2 {
+            color: #667eea;
+            margin-top: 2rem;
+            margin-bottom: 1rem;
+            font-size: 1.8rem;
+        }
+        
+        h3 {
+            color: #333;
+            margin-top: 1.5rem;
+            margin-bottom: 0.75rem;
+            font-size: 1.3rem;
+        }
+        
+        p {
+            margin-bottom: 1rem;
+        }
+        
+        .process-steps {
+            margin: 2rem 0;
+        }
+        
+        .step {
+            display: flex;
+            gap: 1.5rem;
+            margin: 2rem 0;
+            padding: 1.5rem;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+        }
+        
+        .step-number {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #667eea;
+            min-width: 3rem;
+        }
+        
+        .step-content h4 {
+            font-size: 1.2rem;
+            margin-bottom: 0.5rem;
+            color: #333;
+        }
+        
+        pre {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            padding: 1.5rem;
+            border-radius: 4px;
+            overflow-x: auto;
+            margin: 1rem 0;
+        }
+        
+        code {
+            font-family: 'Courier New', monospace;
+            background: #f4f4f4;
+            padding: 0.2rem 0.4rem;
+            border-radius: 3px;
+            font-size: 0.9em;
+        }
+        
+        pre code {
+            background: none;
+            padding: 0;
+        }
+        
+        .info-box {
+            background: #e7f3ff;
+            border-left: 4px solid #2196f3;
+            padding: 1rem 1.5rem;
+            margin: 1.5rem 0;
+            border-radius: 4px;
+        }
+        
+        .warning-box {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 1rem 1.5rem;
+            margin: 1.5rem 0;
+            border-radius: 4px;
+        }
+        
+        .success-box {
+            background: #d4edda;
+            border-left: 4px solid #28a745;
+            padding: 1rem 1.5rem;
+            margin: 1.5rem 0;
+            border-radius: 4px;
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 0.75rem 1.5rem;
+            background: #667eea;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+            font-weight: 600;
+            transition: opacity 0.2s;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+        
+        .btn:hover {
+            opacity: 0.9;
+        }
+        
+        .contact-form {
+            margin: 2rem 0;
+            padding: 2rem;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+        }
+        
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 4px;
+            font-size: 1rem;
+            font-family: inherit;
+        }
+        
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        ul {
+            margin: 1rem 0 1rem 2rem;
+        }
+        
+        li {
+            margin: 0.5rem 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🔐 Get Your Server Verified</h1>
+        <p>Submit your MCP server for comprehensive security analysis</p>
+    </div>
+    
+    <div class="container">
+        <div class="content">
+            <h2>Verification Process</h2>
+            <p>Credence uses ThinkTank's multi-agent security analysis to provide comprehensive evaluation of MCP servers. Our process combines automated security tools with AI-powered interpretation to catch vulnerabilities that traditional scanners miss.</p>
+            
+            <div class="info-box">
+                <strong>🎯 Current Status:</strong> We're accepting submissions for the initial batch of MCP servers. Analysis turnaround time is currently 24-48 hours.
+            </div>
+            
+            <div class="process-steps">
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <h4>Submit Your Server</h4>
+                        <p>Provide your MCP server's GitHub repository URL and basic metadata. We'll automatically fetch the source code and dependencies.</p>
+                    </div>
+                </div>
+                
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <h4>Automated Security Analysis</h4>
+                        <p>Your server goes through our security pipeline:</p>
+                        <ul>
+                            <li>Static code analysis (Semgrep, Bandit)</li>
+                            <li>Dependency vulnerability scanning (Trivy, Syft)</li>
+                            <li>Secret detection (GitLeaks)</li>
+                            <li>SBOM generation</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <h4>ThinkTank Multi-Agent Review</h4>
+                        <p>Our multi-agent swarm deliberates on the security findings:</p>
+                        <ul>
+                            <li><strong>7 Believer agents:</strong> Emphasize server capabilities and safe patterns</li>
+                            <li><strong>7 Skeptic agents:</strong> Challenge assumptions and identify risks</li>
+                            <li><strong>5 Neutral agents:</strong> Synthesize perspectives and weigh evidence</li>
+                            <li><strong>1 Foreperson:</strong> Generates final consensus report</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="step">
+                    <div class="step-number">4</div>
+                    <div class="step-content">
+                        <h4>Cryptographic Attestation</h4>
+                        <p>Verification results are signed using Sigstore and logged to Rekor's transparency log, creating an immutable record that can be independently verified.</p>
+                    </div>
+                </div>
+                
+                <div class="step">
+                    <div class="step-number">5</div>
+                    <div class="step-content">
+                        <h4>Registry Publication & Badge</h4>
+                        <p>Verified servers receive:</p>
+                        <ul>
+                            <li>Public listing in the Credence Registry</li>
+                            <li>Embeddable verification badge for your README</li>
+                            <li>Detailed security analysis report</li>
+                            <li>Trust score and recommendations</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            <h2>What We Analyze</h2>
+            
+            <h3>Security Checks</h3>
+            <ul>
+                <li><strong>Code Quality:</strong> Potential bugs, security antipatterns, injection vulnerabilities</li>
+                <li><strong>Dependencies:</strong> Known CVEs, outdated packages, malicious packages</li>
+                <li><strong>Secrets:</strong> Hardcoded credentials, API keys, private keys</li>
+                <li><strong>Configuration:</strong> Insecure defaults, excessive permissions</li>
+                <li><strong>Behavioral Analysis:</strong> Suspicious network calls, filesystem access patterns</li>
+            </ul>
+            
+            <h3>Supply Chain Verification</h3>
+            <ul>
+                <li>SBOM (Software Bill of Materials) generation</li>
+                <li>Dependency graph analysis</li>
+                <li>License compliance checking</li>
+                <li>Build reproducibility assessment</li>
+            </ul>
+            
+            <div class="warning-box">
+                <strong>⚠️ Note:</strong> Verification does not guarantee zero vulnerabilities. It provides a comprehensive assessment at a point in time. You must update your verification when releasing new versions.
+            </div>
+            
+            <h2>Verification Outcomes</h2>
+            
+            <h3>✅ Verified</h3>
+            <p>Server passed all security checks and received majority approval from ThinkTank swarm. Safe for production use with standard precautions.</p>
+            
+            <h3>🟡 Flagged</h3>
+            <p>Server passed basic checks but has concerns requiring manual review. May be acceptable depending on your organization's risk tolerance.</p>
+            
+            <h3>❌ Rejected</h3>
+            <p>Server failed critical security checks or received majority rejection from ThinkTank swarm. Not recommended for use without remediation.</p>
+            
+            <h2>Badge Usage</h2>
+            <p>Once verified, add our badge to your README to show users your server is trusted:</p>
+            
+            <pre><code>[![Credence Verified](https://registry.credence.security/badge/org/server.svg)](https://registry.credence.security/servers/org/server)</code></pre>
+            
+            <div class="success-box">
+                <strong>💡 Pro Tip:</strong> Link the badge to your full verification report so users can see the detailed analysis.
+            </div>
+            
+            <h2>Submit Your Server</h2>
+            
+            <div class="contact-form">
+                <p><strong>Early Access Submission</strong></p>
+                <p>We're currently accepting submissions via email while we build out automated submission. Send your request to: <strong>verify@credence.security</strong></p>
+                
+                <h3 style="margin-top: 2rem; margin-bottom: 1rem;">Include in your email:</h3>
+                <ul>
+                    <li>GitHub repository URL</li>
+                    <li>Server name and version</li>
+                    <li>Maintainer name and contact</li>
+                    <li>Brief description of server functionality</li>
+                </ul>
+                
+                <p style="margin-top: 1.5rem;"><em>API-based submission coming Q1 2025</em></p>
+            </div>
+            
+            <h2>Pricing</h2>
+            
+            <div class="info-box">
+                <h3 style="margin-top: 0;">Free Tier (Current)</h3>
+                <ul>
+                    <li>Public MCP servers: Free verification</li>
+                    <li>Badge and public listing included</li>
+                    <li>Re-verification on major version updates</li>
+                </ul>
+                
+                <h3>Enterprise (Coming Soon)</h3>
+                <ul>
+                    <li>Private server verification</li>
+                    <li>Custom policy enforcement</li>
+                    <li>Priority analysis queue</li>
+                    <li>API access for CI/CD integration</li>
+                </ul>
+            </div>
+            
+            <h2>Questions?</h2>
+            <p>Check our <a href="faq.html" style="color: #667eea;">FAQ</a> or reach out at <strong>support@credence.security</strong></p>
+            
+            <div style="text-align: center; margin: 3rem 0;">
+                <a href="index.html" class="btn">← Back to Registry</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
