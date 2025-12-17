@@ -77,7 +77,7 @@ def generate_detailed_badge(server_id: str, status: str, trust_score: float, ver
     score_text = f"{int(trust_score * 100)}%"
     
     svg = f'''<svg xmlns="http://www.w3.org/2000/svg" width="280" height="90" role="img">
-    <title>Credence Security - {server_id}</title>
+    <title>Credence - {server_id}</title>
     <rect width="280" height="90" fill="#ffffff" stroke="#e0e0e0" stroke-width="2" rx="6"/>
     
     <!-- Logo/Icon Area -->

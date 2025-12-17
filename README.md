@@ -69,7 +69,7 @@ Edit `registry.json`:
 ```json
 {
   "registry_version": "1.0.0",
-  "last_updated": "2024-12-16T23:00:00Z",
+  "last_updated": "2025-12-16T23:00:00Z",
   "total_servers": 1,
   "verified_servers": 1,
   "servers": [
@@ -78,7 +78,7 @@ Edit `registry.json`:
       "version": "0.1.0",
       "verification_status": "verified",
       "trust_score": 0.95,
-      "last_analyzed": "2024-12-16T23:00:00Z",
+      "last_analyzed": "2025-12-16T23:00:00Z",
       "analysis_id": "abc123",
       
       "metadata": {
@@ -86,7 +86,7 @@ Edit `registry.json`:
         "description": "MCP server for GitHub API access",
         "maintainer": "Anthropic",
         "stars": 234,
-        "last_commit": "2024-12-15T10:30:00Z"
+        "last_commit": "2025-12-15T10:30:00Z"
       },
       
       "security_analysis": {
@@ -113,7 +113,7 @@ Edit `registry.json`:
       "cryptographic_attestation": {
         "signature": "MEUCIQDXvK8r...",
         "sigstore_entry": "24296fb2...",
-        "signed_at": "2024-12-16T23:15:42Z",
+        "signed_at": "2025-12-16T23:15:42Z",
         "certificate_chain": "base64..."
       },
       

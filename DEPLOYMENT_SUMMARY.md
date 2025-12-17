@@ -236,7 +236,7 @@ Edit `registry.json`:
 ```json
 {
   "registry_version": "1.0.0",
-  "last_updated": "2024-12-16T23:00:00Z",
+  "last_updated": "2025-12-16T23:00:00Z",
   "total_servers": 1,
   "verified_servers": 1,
   "servers": [
@@ -386,6 +386,6 @@ Good luck! 🚀
 
 ---
 
-**Built: December 16, 2024**  
+**Built: December 16, 2025**  
 **Status: Ready for deployment**  
 **License: Use as you see fit for Credence/ThinkTank**

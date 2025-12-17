@@ -45,7 +45,7 @@ GET /registry/servers
       "version": "1.0.0",
       "verification_status": "verified",
       "trust_score": 0.95,
-      "last_analyzed": "2024-12-16T23:00:00Z",
+      "last_analyzed": "2025-12-16T23:00:00Z",
       "badge_url": "https://registry.credence.security/badge/org/server.svg"
     }
   ],
@@ -72,7 +72,7 @@ GET /registry/servers/{server_id}
   "version": "1.0.0",
   "verification_status": "verified",
   "trust_score": 0.95,
-  "last_analyzed": "2024-12-16T23:00:00Z",
+  "last_analyzed": "2025-12-16T23:00:00Z",
   "analysis_id": "abc123",
   
   "metadata": {
@@ -80,7 +80,7 @@ GET /registry/servers/{server_id}
     "description": "Server description",
     "maintainer": "maintainer-name",
     "stars": 234,
-    "last_commit": "2024-12-15T10:30:00Z"
+    "last_commit": "2025-12-15T10:30:00Z"
   },
   
   "security_analysis": {
@@ -92,7 +92,7 @@ GET /registry/servers/{server_id}
   "cryptographic_attestation": {
     "signature": "MEUCIQDXvK8r...",
     "sigstore_entry": "24296fb2...",
-    "signed_at": "2024-12-16T23:15:42Z"
+    "signed_at": "2025-12-16T23:15:42Z"
   }
 }
 ```
@@ -138,12 +138,12 @@ POST /verify/signature
 ```json
 {
   "valid": true,
-  "verified_at": "2024-12-16T23:30:00Z",
+  "verified_at": "2025-12-16T23:30:00Z",
   "certificate_chain": [ /* ... */ ],
   "rekor_entry": {
     "uuid": "24296fb2...",
     "log_index": 142857693,
-    "integrated_time": "2024-12-16T23:15:42Z"
+    "integrated_time": "2025-12-16T23:15:42Z"
   }
 }
 ```
@@ -159,7 +159,7 @@ GET /verify/trust/{server_id}
 {
   "server_id": "org/server-name",
   "trust_score": 0.95,
-  "calculated_at": "2024-12-16T23:00:00Z",
+  "calculated_at": "2025-12-16T23:00:00Z",
   "components": {
     "static_analysis": 0.30,
     "dependency_health": 0.20,
@@ -193,7 +193,7 @@ POST /submit
 {
   "submission_id": "sub_abc123",
   "status": "queued",
-  "estimated_completion": "2024-12-17T23:00:00Z",
+  "estimated_completion": "2025-12-17T23:00:00Z",
   "status_url": "/submissions/sub_abc123/status"
 }
 ```
@@ -211,7 +211,7 @@ GET /submissions/{submission_id}/status
   "status": "analyzing" | "completed" | "failed",
   "progress": 65,
   "current_stage": "thinktank_analysis",
-  "started_at": "2024-12-16T23:00:00Z",
+  "started_at": "2025-12-16T23:00:00Z",
   "completed_at": null,
   "result_url": null
 }
@@ -230,7 +230,7 @@ GET /reports/{analysis_id}
 {
   "analysis_id": "abc123",
   "server_id": "org/server-name",
-  "analyzed_at": "2024-12-16T23:00:00Z",
+  "analyzed_at": "2025-12-16T23:00:00Z",
   
   "summary": {
     "verdict": "APPROVED",
@@ -295,7 +295,7 @@ POST /webhooks
   "webhook_id": "wh_abc123",
   "url": "https://example.com/webhook",
   "events": ["analysis_completed", "trust_score_changed"],
-  "created_at": "2024-12-16T23:00:00Z"
+  "created_at": "2025-12-16T23:00:00Z"
 }
 ```
 
@@ -304,7 +304,7 @@ POST /webhooks
 ```json
 {
   "event": "analysis_completed",
-  "timestamp": "2024-12-16T23:30:00Z",
+  "timestamp": "2025-12-16T23:30:00Z",
   "data": {
     "submission_id": "sub_abc123",
     "server_id": "org/server-name",
