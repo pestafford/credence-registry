@@ -1,7 +1,52 @@
 {
   "registry_version": "1.0.0",
-  "last_updated": "2025-12-16T23:00:00Z",
-  "total_servers": 0,
+  "last_updated": "2025-12-17T20:55:04.844823Z",
+  "total_servers": 1,
   "verified_servers": 0,
-  "servers": []
+  "servers": [
+    {
+      "server_id": "modelcontextprotocol/server-filesystem",
+      "version": "0.6.3",
+      "git_commit": "d9c45477cd6ff4d3456c138498dca984c8697f43",
+      "git_commit_short": "d9c4547",
+      "commit_date": "2025-12-17T10:20:48+09:00",
+      "package_hash_sha256": "ac88152479a7c93100f8c21a03de2e3ddfa068585b42a700a5abc52bc77973e3",
+      "verification_status": "rejected",
+      "trust_score": 0.34,
+      "last_analyzed": "2025-12-17T18:29:44.960729Z",
+      "analysis_id": "c5f39e1f",
+      "metadata": {
+        "repository_url": "https://github.com/modelcontextprotocol/server-filesystem",
+        "description": "MCP server for GitHub API access",
+        "maintainer": "Anthropic",
+        "stars": 0,
+        "last_commit": "2025-12-17T18:29:44.960123Z"
+      },
+      "security_analysis": {
+        "static_analysis": {
+          "passed": false,
+          "issues_found": 22,
+          "tools_used": [
+            "semgrep",
+            "gitleaks"
+          ]
+        },
+        "dependency_analysis": {
+          "passed": true,
+          "vulnerabilities_found": 0,
+          "sbom_generated": true
+        },
+        "thinktank_consensus": {
+          "verdict": "REJECTED",
+          "confidence": 0.3,
+          "believer_votes": 0,
+          "skeptic_votes": 0,
+          "neutral_votes": 0,
+          "foreperson_synthesis": "**QUICK SUMMARY (REGISTRY/QUICK REFERENCE)**\n\n\u2022 **Answer:** Not recommended for production deployment due to high-risk filesystem access combined with 22 unresolved SAST findings\n\n\u2022 **Key Points:** \n ..."
+        }
+      },
+      "badge_url": "badges/modelcontextprotocol-server-github.svg",
+      "report_url": "reports/c5f39e1f.html"
+    }
+  ]
 }
