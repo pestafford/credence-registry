@@ -1,7 +1,7 @@
 {
   "registry_version": "1.0.0",
-  "last_updated": "2025-12-17T23:08:49.530390Z",
-  "total_servers": 1,
+  "last_updated": "2025-12-17T23:19:42.911483Z",
+  "total_servers": 2,
   "verified_servers": 0,
   "servers": [
     {
@@ -47,6 +47,50 @@
       },
       "badge_url": "badges/modelcontextprotocol-server-github.svg",
       "report_url": "reports/c5f39e1f.html"
+    },
+    {
+      "server_id": "modelcontextprotocol/server-fetch",
+      "version": "unknown",
+      "git_commit": "a37158bc1555ce0b1121ea98a3e740119d7fc8c7",
+      "git_commit_short": "a37158b",
+      "commit_date": "2025-12-17T16:04:30Z",
+      "package_hash_sha256": "a414afba259f1e5c3ae38c2e66f5719300f7a56f3008dd48d1800f2331b3064d",
+      "verification_status": "rejected",
+      "trust_score": 0.66,
+      "last_analyzed": "2025-12-17T23:19:08.644472Z",
+      "analysis_id": "bec37cfa",
+      "metadata": {
+        "repository_url": "https://github.com/modelcontextprotocol/servers",
+        "description": "MCP server for GitHub API access",
+        "maintainer": "Anthropic",
+        "stars": 0,
+        "last_commit": "2025-12-17T23:19:08.643691Z"
+      },
+      "security_analysis": {
+        "static_analysis": {
+          "passed": false,
+          "issues_found": 1,
+          "tools_used": [
+            "semgrep",
+            "gitleaks"
+          ]
+        },
+        "dependency_analysis": {
+          "passed": true,
+          "vulnerabilities_found": 0,
+          "sbom_generated": true
+        },
+        "thinktank_consensus": {
+          "verdict": "REJECTED",
+          "confidence": 0.45,
+          "believer_votes": 2,
+          "skeptic_votes": 2,
+          "neutral_votes": 1,
+          "foreperson_synthesis": "**QUICK SUMMARY (REGISTRY/QUICK REFERENCE)**\n\n\u2022 **Answer:** Moderate security posture with deployment blockers requiring investigation\n\n\u2022 **Key Points:** \n  - Single unspecified SAST finding represent..."
+        }
+      },
+      "badge_url": "badges/modelcontextprotocol-server-github.svg",
+      "report_url": "reports/bec37cfa.html"
     }
   ]
 }
