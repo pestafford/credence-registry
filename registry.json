@@ -1,6 +1,6 @@
 {
   "registry_version": "1.0.0",
-  "last_updated": "2025-12-17T21:00:30.589846Z",
+  "last_updated": "2025-12-17T23:04:35.144133Z",
   "total_servers": 1,
   "verified_servers": 0,
   "servers": [
@@ -14,7 +14,7 @@
       "verification_status": "rejected",
       "trust_score": 0.34,
       "last_analyzed": "2025-12-17T20:59:25.682576Z",
-      "analysis_id": "836bf779",
+      "analysis_id": "c5f39e1f",
       "metadata": {
         "repository_url": "https://github.com/modelcontextprotocol/server-filesystem",
         "description": "MCP server for GitHub API access",
@@ -46,7 +46,7 @@
         }
       },
       "badge_url": "badges/modelcontextprotocol-server-github.svg",
-      "report_url": "reports/836bf779.html"
+      "report_url": "reports/c5f39e1f.html"
     }
   ]
 }
