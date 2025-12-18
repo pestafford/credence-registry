@@ -1,6 +1,6 @@
 {
   "registry_version": "1.0.0",
-  "last_updated": "2025-12-17T23:19:42.911483Z",
+  "last_updated": "2025-12-18T17:25:04.818935Z",
   "total_servers": 2,
   "verified_servers": 0,
   "servers": [
@@ -55,16 +55,16 @@
       "git_commit_short": "a37158b",
       "commit_date": "2025-12-17T16:04:30Z",
       "package_hash_sha256": "a414afba259f1e5c3ae38c2e66f5719300f7a56f3008dd48d1800f2331b3064d",
-      "verification_status": "rejected",
-      "trust_score": 0.66,
-      "last_analyzed": "2025-12-17T23:19:08.644472Z",
-      "analysis_id": "bec37cfa",
+      "verification_status": "flagged",
+      "trust_score": 0.72,
+      "last_analyzed": "2025-12-18T17:23:45.876108Z",
+      "analysis_id": "64dc9b4e",
       "metadata": {
         "repository_url": "https://github.com/modelcontextprotocol/servers",
         "description": "MCP server for GitHub API access",
         "maintainer": "Anthropic",
         "stars": 0,
-        "last_commit": "2025-12-17T23:19:08.643691Z"
+        "last_commit": "2025-12-18T17:23:45.875315Z"
       },
       "security_analysis": {
         "static_analysis": {
@@ -81,16 +81,16 @@
           "sbom_generated": true
         },
         "thinktank_consensus": {
-          "verdict": "REJECTED",
-          "confidence": 0.45,
+          "verdict": "FLAGGED",
+          "confidence": 0.68,
           "believer_votes": 2,
           "skeptic_votes": 2,
           "neutral_votes": 1,
-          "foreperson_synthesis": "**QUICK SUMMARY (REGISTRY/QUICK REFERENCE)**\n\n\u2022 **Answer:** Moderate security posture with deployment blockers requiring investigation\n\n\u2022 **Key Points:** \n  - Single unspecified SAST finding represent..."
+          "foreperson_synthesis": "**QUICK SUMMARY (REGISTRY/QUICK REFERENCE)**\n\n\u2022 **Answer:** Moderate security posture - production deployment acceptable with strict conditions\n\n\u2022 **Key Points:** \n  - Clean baseline: 0 CVEs, 0 secret..."
         }
       },
       "badge_url": "badges/modelcontextprotocol-server-github.svg",
-      "report_url": "reports/bec37cfa.html"
+      "report_url": "reports/64dc9b4e.html"
     }
   ]
 }
