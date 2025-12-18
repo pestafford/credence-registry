@@ -1,26 +1,26 @@
 {
   "registry_version": "1.0.0",
-  "last_updated": "2025-12-18T17:25:04.818935Z",
+  "last_updated": "2025-12-18T17:35:53.165400Z",
   "total_servers": 2,
   "verified_servers": 0,
   "servers": [
     {
       "server_id": "modelcontextprotocol/server-filesystem",
       "version": "0.6.3",
-      "git_commit": "d9c45477cd6ff4d3456c138498dca984c8697f43",
-      "git_commit_short": "d9c4547",
-      "commit_date": "2025-12-17T10:20:48+09:00",
+      "git_commit": "c7d60d635abcad61fc0cf0bb3f0ca8d83bcd2eec",
+      "git_commit_short": "c7d60d6",
+      "commit_date": "2025-12-18T16:25:49Z",
       "package_hash_sha256": "ac88152479a7c93100f8c21a03de2e3ddfa068585b42a700a5abc52bc77973e3",
       "verification_status": "rejected",
-      "trust_score": 0.34,
-      "last_analyzed": "2025-12-17T23:07:53.786188Z",
-      "analysis_id": "c5f39e1f",
+      "trust_score": 0.39,
+      "last_analyzed": "2025-12-18T17:35:22.609802Z",
+      "analysis_id": "c86e7c6d",
       "metadata": {
         "repository_url": "https://github.com/modelcontextprotocol/servers",
         "description": "MCP server for GitHub API access",
         "maintainer": "Anthropic",
         "stars": 0,
-        "last_commit": "2025-12-17T23:07:53.785660Z"
+        "last_commit": "2025-12-18T17:35:22.609058Z"
       },
       "security_analysis": {
         "static_analysis": {
@@ -38,15 +38,15 @@
         },
         "thinktank_consensus": {
           "verdict": "REJECTED",
-          "confidence": 0.3,
+          "confidence": 0.45,
           "believer_votes": 2,
           "skeptic_votes": 2,
           "neutral_votes": 1,
-          "foreperson_synthesis": "**QUICK SUMMARY (REGISTRY/QUICK REFERENCE)**\n\n\u2022 **Answer:** Not recommended for production deployment due to high-risk filesystem access combined with 22 unresolved SAST findings\n\n\u2022 **Key Points:** \n ..."
+          "foreperson_synthesis": "**QUICK SUMMARY (REGISTRY/QUICK REFERENCE)**\n\n\u2022 **Answer:** Conditionally acceptable for production with mandatory security controls implementation\n\n\u2022 **Key Points:** \n  - Zero CVEs and no exposed sec..."
         }
       },
       "badge_url": "badges/modelcontextprotocol-server-github.svg",
-      "report_url": "reports/c5f39e1f.html"
+      "report_url": "reports/c86e7c6d.html"
     },
     {
       "server_id": "modelcontextprotocol/server-fetch",
