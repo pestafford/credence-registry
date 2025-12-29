@@ -1,6 +1,6 @@
 {
   "metadata": {
-    "scan_timestamp": "2025-12-28T18:45:09.929570Z",
+    "scan_timestamp": "2025-12-28T22:26:09.821309Z",
     "git_commit": "dcb47d2d94a3a33340053d2df550ae68d2795a3f",
     "git_commit_date": "2025-12-19T12:39:55-05:00"
   },
@@ -10,7 +10,7 @@
       "results": [
         {
           "check_id": "dockerfile.security.missing-user-entrypoint.missing-user-entrypoint",
-          "path": "/tmp/mcp-scan-fapx2gn3/server_repo/src/filesystem/Dockerfile",
+          "path": "/tmp/mcp-scan-2imvfxdw/server_repo/src/filesystem/Dockerfile",
           "start": {
             "line": 25,
             "col": 1,
@@ -60,7 +60,7 @@
         },
         {
           "check_id": "javascript.lang.security.audit.path-traversal.path-join-resolve-traversal.path-join-resolve-traversal",
-          "path": "/tmp/mcp-scan-fapx2gn3/server_repo/src/filesystem/__tests__/directory-tree.test.ts",
+          "path": "/tmp/mcp-scan-2imvfxdw/server_repo/src/filesystem/__tests__/directory-tree.test.ts",
           "start": {
             "line": 21,
             "col": 64,
@@ -113,7 +113,7 @@
         },
         {
           "check_id": "javascript.lang.security.audit.path-traversal.path-join-resolve-traversal.path-join-resolve-traversal",
-          "path": "/tmp/mcp-scan-fapx2gn3/server_repo/src/filesystem/__tests__/directory-tree.test.ts",
+          "path": "/tmp/mcp-scan-2imvfxdw/server_repo/src/filesystem/__tests__/directory-tree.test.ts",
           "start": {
             "line": 21,
             "col": 77,
@@ -166,7 +166,7 @@
         },
         {
           "check_id": "javascript.lang.security.audit.path-traversal.path-join-resolve-traversal.path-join-resolve-traversal",
-          "path": "/tmp/mcp-scan-fapx2gn3/server_repo/src/filesystem/__tests__/directory-tree.test.ts",
+          "path": "/tmp/mcp-scan-2imvfxdw/server_repo/src/filesystem/__tests__/directory-tree.test.ts",
           "start": {
             "line": 41,
             "col": 39,
@@ -219,7 +219,7 @@
         },
         {
           "check_id": "javascript.lang.security.audit.path-traversal.path-join-resolve-traversal.path-join-resolve-traversal",
-          "path": "/tmp/mcp-scan-fapx2gn3/server_repo/src/filesystem/__tests__/directory-tree.test.ts",
+          "path": "/tmp/mcp-scan-2imvfxdw/server_repo/src/filesystem/__tests__/directory-tree.test.ts",
           "start": {
             "line": 41,
             "col": 52,
@@ -272,7 +272,7 @@
         },
         {
           "check_id": "javascript.lang.security.audit.path-traversal.path-join-resolve-traversal.path-join-resolve-traversal",
-          "path": "/tmp/mcp-scan-fapx2gn3/server_repo/src/filesystem/index.ts",
+          "path": "/tmp/mcp-scan-2imvfxdw/server_repo/src/filesystem/index.ts",
           "start": {
             "line": 45,
             "col": 35,
@@ -325,7 +325,7 @@
         },
         {
           "check_id": "javascript.lang.security.audit.unsafe-formatstring.unsafe-formatstring",
-          "path": "/tmp/mcp-scan-fapx2gn3/server_repo/src/filesystem/index.ts",
+          "path": "/tmp/mcp-scan-2imvfxdw/server_repo/src/filesystem/index.ts",
           "start": {
             "line": 68,
             "col": 19,
@@ -374,7 +374,7 @@
         },
         {
           "check_id": "javascript.lang.security.audit.path-traversal.path-join-resolve-traversal.path-join-resolve-traversal",
-          "path": "/tmp/mcp-scan-fapx2gn3/server_repo/src/filesystem/index.ts",
+          "path": "/tmp/mcp-scan-2imvfxdw/server_repo/src/filesystem/index.ts",
           "start": {
             "line": 452,
             "col": 37,
@@ -427,7 +427,7 @@
         },
         {
           "check_id": "javascript.lang.security.audit.path-traversal.path-join-resolve-traversal.path-join-resolve-traversal",
-          "path": "/tmp/mcp-scan-fapx2gn3/server_repo/src/filesystem/index.ts",
+          "path": "/tmp/mcp-scan-2imvfxdw/server_repo/src/filesystem/index.ts",
           "start": {
             "line": 452,
             "col": 48,
@@ -480,7 +480,7 @@
         },
         {
           "check_id": "javascript.lang.security.audit.path-traversal.path-join-resolve-traversal.path-join-resolve-traversal",
-          "path": "/tmp/mcp-scan-fapx2gn3/server_repo/src/filesystem/index.ts",
+          "path": "/tmp/mcp-scan-2imvfxdw/server_repo/src/filesystem/index.ts",
           "start": {
             "line": 538,
             "col": 64,
@@ -533,7 +533,7 @@
         },
         {
           "check_id": "javascript.lang.security.audit.path-traversal.path-join-resolve-traversal.path-join-resolve-traversal",
-          "path": "/tmp/mcp-scan-fapx2gn3/server_repo/src/filesystem/index.ts",
+          "path": "/tmp/mcp-scan-2imvfxdw/server_repo/src/filesystem/index.ts",
           "start": {
             "line": 538,
             "col": 77,
@@ -586,7 +586,7 @@
         },
         {
           "check_id": "javascript.lang.security.audit.path-traversal.path-join-resolve-traversal.path-join-resolve-traversal",
-          "path": "/tmp/mcp-scan-fapx2gn3/server_repo/src/filesystem/index.ts",
+          "path": "/tmp/mcp-scan-2imvfxdw/server_repo/src/filesystem/index.ts",
           "start": {
             "line": 558,
             "col": 37,
@@ -639,7 +639,7 @@
         },
         {
           "check_id": "javascript.lang.security.audit.path-traversal.path-join-resolve-traversal.path-join-resolve-traversal",
-          "path": "/tmp/mcp-scan-fapx2gn3/server_repo/src/filesystem/index.ts",
+          "path": "/tmp/mcp-scan-2imvfxdw/server_repo/src/filesystem/index.ts",
           "start": {
             "line": 558,
             "col": 50,
@@ -692,7 +692,7 @@
         },
         {
           "check_id": "javascript.lang.security.audit.path-traversal.path-join-resolve-traversal.path-join-resolve-traversal",
-          "path": "/tmp/mcp-scan-fapx2gn3/server_repo/src/filesystem/lib.ts",
+          "path": "/tmp/mcp-scan-2imvfxdw/server_repo/src/filesystem/lib.ts",
           "start": {
             "line": 79,
             "col": 20,
@@ -745,7 +745,7 @@
         },
         {
           "check_id": "javascript.lang.security.audit.path-traversal.path-join-resolve-traversal.path-join-resolve-traversal",
-          "path": "/tmp/mcp-scan-fapx2gn3/server_repo/src/filesystem/lib.ts",
+          "path": "/tmp/mcp-scan-2imvfxdw/server_repo/src/filesystem/lib.ts",
           "start": {
             "line": 80,
             "col": 35,
@@ -798,7 +798,7 @@
         },
         {
           "check_id": "javascript.lang.security.audit.path-traversal.path-join-resolve-traversal.path-join-resolve-traversal",
-          "path": "/tmp/mcp-scan-fapx2gn3/server_repo/src/filesystem/lib.ts",
+          "path": "/tmp/mcp-scan-2imvfxdw/server_repo/src/filesystem/lib.ts",
           "start": {
             "line": 364,
             "col": 34,
@@ -851,7 +851,7 @@
         },
         {
           "check_id": "javascript.lang.security.audit.path-traversal.path-join-resolve-traversal.path-join-resolve-traversal",
-          "path": "/tmp/mcp-scan-fapx2gn3/server_repo/src/filesystem/lib.ts",
+          "path": "/tmp/mcp-scan-2imvfxdw/server_repo/src/filesystem/lib.ts",
           "start": {
             "line": 364,
             "col": 47,
@@ -904,7 +904,7 @@
         },
         {
           "check_id": "javascript.lang.security.audit.path-traversal.path-join-resolve-traversal.path-join-resolve-traversal",
-          "path": "/tmp/mcp-scan-fapx2gn3/server_repo/src/filesystem/path-utils.ts",
+          "path": "/tmp/mcp-scan-2imvfxdw/server_repo/src/filesystem/path-utils.ts",
           "start": {
             "line": 115,
             "col": 36,
@@ -957,7 +957,7 @@
         },
         {
           "check_id": "javascript.lang.security.audit.path-traversal.path-join-resolve-traversal.path-join-resolve-traversal",
-          "path": "/tmp/mcp-scan-fapx2gn3/server_repo/src/filesystem/path-validation.ts",
+          "path": "/tmp/mcp-scan-2imvfxdw/server_repo/src/filesystem/path-validation.ts",
           "start": {
             "line": 30,
             "col": 35,
@@ -1010,7 +1010,7 @@
         },
         {
           "check_id": "javascript.lang.security.audit.path-traversal.path-join-resolve-traversal.path-join-resolve-traversal",
-          "path": "/tmp/mcp-scan-fapx2gn3/server_repo/src/filesystem/path-validation.ts",
+          "path": "/tmp/mcp-scan-2imvfxdw/server_repo/src/filesystem/path-validation.ts",
           "start": {
             "line": 54,
             "col": 36,
@@ -1063,7 +1063,7 @@
         },
         {
           "check_id": "javascript.lang.security.audit.path-traversal.path-join-resolve-traversal.path-join-resolve-traversal",
-          "path": "/tmp/mcp-scan-fapx2gn3/server_repo/src/filesystem/roots-utils.ts",
+          "path": "/tmp/mcp-scan-2imvfxdw/server_repo/src/filesystem/roots-utils.ts",
           "start": {
             "line": 16,
             "col": 33,
@@ -1116,7 +1116,7 @@
         },
         {
           "check_id": "javascript.lang.security.audit.path-traversal.path-join-resolve-traversal.path-join-resolve-traversal",
-          "path": "/tmp/mcp-scan-fapx2gn3/server_repo/src/filesystem/roots-utils.ts",
+          "path": "/tmp/mcp-scan-2imvfxdw/server_repo/src/filesystem/roots-utils.ts",
           "start": {
             "line": 18,
             "col": 39,
@@ -1171,32 +1171,32 @@
       "errors": [],
       "paths": {
         "scanned": [
-          "/tmp/mcp-scan-fapx2gn3/server_repo/src/filesystem/Dockerfile",
-          "/tmp/mcp-scan-fapx2gn3/server_repo/src/filesystem/README.md",
-          "/tmp/mcp-scan-fapx2gn3/server_repo/src/filesystem/__tests__/directory-tree.test.ts",
-          "/tmp/mcp-scan-fapx2gn3/server_repo/src/filesystem/__tests__/lib.test.ts",
-          "/tmp/mcp-scan-fapx2gn3/server_repo/src/filesystem/__tests__/path-utils.test.ts",
-          "/tmp/mcp-scan-fapx2gn3/server_repo/src/filesystem/__tests__/path-validation.test.ts",
-          "/tmp/mcp-scan-fapx2gn3/server_repo/src/filesystem/__tests__/roots-utils.test.ts",
-          "/tmp/mcp-scan-fapx2gn3/server_repo/src/filesystem/__tests__/structured-content.test.ts",
-          "/tmp/mcp-scan-fapx2gn3/server_repo/src/filesystem/index.ts",
-          "/tmp/mcp-scan-fapx2gn3/server_repo/src/filesystem/lib.ts",
-          "/tmp/mcp-scan-fapx2gn3/server_repo/src/filesystem/package.json",
-          "/tmp/mcp-scan-fapx2gn3/server_repo/src/filesystem/path-utils.ts",
-          "/tmp/mcp-scan-fapx2gn3/server_repo/src/filesystem/path-validation.ts",
-          "/tmp/mcp-scan-fapx2gn3/server_repo/src/filesystem/roots-utils.ts",
-          "/tmp/mcp-scan-fapx2gn3/server_repo/src/filesystem/tsconfig.json",
-          "/tmp/mcp-scan-fapx2gn3/server_repo/src/filesystem/vitest.config.ts"
+          "/tmp/mcp-scan-2imvfxdw/server_repo/src/filesystem/Dockerfile",
+          "/tmp/mcp-scan-2imvfxdw/server_repo/src/filesystem/README.md",
+          "/tmp/mcp-scan-2imvfxdw/server_repo/src/filesystem/__tests__/directory-tree.test.ts",
+          "/tmp/mcp-scan-2imvfxdw/server_repo/src/filesystem/__tests__/lib.test.ts",
+          "/tmp/mcp-scan-2imvfxdw/server_repo/src/filesystem/__tests__/path-utils.test.ts",
+          "/tmp/mcp-scan-2imvfxdw/server_repo/src/filesystem/__tests__/path-validation.test.ts",
+          "/tmp/mcp-scan-2imvfxdw/server_repo/src/filesystem/__tests__/roots-utils.test.ts",
+          "/tmp/mcp-scan-2imvfxdw/server_repo/src/filesystem/__tests__/structured-content.test.ts",
+          "/tmp/mcp-scan-2imvfxdw/server_repo/src/filesystem/index.ts",
+          "/tmp/mcp-scan-2imvfxdw/server_repo/src/filesystem/lib.ts",
+          "/tmp/mcp-scan-2imvfxdw/server_repo/src/filesystem/package.json",
+          "/tmp/mcp-scan-2imvfxdw/server_repo/src/filesystem/path-utils.ts",
+          "/tmp/mcp-scan-2imvfxdw/server_repo/src/filesystem/path-validation.ts",
+          "/tmp/mcp-scan-2imvfxdw/server_repo/src/filesystem/roots-utils.ts",
+          "/tmp/mcp-scan-2imvfxdw/server_repo/src/filesystem/tsconfig.json",
+          "/tmp/mcp-scan-2imvfxdw/server_repo/src/filesystem/vitest.config.ts"
         ]
       },
       "time": {
         "rules": [],
-        "rules_parse_time": 1.6405789852142334,
+        "rules_parse_time": 1.5795681476593018,
         "profiling_times": {
-          "config_time": 2.852433204650879,
-          "core_time": 3.495682716369629,
-          "ignores_time": 0.0013778209686279297,
-          "total_time": 6.354734897613525
+          "config_time": 2.922642230987549,
+          "core_time": 3.1726229190826416,
+          "ignores_time": 0.0012867450714111328,
+          "total_time": 6.100898027420044
         },
         "parsing_time": {
           "total_time": 0.0,
@@ -1211,10 +1211,10 @@
           "very_slow_files": []
         },
         "scanning_time": {
-          "total_time": 2.8026444911956787,
+          "total_time": 2.9056453704833984,
           "per_file_time": {
-            "mean": 0.059630733855227214,
-            "std_dev": 0.02197594608112599
+            "mean": 0.061822241925178704,
+            "std_dev": 0.02437873345816963
           },
           "very_slow_stats": {
             "time_ratio": 0.0,
@@ -1257,222 +1257,23 @@
         },
         "targets": [],
         "total_bytes": 0,
-        "max_memory_bytes": 1342678208
+        "max_memory_bytes": 1310773568
       },
       "engine_requested": "OSS",
       "skipped_rules": [],
       "profiling_results": []
     },
     "secrets": [],
-    "sbom": {
-      "artifacts": [],
-      "artifactRelationships": [],
-      "source": {
-        "id": "a7283efb6068f6fb1b4f2de373a843a5aa7bfa29d6c8caed849ecbe8083750dc",
-        "name": "/tmp/mcp-scan-fapx2gn3/server_repo/src/filesystem",
-        "version": "",
-        "type": "directory",
-        "metadata": {
-          "path": "/tmp/mcp-scan-fapx2gn3/server_repo/src/filesystem"
-        }
-      },
-      "distro": {},
-      "descriptor": {
-        "name": "syft",
-        "version": "1.20.0",
-        "configuration": {
-          "catalogers": {
-            "requested": {
-              "default": [
-                "directory",
-                "file"
-              ]
-            },
-            "used": [
-              "alpm-db-cataloger",
-              "apk-db-cataloger",
-              "binary-classifier-cataloger",
-              "cargo-auditable-binary-cataloger",
-              "cocoapods-cataloger",
-              "conan-cataloger",
-              "dart-pubspec-lock-cataloger",
-              "dotnet-deps-cataloger",
-              "dotnet-packages-lock-cataloger",
-              "dotnet-portable-executable-cataloger",
-              "dpkg-db-cataloger",
-              "elf-binary-package-cataloger",
-              "elixir-mix-lock-cataloger",
-              "erlang-otp-application-cataloger",
-              "erlang-rebar-lock-cataloger",
-              "file-content-cataloger",
-              "file-digest-cataloger",
-              "file-executable-cataloger",
-              "file-metadata-cataloger",
-              "github-action-workflow-usage-cataloger",
-              "github-actions-usage-cataloger",
-              "go-module-binary-cataloger",
-              "go-module-file-cataloger",
-              "graalvm-native-image-cataloger",
-              "haskell-cataloger",
-              "java-archive-cataloger",
-              "java-gradle-lockfile-cataloger",
-              "java-jvm-cataloger",
-              "java-pom-cataloger",
-              "javascript-lock-cataloger",
-              "linux-kernel-cataloger",
-              "lua-rock-cataloger",
-              "nix-store-cataloger",
-              "opam-cataloger",
-              "php-composer-lock-cataloger",
-              "php-pecl-serialized-cataloger",
-              "portage-cataloger",
-              "python-installed-package-cataloger",
-              "python-package-cataloger",
-              "rpm-archive-cataloger",
-              "rpm-db-cataloger",
-              "ruby-gemfile-cataloger",
-              "ruby-gemspec-cataloger",
-              "rust-cargo-lock-cataloger",
-              "swift-package-manager-cataloger",
-              "swipl-pack-cataloger",
-              "terraform-lock-cataloger",
-              "wordpress-plugins-cataloger"
-            ]
-          },
-          "data-generation": {
-            "generate-cpes": true
-          },
-          "files": {
-            "content": {
-              "globs": null,
-              "skip-files-above-size": 0
-            },
-            "hashers": [
-              "sha-1",
-              "sha-256"
-            ],
-            "selection": "owned-by-package"
-          },
-          "licenses": {
-            "coverage": 75,
-            "include-unknown-license-content": false
-          },
-          "packages": {
-            "binary": [
-              "python-binary",
-              "python-binary-lib",
-              "pypy-binary-lib",
-              "go-binary",
-              "julia-binary",
-              "helm",
-              "redis-binary",
-              "java-binary-openjdk",
-              "java-binary-ibm",
-              "java-binary-oracle",
-              "java-binary-graalvm",
-              "java-binary-jdk",
-              "nodejs-binary",
-              "go-binary-hint",
-              "busybox-binary",
-              "util-linux-binary",
-              "haproxy-binary",
-              "perl-binary",
-              "php-cli-binary",
-              "php-fpm-binary",
-              "php-apache-binary",
-              "php-composer-binary",
-              "httpd-binary",
-              "memcached-binary",
-              "traefik-binary",
-              "arangodb-binary",
-              "postgresql-binary",
-              "mysql-binary",
-              "mysql-binary",
-              "mysql-binary",
-              "xtrabackup-binary",
-              "mariadb-binary",
-              "rust-standard-library-linux",
-              "rust-standard-library-macos",
-              "ruby-binary",
-              "erlang-binary",
-              "erlang-alpine-binary",
-              "erlang-library",
-              "swipl-binary",
-              "dart-binary",
-              "haskell-ghc-binary",
-              "haskell-cabal-binary",
-              "haskell-stack-binary",
-              "consul-binary",
-              "nginx-binary",
-              "bash-binary",
-              "openssl-binary",
-              "gcc-binary",
-              "fluent-bit-binary",
-              "wordpress-cli-binary",
-              "curl-binary",
-              "lighttpd-binary",
-              "proftpd-binary",
-              "zstd-binary",
-              "xz-binary",
-              "gzip-binary",
-              "sqlcipher-binary",
-              "jq-binary"
-            ],
-            "dotnet": {
-              "enable-certificate-validation": false
-            },
-            "golang": {
-              "local-mod-cache-dir": "/home/phil/go/pkg/mod",
-              "local-vendor-dir": "",
-              "main-module-version": {
-                "from-build-settings": true,
-                "from-contents": true,
-                "from-ld-flags": true
-              },
-              "proxies": [
-                "https://proxy.golang.org",
-                "direct"
-              ],
-              "search-local-mod-cache-licenses": false,
-              "search-local-vendor-licenses": false,
-              "search-remote-licenses": false
-            },
-            "java-archive": {
-              "include-indexed-archives": true,
-              "include-unindexed-archives": false,
-              "maven-base-url": "https://repo1.maven.org/maven2",
-              "maven-localrepository-dir": "/home/phil/.m2/repository",
-              "max-parent-recursive-depth": 0,
-              "resolve-transitive-dependencies": false,
-              "use-maven-localrepository": false,
-              "use-network": false
-            },
-            "javascript": {
-              "include-dev-dependencies": false,
-              "npm-base-url": "https://registry.npmjs.org",
-              "search-remote-licenses": false
-            },
-            "linux-kernel": {
-              "catalog-modules": true
-            },
-            "python": {
-              "guess-unpinned-requirements": false
-            }
-          },
-          "relationships": {
-            "exclude-binary-packages-with-file-ownership-overlap": true,
-            "package-file-ownership": true,
-            "package-file-ownership-overlap": true
-          },
-          "search": {
-            "scope": "squashed"
-          }
-        }
-      },
-      "schema": {
-        "version": "16.0.22",
-        "url": "https://raw.githubusercontent.com/anchore/syft/main/schema/json/schema-16.0.22.json"
+    "npm_audit": {
+      "metadata": {
+        "vulnerabilities": {}
       }
+    },
+    "pip_audit": {
+      "dependencies": []
+    },
+    "sbom": {
+      "artifacts": []
     },
     "vulnerabilities": {
       "Results": []
@@ -1481,9 +1282,13 @@
   "summary": {
     "sast_findings": 22,
     "total_packages": 0,
-    "critical_vulns": 0,
-    "high_vulns": 0,
-    "medium_vulns": 0,
+    "total_vulnerabilities": 0,
+    "critical_high_vulns": 0,
+    "npm_vulnerabilities": 0,
+    "pip_vulnerabilities": 0,
+    "trivy_critical": 0,
+    "trivy_high": 0,
+    "trivy_medium": 0,
     "secrets_found": 0
   }
 }

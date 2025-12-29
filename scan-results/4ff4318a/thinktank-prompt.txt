@@ -3,11 +3,11 @@
 ## Automated Security Scan Results
 
 ### Summary Statistics
-- SAST Findings: 22
-- Known Vulnerabilities: 0 total (Critical/High: 0)
-  - npm audit: 0 vulnerabilities
-  - pip-audit: 0 vulnerabilities
-  - Trivy: 0 critical, 0 high, 0 medium
+- SAST Findings: 0
+- Known Vulnerabilities: 0 total
+  - Critical: 0
+  - High: 0
+  - Medium: 0
 - Exposed Secrets: 0
 - Total Dependencies: 0
 
