@@ -1,6 +1,6 @@
 {
   "metadata": {
-    "scan_timestamp": "2025-12-28T22:26:09.821309Z",
+    "scan_timestamp": "2025-12-28T22:42:05.874598Z",
     "git_commit": "dcb47d2d94a3a33340053d2df550ae68d2795a3f",
     "git_commit_date": "2025-12-19T12:39:55-05:00"
   },
@@ -10,7 +10,7 @@
       "results": [
         {
           "check_id": "dockerfile.security.missing-user-entrypoint.missing-user-entrypoint",
-          "path": "/tmp/mcp-scan-2imvfxdw/server_repo/src/filesystem/Dockerfile",
+          "path": "/tmp/mcp-scan-08odxdxn/server_repo/src/filesystem/Dockerfile",
           "start": {
             "line": 25,
             "col": 1,
@@ -60,7 +60,7 @@
         },
         {
           "check_id": "javascript.lang.security.audit.path-traversal.path-join-resolve-traversal.path-join-resolve-traversal",
-          "path": "/tmp/mcp-scan-2imvfxdw/server_repo/src/filesystem/__tests__/directory-tree.test.ts",
+          "path": "/tmp/mcp-scan-08odxdxn/server_repo/src/filesystem/__tests__/directory-tree.test.ts",
           "start": {
             "line": 21,
             "col": 64,
@@ -113,7 +113,7 @@
         },
         {
           "check_id": "javascript.lang.security.audit.path-traversal.path-join-resolve-traversal.path-join-resolve-traversal",
-          "path": "/tmp/mcp-scan-2imvfxdw/server_repo/src/filesystem/__tests__/directory-tree.test.ts",
+          "path": "/tmp/mcp-scan-08odxdxn/server_repo/src/filesystem/__tests__/directory-tree.test.ts",
           "start": {
             "line": 21,
             "col": 77,
@@ -166,7 +166,7 @@
         },
         {
           "check_id": "javascript.lang.security.audit.path-traversal.path-join-resolve-traversal.path-join-resolve-traversal",
-          "path": "/tmp/mcp-scan-2imvfxdw/server_repo/src/filesystem/__tests__/directory-tree.test.ts",
+          "path": "/tmp/mcp-scan-08odxdxn/server_repo/src/filesystem/__tests__/directory-tree.test.ts",
           "start": {
             "line": 41,
             "col": 39,
@@ -219,7 +219,7 @@
         },
         {
           "check_id": "javascript.lang.security.audit.path-traversal.path-join-resolve-traversal.path-join-resolve-traversal",
-          "path": "/tmp/mcp-scan-2imvfxdw/server_repo/src/filesystem/__tests__/directory-tree.test.ts",
+          "path": "/tmp/mcp-scan-08odxdxn/server_repo/src/filesystem/__tests__/directory-tree.test.ts",
           "start": {
             "line": 41,
             "col": 52,
@@ -272,7 +272,7 @@
         },
         {
           "check_id": "javascript.lang.security.audit.path-traversal.path-join-resolve-traversal.path-join-resolve-traversal",
-          "path": "/tmp/mcp-scan-2imvfxdw/server_repo/src/filesystem/index.ts",
+          "path": "/tmp/mcp-scan-08odxdxn/server_repo/src/filesystem/index.ts",
           "start": {
             "line": 45,
             "col": 35,
@@ -325,7 +325,7 @@
         },
         {
           "check_id": "javascript.lang.security.audit.unsafe-formatstring.unsafe-formatstring",
-          "path": "/tmp/mcp-scan-2imvfxdw/server_repo/src/filesystem/index.ts",
+          "path": "/tmp/mcp-scan-08odxdxn/server_repo/src/filesystem/index.ts",
           "start": {
             "line": 68,
             "col": 19,
@@ -374,7 +374,7 @@
         },
         {
           "check_id": "javascript.lang.security.audit.path-traversal.path-join-resolve-traversal.path-join-resolve-traversal",
-          "path": "/tmp/mcp-scan-2imvfxdw/server_repo/src/filesystem/index.ts",
+          "path": "/tmp/mcp-scan-08odxdxn/server_repo/src/filesystem/index.ts",
           "start": {
             "line": 452,
             "col": 37,
@@ -427,7 +427,7 @@
         },
         {
           "check_id": "javascript.lang.security.audit.path-traversal.path-join-resolve-traversal.path-join-resolve-traversal",
-          "path": "/tmp/mcp-scan-2imvfxdw/server_repo/src/filesystem/index.ts",
+          "path": "/tmp/mcp-scan-08odxdxn/server_repo/src/filesystem/index.ts",
           "start": {
             "line": 452,
             "col": 48,
@@ -480,7 +480,7 @@
         },
         {
           "check_id": "javascript.lang.security.audit.path-traversal.path-join-resolve-traversal.path-join-resolve-traversal",
-          "path": "/tmp/mcp-scan-2imvfxdw/server_repo/src/filesystem/index.ts",
+          "path": "/tmp/mcp-scan-08odxdxn/server_repo/src/filesystem/index.ts",
           "start": {
             "line": 538,
             "col": 64,
@@ -533,7 +533,7 @@
         },
         {
           "check_id": "javascript.lang.security.audit.path-traversal.path-join-resolve-traversal.path-join-resolve-traversal",
-          "path": "/tmp/mcp-scan-2imvfxdw/server_repo/src/filesystem/index.ts",
+          "path": "/tmp/mcp-scan-08odxdxn/server_repo/src/filesystem/index.ts",
           "start": {
             "line": 538,
             "col": 77,
@@ -586,7 +586,7 @@
         },
         {
           "check_id": "javascript.lang.security.audit.path-traversal.path-join-resolve-traversal.path-join-resolve-traversal",
-          "path": "/tmp/mcp-scan-2imvfxdw/server_repo/src/filesystem/index.ts",
+          "path": "/tmp/mcp-scan-08odxdxn/server_repo/src/filesystem/index.ts",
           "start": {
             "line": 558,
             "col": 37,
@@ -639,7 +639,7 @@
         },
         {
           "check_id": "javascript.lang.security.audit.path-traversal.path-join-resolve-traversal.path-join-resolve-traversal",
-          "path": "/tmp/mcp-scan-2imvfxdw/server_repo/src/filesystem/index.ts",
+          "path": "/tmp/mcp-scan-08odxdxn/server_repo/src/filesystem/index.ts",
           "start": {
             "line": 558,
             "col": 50,
@@ -692,7 +692,7 @@
         },
         {
           "check_id": "javascript.lang.security.audit.path-traversal.path-join-resolve-traversal.path-join-resolve-traversal",
-          "path": "/tmp/mcp-scan-2imvfxdw/server_repo/src/filesystem/lib.ts",
+          "path": "/tmp/mcp-scan-08odxdxn/server_repo/src/filesystem/lib.ts",
           "start": {
             "line": 79,
             "col": 20,
@@ -745,7 +745,7 @@
         },
         {
           "check_id": "javascript.lang.security.audit.path-traversal.path-join-resolve-traversal.path-join-resolve-traversal",
-          "path": "/tmp/mcp-scan-2imvfxdw/server_repo/src/filesystem/lib.ts",
+          "path": "/tmp/mcp-scan-08odxdxn/server_repo/src/filesystem/lib.ts",
           "start": {
             "line": 80,
             "col": 35,
@@ -798,7 +798,7 @@
         },
         {
           "check_id": "javascript.lang.security.audit.path-traversal.path-join-resolve-traversal.path-join-resolve-traversal",
-          "path": "/tmp/mcp-scan-2imvfxdw/server_repo/src/filesystem/lib.ts",
+          "path": "/tmp/mcp-scan-08odxdxn/server_repo/src/filesystem/lib.ts",
           "start": {
             "line": 364,
             "col": 34,
@@ -851,7 +851,7 @@
         },
         {
           "check_id": "javascript.lang.security.audit.path-traversal.path-join-resolve-traversal.path-join-resolve-traversal",
-          "path": "/tmp/mcp-scan-2imvfxdw/server_repo/src/filesystem/lib.ts",
+          "path": "/tmp/mcp-scan-08odxdxn/server_repo/src/filesystem/lib.ts",
           "start": {
             "line": 364,
             "col": 47,
@@ -904,7 +904,7 @@
         },
         {
           "check_id": "javascript.lang.security.audit.path-traversal.path-join-resolve-traversal.path-join-resolve-traversal",
-          "path": "/tmp/mcp-scan-2imvfxdw/server_repo/src/filesystem/path-utils.ts",
+          "path": "/tmp/mcp-scan-08odxdxn/server_repo/src/filesystem/path-utils.ts",
           "start": {
             "line": 115,
             "col": 36,
@@ -957,7 +957,7 @@
         },
         {
           "check_id": "javascript.lang.security.audit.path-traversal.path-join-resolve-traversal.path-join-resolve-traversal",
-          "path": "/tmp/mcp-scan-2imvfxdw/server_repo/src/filesystem/path-validation.ts",
+          "path": "/tmp/mcp-scan-08odxdxn/server_repo/src/filesystem/path-validation.ts",
           "start": {
             "line": 30,
             "col": 35,
@@ -1010,7 +1010,7 @@
         },
         {
           "check_id": "javascript.lang.security.audit.path-traversal.path-join-resolve-traversal.path-join-resolve-traversal",
-          "path": "/tmp/mcp-scan-2imvfxdw/server_repo/src/filesystem/path-validation.ts",
+          "path": "/tmp/mcp-scan-08odxdxn/server_repo/src/filesystem/path-validation.ts",
           "start": {
             "line": 54,
             "col": 36,
@@ -1063,7 +1063,7 @@
         },
         {
           "check_id": "javascript.lang.security.audit.path-traversal.path-join-resolve-traversal.path-join-resolve-traversal",
-          "path": "/tmp/mcp-scan-2imvfxdw/server_repo/src/filesystem/roots-utils.ts",
+          "path": "/tmp/mcp-scan-08odxdxn/server_repo/src/filesystem/roots-utils.ts",
           "start": {
             "line": 16,
             "col": 33,
@@ -1116,7 +1116,7 @@
         },
         {
           "check_id": "javascript.lang.security.audit.path-traversal.path-join-resolve-traversal.path-join-resolve-traversal",
-          "path": "/tmp/mcp-scan-2imvfxdw/server_repo/src/filesystem/roots-utils.ts",
+          "path": "/tmp/mcp-scan-08odxdxn/server_repo/src/filesystem/roots-utils.ts",
           "start": {
             "line": 18,
             "col": 39,
@@ -1171,32 +1171,32 @@
       "errors": [],
       "paths": {
         "scanned": [
-          "/tmp/mcp-scan-2imvfxdw/server_repo/src/filesystem/Dockerfile",
-          "/tmp/mcp-scan-2imvfxdw/server_repo/src/filesystem/README.md",
-          "/tmp/mcp-scan-2imvfxdw/server_repo/src/filesystem/__tests__/directory-tree.test.ts",
-          "/tmp/mcp-scan-2imvfxdw/server_repo/src/filesystem/__tests__/lib.test.ts",
-          "/tmp/mcp-scan-2imvfxdw/server_repo/src/filesystem/__tests__/path-utils.test.ts",
-          "/tmp/mcp-scan-2imvfxdw/server_repo/src/filesystem/__tests__/path-validation.test.ts",
-          "/tmp/mcp-scan-2imvfxdw/server_repo/src/filesystem/__tests__/roots-utils.test.ts",
-          "/tmp/mcp-scan-2imvfxdw/server_repo/src/filesystem/__tests__/structured-content.test.ts",
-          "/tmp/mcp-scan-2imvfxdw/server_repo/src/filesystem/index.ts",
-          "/tmp/mcp-scan-2imvfxdw/server_repo/src/filesystem/lib.ts",
-          "/tmp/mcp-scan-2imvfxdw/server_repo/src/filesystem/package.json",
-          "/tmp/mcp-scan-2imvfxdw/server_repo/src/filesystem/path-utils.ts",
-          "/tmp/mcp-scan-2imvfxdw/server_repo/src/filesystem/path-validation.ts",
-          "/tmp/mcp-scan-2imvfxdw/server_repo/src/filesystem/roots-utils.ts",
-          "/tmp/mcp-scan-2imvfxdw/server_repo/src/filesystem/tsconfig.json",
-          "/tmp/mcp-scan-2imvfxdw/server_repo/src/filesystem/vitest.config.ts"
+          "/tmp/mcp-scan-08odxdxn/server_repo/src/filesystem/Dockerfile",
+          "/tmp/mcp-scan-08odxdxn/server_repo/src/filesystem/README.md",
+          "/tmp/mcp-scan-08odxdxn/server_repo/src/filesystem/__tests__/directory-tree.test.ts",
+          "/tmp/mcp-scan-08odxdxn/server_repo/src/filesystem/__tests__/lib.test.ts",
+          "/tmp/mcp-scan-08odxdxn/server_repo/src/filesystem/__tests__/path-utils.test.ts",
+          "/tmp/mcp-scan-08odxdxn/server_repo/src/filesystem/__tests__/path-validation.test.ts",
+          "/tmp/mcp-scan-08odxdxn/server_repo/src/filesystem/__tests__/roots-utils.test.ts",
+          "/tmp/mcp-scan-08odxdxn/server_repo/src/filesystem/__tests__/structured-content.test.ts",
+          "/tmp/mcp-scan-08odxdxn/server_repo/src/filesystem/index.ts",
+          "/tmp/mcp-scan-08odxdxn/server_repo/src/filesystem/lib.ts",
+          "/tmp/mcp-scan-08odxdxn/server_repo/src/filesystem/package.json",
+          "/tmp/mcp-scan-08odxdxn/server_repo/src/filesystem/path-utils.ts",
+          "/tmp/mcp-scan-08odxdxn/server_repo/src/filesystem/path-validation.ts",
+          "/tmp/mcp-scan-08odxdxn/server_repo/src/filesystem/roots-utils.ts",
+          "/tmp/mcp-scan-08odxdxn/server_repo/src/filesystem/tsconfig.json",
+          "/tmp/mcp-scan-08odxdxn/server_repo/src/filesystem/vitest.config.ts"
         ]
       },
       "time": {
         "rules": [],
-        "rules_parse_time": 1.5795681476593018,
+        "rules_parse_time": 1.5634710788726807,
         "profiling_times": {
-          "config_time": 2.922642230987549,
-          "core_time": 3.1726229190826416,
-          "ignores_time": 0.0012867450714111328,
-          "total_time": 6.100898027420044
+          "config_time": 2.8295538425445557,
+          "core_time": 3.204761028289795,
+          "ignores_time": 0.001300811767578125,
+          "total_time": 6.038657188415527
         },
         "parsing_time": {
           "total_time": 0.0,
@@ -1211,10 +1211,10 @@
           "very_slow_files": []
         },
         "scanning_time": {
-          "total_time": 2.9056453704833984,
+          "total_time": 2.788543701171875,
           "per_file_time": {
-            "mean": 0.061822241925178704,
-            "std_dev": 0.02437873345816963
+            "mean": 0.059330717046210124,
+            "std_dev": 0.021589774802061517
           },
           "very_slow_stats": {
             "time_ratio": 0.0,
@@ -1257,7 +1257,7 @@
         },
         "targets": [],
         "total_bytes": 0,
-        "max_memory_bytes": 1310773568
+        "max_memory_bytes": 1291021952
       },
       "engine_requested": "OSS",
       "skipped_rules": [],
