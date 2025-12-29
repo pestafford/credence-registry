@@ -1,0 +1,31 @@
+{
+  "analysis_id": "4ff4318a",
+  "server_id": "modelcontextprotocol/server-filesystem",
+  "repository_url": "https://github.com/modelcontextprotocol/servers",
+  "git_commit": "dcb47d2d94a3a33340053d2df550ae68d2795a3f",
+  "git_commit_short": "dcb47d2",
+  "commit_date": "2025-12-19T12:39:55-05:00",
+  "package_hash_sha256": "9c3d7d8913ab83715bd861add612446714681eba09151bf988651b49096647c5",
+  "scan_timestamp": "2025-12-28T18:45:09.931519Z",
+  "static_analysis": {
+    "passed": false,
+    "issues_found": 22,
+    "tools_used": [
+      "semgrep",
+      "gitleaks"
+    ]
+  },
+  "dependency_analysis": {
+    "passed": true,
+    "vulnerabilities_found": 0,
+    "sbom_generated": true
+  },
+  "summary": {
+    "sast_findings": 22,
+    "total_packages": 0,
+    "critical_vulns": 0,
+    "high_vulns": 0,
+    "medium_vulns": 0,
+    "secrets_found": 0
+  }
+}

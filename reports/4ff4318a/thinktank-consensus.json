@@ -1,0 +1,25 @@
+{
+  "verdict": "FLAGGED",
+  "trust_score": 0.62,
+  "confidence": 0.85,
+  "agent_count": 8,
+  "consensus_summary": "FLAGGED FOR CONDITIONAL DEPLOYMENT - 22 SAST findings require review. Safe for controlled environments with security controls, but not ready for untrusted users without hardening.",
+  "key_findings": [
+    "22 SAST findings require comprehensive review and triage",
+    "Filesystem access represents inherent architectural risk",
+    "Can be safely deployed in controlled environments with appropriate security controls",
+    "Should not be exposed to untrusted users or networks without significant hardening"
+  ],
+  "agent_votes": {
+    "flagged": 8,
+    "approved": 0,
+    "rejected": 0
+  },
+  "trust_score_range": {
+    "min": 0.48,
+    "max": 0.72,
+    "median": 0.62
+  },
+  "analysis_runtime_seconds": 17.45,
+  "timestamp": "2025-12-28T18:53:00Z"
+}
