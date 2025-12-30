@@ -1,6 +1,6 @@
 {
   "registry_version": "1.0.0",
-  "last_updated": "2025-12-30T08:27:13.067588Z",
+  "last_updated": "2025-12-30T09:39:54.192542Z",
   "total_servers": 2,
   "verified_servers": 0,
   "servers": [
@@ -13,7 +13,7 @@
       "package_hash_sha256": "9c3d7d8913ab83715bd861add612446714681eba09151bf988651b49096647c5",
       "verification_status": "flagged",
       "trust_score": 0.64,
-      "last_analyzed": "2025-12-30T08:27:13.066700Z",
+      "last_analyzed": "2025-12-30T09:39:54.191429Z",
       "analysis_id": "4ff4318a",
       "metadata": {
         "repository_url": "https://github.com/modelcontextprotocol/servers",
@@ -32,9 +32,9 @@
           ]
         },
         "dependency_analysis": {
-          "passed": true,
-          "total_vulnerabilities": 0,
-          "npm_vulnerabilities": 0,
+          "passed": false,
+          "total_vulnerabilities": 2,
+          "npm_vulnerabilities": 2,
           "pip_vulnerabilities": 0,
           "trivy_vulnerabilities": 0,
           "sbom_generated": true
@@ -45,7 +45,7 @@
           "believer_votes": 2,
           "skeptic_votes": 2,
           "neutral_votes": 1,
-          "foreperson_synthesis": "# SECURITY ASSESSMENT REPORT\n## MCP Server: modelcontextprotocol/server-filesystem\n\n---\n\n## EXECUTIVE SUMMARY\n\nThe filesystem MCP server presents **moderate security risks** that require remediation before production deployment. While automated vulnerability scans returned clean results (zero known CVEs, no exposed secrets, no dependency vulnerabilities), static analysis identified 22 findings that warrant serious attention. The contrast between clean dependency scans and substantive SAST findin..."
+          "foreperson_synthesis": "# CREDENCE MCP SECURITY REGISTRY\n## Security Assessment Report: modelcontextprotocol/server-filesystem\n\n---\n\n## EXECUTIVE SUMMARY\n\nThe modelcontextprotocol/server-filesystem server presents **moderate security risks** that require remediation before production deployment. The security assessment yielded a **FLAGGED** determination with a trust score of **0.58-0.65/1.0** (confidence level: 82-88%).\n\nWhile the server contains no critical vulnerabilities in its dependency chain, significant concern..."
         }
       },
       "badge_url": "badges/modelcontextprotocol-server-filesystem.svg",

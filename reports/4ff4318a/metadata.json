@@ -6,7 +6,7 @@
   "git_commit_short": "dcb47d2",
   "commit_date": "2025-12-19T12:39:55-05:00",
   "package_hash_sha256": "9c3d7d8913ab83715bd861add612446714681eba09151bf988651b49096647c5",
-  "scan_timestamp": "2025-12-30T08:27:13.066700Z",
+  "scan_timestamp": "2025-12-30T09:39:54.191429Z",
   "static_analysis": {
     "passed": false,
     "issues_found": 22,
@@ -16,9 +16,9 @@
     ]
   },
   "dependency_analysis": {
-    "passed": true,
-    "total_vulnerabilities": 0,
-    "npm_vulnerabilities": 0,
+    "passed": false,
+    "total_vulnerabilities": 2,
+    "npm_vulnerabilities": 2,
     "pip_vulnerabilities": 0,
     "trivy_vulnerabilities": 0,
     "sbom_generated": true
@@ -30,15 +30,17 @@
     "believer_votes": 2,
     "skeptic_votes": 2,
     "neutral_votes": 1,
-    "foreperson_synthesis": "# SECURITY ASSESSMENT REPORT\n## MCP Server: modelcontextprotocol/server-filesystem\n\n---\n\n## EXECUTIVE SUMMARY\n\nThe filesystem MCP server presents **moderate security risks** that require remediation before production deployment. While automated vulnerability scans returned clean results (zero known CVEs, no exposed secrets, no dependency vulnerabilities), static analysis identified 22 findings that warrant serious attention. The contrast between clean dependency scans and substantive SAST findin..."
+    "foreperson_synthesis": "# CREDENCE MCP SECURITY REGISTRY\n## Security Assessment Report: modelcontextprotocol/server-filesystem\n\n---\n\n## EXECUTIVE SUMMARY\n\nThe modelcontextprotocol/server-filesystem server presents **moderate security risks** that require remediation before production deployment. The security assessment yielded a **FLAGGED** determination with a trust score of **0.58-0.65/1.0** (confidence level: 82-88%).\n\nWhile the server contains no critical vulnerabilities in its dependency chain, significant concern..."
   },
   "summary": {
     "sast_findings": 22,
-    "total_packages": 0,
-    "total_vulnerabilities": 0,
+    "total_packages": 12,
+    "total_vulnerabilities": 2,
     "critical_high_vulns": 0,
-    "npm_vulnerabilities": 0,
+    "npm_vulnerabilities": 2,
     "pip_vulnerabilities": 0,
+    "npm_dependencies": 12,
+    "pip_dependencies": 0,
     "trivy_critical": 0,
     "trivy_high": 0,
     "trivy_medium": 0,

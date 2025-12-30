@@ -5,5 +5,5 @@
   "believer_votes": 2,
   "skeptic_votes": 2,
   "neutral_votes": 1,
-  "foreperson_synthesis": "# SECURITY ASSESSMENT REPORT\n## MCP Server: modelcontextprotocol/server-filesystem\n\n---\n\n## EXECUTIVE SUMMARY\n\nThe filesystem MCP server presents **moderate security risks** that require remediation before production deployment. While automated vulnerability scans returned clean results (zero known CVEs, no exposed secrets, no dependency vulnerabilities), static analysis identified 22 findings that warrant serious attention. The contrast between clean dependency scans and substantive SAST findin..."
+  "foreperson_synthesis": "# CREDENCE MCP SECURITY REGISTRY\n## Security Assessment Report: modelcontextprotocol/server-filesystem\n\n---\n\n## EXECUTIVE SUMMARY\n\nThe modelcontextprotocol/server-filesystem server presents **moderate security risks** that require remediation before production deployment. The security assessment yielded a **FLAGGED** determination with a trust score of **0.58-0.65/1.0** (confidence level: 82-88%).\n\nWhile the server contains no critical vulnerabilities in its dependency chain, significant concern..."
 }

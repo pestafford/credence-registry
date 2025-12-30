@@ -4,12 +4,12 @@
 
 ### Summary Statistics
 - SAST Findings: 22
-- Known Vulnerabilities: 0 total (Critical/High: 0)
-  - npm audit: 0 vulnerabilities
+- Known Vulnerabilities: 2 total (Critical/High: 0)
+  - npm audit: 2 vulnerabilities
   - pip-audit: 0 vulnerabilities
   - Trivy: 0 critical, 0 high, 0 medium
 - Exposed Secrets: 0
-- Total Dependencies: 0
+- Total Dependencies: 12
 
 ## Critical Analysis Question
 

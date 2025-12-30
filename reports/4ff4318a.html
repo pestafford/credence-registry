@@ -129,7 +129,7 @@
                     <div class="metric-label">SAST Findings</div>
                 </div>
                 <div class="metric">
-                    <div class="metric-value">0</div>
+                    <div class="metric-value">2</div>
                     <div class="metric-label">Vulnerabilities</div>
                 </div>
                 <div class="metric">
@@ -137,17 +137,101 @@
                     <div class="metric-label">Secrets Found</div>
                 </div>
                 <div class="metric">
-                    <div class="metric-value">0</div>
+                    <div class="metric-value">12</div>
                     <div class="metric-label">Dependencies</div>
                 </div>
             </div>
 
             <h3>Dependency Analysis</h3>
             <ul>
-                <li>npm audit: 0 vulnerabilities</li>
+                <li>npm audit: 2 vulnerabilities</li>
                 <li>pip-audit: 0 vulnerabilities</li>
                 <li>Trivy: 0 critical, 0 high, 0 medium</li>
             </ul>
+        </div>
+
+        <div class="section">
+            <h2>📦 Software Bill of Materials (SBOM)</h2>
+            <p><strong>Total Dependencies:</strong> 12</p>
+            <p><strong>npm packages:</strong> 12 | <strong>PyPI packages:</strong> 0</p>
+
+            <div style="max-height: 400px; overflow-y: auto; margin-top: 1rem;">
+                <table style="width: 100%; border-collapse: collapse;">
+                    <thead style="position: sticky; top: 0; background: #f8f9fa;">
+                        <tr style="border-bottom: 2px solid #dee2e6;">
+                            <th style="padding: 0.75rem; text-align: left;">Package Name</th>
+                            <th style="padding: 0.75rem; text-align: left;">Version</th>
+                            <th style="padding: 0.75rem; text-align: left;">Type</th>
+                            <th style="padding: 0.75rem; text-align: left;">Ecosystem</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr style="border-bottom: 1px solid #dee2e6;">
+                                <td style="padding: 0.75rem; font-family: monospace;">@modelcontextprotocol/sdk</td>
+                                <td style="padding: 0.75rem; font-family: monospace; color: #667eea;">^1.24.0</td>
+                                <td style="padding: 0.75rem;">production</td>
+                                <td style="padding: 0.75rem;"><span style="background: #667eea; color: white; padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.75rem;">npm</span></td>
+                            </tr><tr style="border-bottom: 1px solid #dee2e6;">
+                                <td style="padding: 0.75rem; font-family: monospace;">diff</td>
+                                <td style="padding: 0.75rem; font-family: monospace; color: #667eea;">^5.1.0</td>
+                                <td style="padding: 0.75rem;">production</td>
+                                <td style="padding: 0.75rem;"><span style="background: #667eea; color: white; padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.75rem;">npm</span></td>
+                            </tr><tr style="border-bottom: 1px solid #dee2e6;">
+                                <td style="padding: 0.75rem; font-family: monospace;">glob</td>
+                                <td style="padding: 0.75rem; font-family: monospace; color: #667eea;">^10.5.0</td>
+                                <td style="padding: 0.75rem;">production</td>
+                                <td style="padding: 0.75rem;"><span style="background: #667eea; color: white; padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.75rem;">npm</span></td>
+                            </tr><tr style="border-bottom: 1px solid #dee2e6;">
+                                <td style="padding: 0.75rem; font-family: monospace;">minimatch</td>
+                                <td style="padding: 0.75rem; font-family: monospace; color: #667eea;">^10.0.1</td>
+                                <td style="padding: 0.75rem;">production</td>
+                                <td style="padding: 0.75rem;"><span style="background: #667eea; color: white; padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.75rem;">npm</span></td>
+                            </tr><tr style="border-bottom: 1px solid #dee2e6;">
+                                <td style="padding: 0.75rem; font-family: monospace;">zod-to-json-schema</td>
+                                <td style="padding: 0.75rem; font-family: monospace; color: #667eea;">^3.23.5</td>
+                                <td style="padding: 0.75rem;">production</td>
+                                <td style="padding: 0.75rem;"><span style="background: #667eea; color: white; padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.75rem;">npm</span></td>
+                            </tr><tr style="border-bottom: 1px solid #dee2e6;">
+                                <td style="padding: 0.75rem; font-family: monospace;">@types/diff</td>
+                                <td style="padding: 0.75rem; font-family: monospace; color: #667eea;">^5.0.9</td>
+                                <td style="padding: 0.75rem;">development</td>
+                                <td style="padding: 0.75rem;"><span style="background: #667eea; color: white; padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.75rem;">npm</span></td>
+                            </tr><tr style="border-bottom: 1px solid #dee2e6;">
+                                <td style="padding: 0.75rem; font-family: monospace;">@types/minimatch</td>
+                                <td style="padding: 0.75rem; font-family: monospace; color: #667eea;">^5.1.2</td>
+                                <td style="padding: 0.75rem;">development</td>
+                                <td style="padding: 0.75rem;"><span style="background: #667eea; color: white; padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.75rem;">npm</span></td>
+                            </tr><tr style="border-bottom: 1px solid #dee2e6;">
+                                <td style="padding: 0.75rem; font-family: monospace;">@types/node</td>
+                                <td style="padding: 0.75rem; font-family: monospace; color: #667eea;">^22</td>
+                                <td style="padding: 0.75rem;">development</td>
+                                <td style="padding: 0.75rem;"><span style="background: #667eea; color: white; padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.75rem;">npm</span></td>
+                            </tr><tr style="border-bottom: 1px solid #dee2e6;">
+                                <td style="padding: 0.75rem; font-family: monospace;">@vitest/coverage-v8</td>
+                                <td style="padding: 0.75rem; font-family: monospace; color: #667eea;">^2.1.8</td>
+                                <td style="padding: 0.75rem;">development</td>
+                                <td style="padding: 0.75rem;"><span style="background: #667eea; color: white; padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.75rem;">npm</span></td>
+                            </tr><tr style="border-bottom: 1px solid #dee2e6;">
+                                <td style="padding: 0.75rem; font-family: monospace;">shx</td>
+                                <td style="padding: 0.75rem; font-family: monospace; color: #667eea;">^0.3.4</td>
+                                <td style="padding: 0.75rem;">development</td>
+                                <td style="padding: 0.75rem;"><span style="background: #667eea; color: white; padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.75rem;">npm</span></td>
+                            </tr><tr style="border-bottom: 1px solid #dee2e6;">
+                                <td style="padding: 0.75rem; font-family: monospace;">typescript</td>
+                                <td style="padding: 0.75rem; font-family: monospace; color: #667eea;">^5.8.2</td>
+                                <td style="padding: 0.75rem;">development</td>
+                                <td style="padding: 0.75rem;"><span style="background: #667eea; color: white; padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.75rem;">npm</span></td>
+                            </tr><tr style="border-bottom: 1px solid #dee2e6;">
+                                <td style="padding: 0.75rem; font-family: monospace;">vitest</td>
+                                <td style="padding: 0.75rem; font-family: monospace; color: #667eea;">^2.1.8</td>
+                                <td style="padding: 0.75rem;">development</td>
+                                <td style="padding: 0.75rem;"><span style="background: #667eea; color: white; padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.75rem;">npm</span></td>
+                            </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            
         </div>
 
         <div class="section">
@@ -157,14 +241,16 @@
             <p><strong>Confidence:</strong> 75%</p>
 
             <h3 style="margin-top: 1.5rem;">Consensus Summary</h3>
-            <div class="consensus-text"># SECURITY ASSESSMENT REPORT
-## MCP Server: modelcontextprotocol/server-filesystem
+            <div class="consensus-text"># CREDENCE MCP SECURITY REGISTRY
+## Security Assessment Report: modelcontextprotocol/server-filesystem
 
 ---
 
 ## EXECUTIVE SUMMARY
 
-The filesystem MCP server presents **moderate security risks** that require remediation before production deployment. While automated vulnerability scans returned clean results (zero known CVEs, no exposed secrets, no dependency vulnerabilities), static analysis identified 22 findings that warrant serious attention. The contrast between clean dependency scans and substantive SAST findin...</div>
+The modelcontextprotocol/server-filesystem server presents **moderate security risks** that require remediation before production deployment. The security assessment yielded a **FLAGGED** determination with a trust score of **0.58-0.65/1.0** (confidence level: 82-88%).
+
+While the server contains no critical vulnerabilities in its dependency chain, significant concern...</div>
 
             <p style="margin-top: 1.5rem;"><a href="4ff4318a/4ff4318a_full_debate.json.gz">Download Full Debate Transcript (.json.gz)</a></p>
         </div>
