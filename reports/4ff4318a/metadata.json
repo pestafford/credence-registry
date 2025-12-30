@@ -6,7 +6,7 @@
   "git_commit_short": "dcb47d2",
   "commit_date": "2025-12-19T12:39:55-05:00",
   "package_hash_sha256": "9c3d7d8913ab83715bd861add612446714681eba09151bf988651b49096647c5",
-  "scan_timestamp": "2025-12-28T22:42:22.813584Z",
+  "scan_timestamp": "2025-12-30T08:04:40.417482Z",
   "static_analysis": {
     "passed": false,
     "issues_found": 22,
@@ -30,7 +30,7 @@
     "believer_votes": 2,
     "skeptic_votes": 2,
     "neutral_votes": 1,
-    "foreperson_synthesis": "# MCP Server Security Assessment\n## Model Context Protocol: server-filesystem\n\n**PRODUCTION READINESS DETERMINATION: CONDITIONAL APPROVAL WITH MANDATORY CONTROLS**\n\n**Overall Security Verdict:** FLAGGED  \n**Trust Score:** 0.62/1.0  \n**Assessment Confidence:** High (0.85/1.0)\n\n---\n\n## Executive Summary\n\nThe modelcontextprotocol/server-filesystem presents a moderate-risk security profile suitable for production deployment only with appropriate architectural controls and operational safeguards. Whi..."
+    "foreperson_synthesis": "# SECURITY ASSESSMENT REPORT\n## MCP Server: modelcontextprotocol/server-filesystem\n\n---\n\n## EXECUTIVE SUMMARY\n\n**Security Verdict:** FLAGGED  \n**Trust Score:** 0.62/1.0  \n**Deployment Recommendation:** Conditional approval with mandatory security controls\n\nThis filesystem MCP server exhibits moderate security risk that requires mitigation before production deployment. While automated scanning detected zero known CVEs, dependency vulnerabilities, or exposed secrets, the 22 SAST findings indicate..."
   },
   "summary": {
     "sast_findings": 22,
