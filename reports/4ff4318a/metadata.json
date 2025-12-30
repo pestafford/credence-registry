@@ -6,7 +6,7 @@
   "git_commit_short": "dcb47d2",
   "commit_date": "2025-12-19T12:39:55-05:00",
   "package_hash_sha256": "9c3d7d8913ab83715bd861add612446714681eba09151bf988651b49096647c5",
-  "scan_timestamp": "2025-12-30T08:17:19.927326Z",
+  "scan_timestamp": "2025-12-30T08:27:13.066700Z",
   "static_analysis": {
     "passed": false,
     "issues_found": 22,
@@ -24,13 +24,13 @@
     "sbom_generated": true
   },
   "thinktank_consensus": {
-    "verdict": "APPROVED",
+    "verdict": "FLAGGED",
     "confidence": 0.75,
-    "trust_score": 0.94,
+    "trust_score": 0.64,
     "believer_votes": 2,
     "skeptic_votes": 2,
     "neutral_votes": 1,
-    "foreperson_synthesis": "# MCP Server Security Assessment\n## modelcontextprotocol/server-filesystem\n\n---\n\n## EXECUTIVE SUMMARY\n\nThe filesystem server presents a **FLAGGED** security posture with a trust score of **0.65/1.0**. While automated scanning reveals zero dependency vulnerabilities and no exposed credentials, the presence of 22 SAST findings combined with the inherent high-risk nature of filesystem access operations creates significant deployment concerns. The server cannot be approved for production without man..."
+    "foreperson_synthesis": "# SECURITY ASSESSMENT REPORT\n## MCP Server: modelcontextprotocol/server-filesystem\n\n---\n\n## EXECUTIVE SUMMARY\n\nThe filesystem MCP server presents **moderate security risks** that require remediation before production deployment. While automated vulnerability scans returned clean results (zero known CVEs, no exposed secrets, no dependency vulnerabilities), static analysis identified 22 findings that warrant serious attention. The contrast between clean dependency scans and substantive SAST findin..."
   },
   "summary": {
     "sast_findings": 22,

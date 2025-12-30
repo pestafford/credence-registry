@@ -49,12 +49,12 @@
             padding: 1.5rem;
             border-radius: 8px;
             margin-bottom: 2rem;
-            background: #d4edda;
-            border-left: 4px solid #4caf50;
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
         }
         .status-icon { font-size: 3rem; }
-        .status-text h2 { color: #4caf50; margin-bottom: 0.5rem; }
-        .status-text p { color: #4caf50; }
+        .status-text h2 { color: #ff9800; margin-bottom: 0.5rem; }
+        .status-text p { color: #ff9800; }
         .metrics-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -114,10 +114,10 @@
 
     <div class="container">
         <div class="status-banner">
-            <div class="status-icon">✓</div>
+            <div class="status-icon">⚠</div>
             <div class="status-text">
-                <h2>APPROVED</h2>
-                <p>Trust Score: 94% | Confidence: 75%</p>
+                <h2>FLAGGED</h2>
+                <p>Trust Score: 64% | Confidence: 75%</p>
             </div>
         </div>
 
@@ -152,19 +152,19 @@
 
         <div class="section">
             <h2>🤖 ThinkTank Multi-Agent Consensus</h2>
-            <p><strong>Verdict:</strong> APPROVED</p>
+            <p><strong>Verdict:</strong> FLAGGED</p>
             <p><strong>Agents:</strong> 5 AI security experts (2 Believers, 2 Skeptics, 1 Neutral)</p>
             <p><strong>Confidence:</strong> 75%</p>
 
             <h3 style="margin-top: 1.5rem;">Consensus Summary</h3>
-            <div class="consensus-text"># MCP Server Security Assessment
-## modelcontextprotocol/server-filesystem
+            <div class="consensus-text"># SECURITY ASSESSMENT REPORT
+## MCP Server: modelcontextprotocol/server-filesystem
 
 ---
 
 ## EXECUTIVE SUMMARY
 
-The filesystem server presents a **FLAGGED** security posture with a trust score of **0.65/1.0**. While automated scanning reveals zero dependency vulnerabilities and no exposed credentials, the presence of 22 SAST findings combined with the inherent high-risk nature of filesystem access operations creates significant deployment concerns. The server cannot be approved for production without man...</div>
+The filesystem MCP server presents **moderate security risks** that require remediation before production deployment. While automated vulnerability scans returned clean results (zero known CVEs, no exposed secrets, no dependency vulnerabilities), static analysis identified 22 findings that warrant serious attention. The contrast between clean dependency scans and substantive SAST findin...</div>
 
             <p style="margin-top: 1.5rem;"><a href="4ff4318a/4ff4318a_full_debate.json.gz">Download Full Debate Transcript (.json.gz)</a></p>
         </div>
