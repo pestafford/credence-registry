@@ -1,55 +1,55 @@
 {
   "registry_version": "1.0.0",
-  "last_updated": "2025-12-30T09:39:54.192542Z",
-  "total_servers": 2,
-  "verified_servers": 0,
+  "last_updated": "2025-12-31T15:24:20.311633Z",
+  "total_servers": 3,
+  "verified_servers": 2,
   "servers": [
     {
       "server_id": "modelcontextprotocol/server-filesystem",
       "version": "latest",
-      "git_commit": "dcb47d2d94a3a33340053d2df550ae68d2795a3f",
-      "git_commit_short": "dcb47d2",
-      "commit_date": "2025-12-19T12:39:55-05:00",
-      "package_hash_sha256": "9c3d7d8913ab83715bd861add612446714681eba09151bf988651b49096647c5",
-      "verification_status": "flagged",
-      "trust_score": 0.64,
-      "last_analyzed": "2025-12-30T09:39:54.191429Z",
-      "analysis_id": "4ff4318a",
+      "git_commit": "unknown",
+      "git_commit_short": "unknown",
+      "commit_date": "2025-12-31T15:24:20.311426",
+      "package_hash_sha256": "unknown",
+      "verification_status": "approved",
+      "trust_score": 1.0,
+      "last_analyzed": "2025-12-31T15:23:07.348702Z",
+      "analysis_id": "ad9fd5e3",
       "metadata": {
         "repository_url": "https://github.com/modelcontextprotocol/servers",
-        "description": "MCP server for filesystem access",
+        "description": "MCP server: modelcontextprotocol/server-filesystem",
         "maintainer": "Anthropic",
         "stars": 0,
-        "last_commit": "2025-12-19T12:39:55-05:00"
+        "last_commit": "2025-12-31T15:24:20.311426"
       },
       "security_analysis": {
         "static_analysis": {
-          "passed": false,
-          "issues_found": 22,
+          "passed": true,
+          "issues_found": 0,
           "tools_used": [
             "semgrep",
             "gitleaks"
           ]
         },
         "dependency_analysis": {
-          "passed": false,
-          "total_vulnerabilities": 2,
-          "npm_vulnerabilities": 2,
+          "passed": true,
+          "total_vulnerabilities": 0,
+          "npm_vulnerabilities": 0,
           "pip_vulnerabilities": 0,
           "trivy_vulnerabilities": 0,
           "sbom_generated": true
         },
         "thinktank_consensus": {
-          "verdict": "FLAGGED",
-          "confidence": 0.75,
+          "verdict": "APPROVED",
+          "confidence": 0.85,
           "believer_votes": 2,
           "skeptic_votes": 2,
           "neutral_votes": 1,
-          "foreperson_synthesis": "# CREDENCE MCP SECURITY REGISTRY\n## Security Assessment Report: modelcontextprotocol/server-filesystem\n\n---\n\n## EXECUTIVE SUMMARY\n\nThe modelcontextprotocol/server-filesystem server presents **moderate security risks** that require remediation before production deployment. The security assessment yielded a **FLAGGED** determination with a trust score of **0.58-0.65/1.0** (confidence level: 82-88%).\n\nWhile the server contains no critical vulnerabilities in its dependency chain, significant concern..."
+          "foreperson_synthesis": "Analysis pending"
         }
       },
       "badge_url": "badges/modelcontextprotocol-server-filesystem.svg",
-      "report_url": "reports/4ff4318a.html"
+      "report_url": "reports/ad9fd5e3.html"
     },
     {
       "server_id": "modelcontextprotocol/server-fetch",
@@ -94,6 +94,53 @@
       },
       "badge_url": "badges/modelcontextprotocol-server-github.svg",
       "report_url": "reports/64dc9b4e.html"
+    },
+    {
+      "server_id": "test/registry-test",
+      "version": "latest",
+      "git_commit": "unknown",
+      "git_commit_short": "unknown",
+      "commit_date": "2025-12-31T15:18:01.149930",
+      "package_hash_sha256": "unknown",
+      "verification_status": "approved",
+      "trust_score": 1.0,
+      "last_analyzed": "2025-12-31T15:17:56.374487Z",
+      "analysis_id": "d873fb1f",
+      "metadata": {
+        "repository_url": "https://github.com/modelcontextprotocol/servers",
+        "description": "MCP server: test/registry-test",
+        "maintainer": "Community",
+        "stars": 0,
+        "last_commit": "2025-12-31T15:18:01.149930"
+      },
+      "security_analysis": {
+        "static_analysis": {
+          "passed": true,
+          "issues_found": 0,
+          "tools_used": [
+            "semgrep",
+            "gitleaks"
+          ]
+        },
+        "dependency_analysis": {
+          "passed": true,
+          "total_vulnerabilities": 0,
+          "npm_vulnerabilities": 0,
+          "pip_vulnerabilities": 0,
+          "trivy_vulnerabilities": 0,
+          "sbom_generated": true
+        },
+        "thinktank_consensus": {
+          "verdict": "APPROVED",
+          "confidence": 0.85,
+          "believer_votes": 2,
+          "skeptic_votes": 2,
+          "neutral_votes": 1,
+          "foreperson_synthesis": "Analysis pending"
+        }
+      },
+      "badge_url": "badges/test-registry-test.svg",
+      "report_url": "reports/d873fb1f.html"
     }
   ]
 }
