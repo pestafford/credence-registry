@@ -1,6 +1,6 @@
 {
   "registry_version": "1.0.0",
-  "last_updated": "2025-12-31T16:31:31.368485Z",
+  "last_updated": "2025-12-31T21:43:57.235037Z",
   "total_servers": 3,
   "verified_servers": 1,
   "servers": [
@@ -9,20 +9,20 @@
       "version": "latest",
       "git_commit": "unknown",
       "git_commit_short": "unknown",
-      "commit_date": "2025-12-31T16:31:31.368290",
+      "commit_date": "2025-12-31T21:43:57.234727",
       "package_hash_sha256": "unknown",
       "verification_status": "flagged",
       "trust_score": 0.63,
       "risk_score": 3.65,
       "risk_score_normalized": 36,
-      "last_analyzed": "2025-12-31T16:30:07.961466Z",
-      "analysis_id": "98900374",
+      "last_analyzed": "2025-12-31T21:42:45.083475Z",
+      "analysis_id": "92937b36",
       "metadata": {
         "repository_url": "https://github.com/modelcontextprotocol/servers",
         "description": "MCP server: modelcontextprotocol/server-filesystem",
         "maintainer": "Anthropic",
         "stars": 0,
-        "last_commit": "2025-12-31T16:31:31.368290"
+        "last_commit": "2025-12-31T21:43:57.234727"
       },
       "security_analysis": {
         "static_analysis": {
@@ -48,15 +48,15 @@
         },
         "thinktank_consensus": {
           "verdict": "FLAGGED",
-          "confidence": 0.75,
+          "confidence": 0.85,
           "believer_votes": 2,
           "skeptic_votes": 2,
           "neutral_votes": 1,
-          "foreperson_synthesis": "# SECURITY ASSESSMENT REPORT\n## MCP Server: modelcontextprotocol/server-filesystem\n\n---\n\n## EXECUTIVE SUMMARY\n\nThe modelcontextprotocol/server-filesystem MCP server has been assessed for production readiness and presents **moderate security concerns requiring remediation before deployment**. Based on comprehensive analysis of 22 SAST findings, 3 known vulnerabilities (including 1 critical/high severity), and 12 dependencies, the server requires security hardening in several critical areas.\n\n**Ov"
+          "foreperson_synthesis": "# SECURITY ASSESSMENT REPORT\n## MCP Server: modelcontextprotocol/server-filesystem\n\n**Assessment Date:** December 31, 2025  \n**Scan ID:** 20251231_214245  \n**Classification:** LOW-MODERATE RISK\n\n---\n\n## EXECUTIVE SUMMARY\n\nThe modelcontextprotocol/server-filesystem server demonstrates strong operational security with exceptional runtime behavior, evidenced by zero dynamic analysis findings and a 0.0/10 risk score. However, static analysis reveals 22 code quality findings and 3 npm dependency vuln"
         }
       },
       "badge_url": "badges/modelcontextprotocol-server-filesystem.svg",
-      "report_url": "reports/98900374.html"
+      "report_url": "reports/92937b36.html"
     },
     {
       "server_id": "modelcontextprotocol/server-fetch",

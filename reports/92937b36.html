@@ -22,7 +22,7 @@
     <div class="header">
         <h1>🔒 Credence Security Report</h1>
         <h2 style="margin-top: 10px; font-weight: normal;">modelcontextprotocol/server-filesystem</h2>
-        <p>Analysis ID: 98900374 | 2025-12-31</p>
+        <p>Analysis ID: 92937b36 | 2025-12-31</p>
     </div>
 
     <div class="section">
@@ -50,7 +50,7 @@
 
         <div class="metric">
             <div class="metric-label">Analysis Confidence</div>
-            <div class="metric-value">75%</div>
+            <div class="metric-value">85%</div>
         </div>
     </div>
 
@@ -60,13 +60,19 @@
             <pre style="white-space: pre-wrap; font-family: inherit; line-height: 1.6; margin: 0;"># SECURITY ASSESSMENT REPORT
 ## MCP Server: modelcontextprotocol/server-filesystem
 
+**Assessment Date:** December 31, 2025  
+**Scan ID:** 20251231_214245  
+**Classification:** LOW-MODERATE RISK
+
 ---
 
 ## EXECUTIVE SUMMARY
 
-The modelcontextprotocol/server-filesystem MCP server has been assessed for production readiness and presents **moderate security concerns requiring remediation before deployment**. Based on comprehensive analysis of 22 SAST findings, 3 known vulnerabilities (including 1 critical/high severity), and 12 dependencies, the server requires security hardening in several critical areas.
+The modelcontextprotocol/server-filesystem server demonstrates strong operational security with exceptional runtime behavior, evidenced by zero dynamic analysis findings and a 0.0/10 risk score. However, static analysis reveals 22 code quality findings and 3 npm dependency vulnerabilities, including 1 critical/high severity issue, that require remediation before production deployment.
 
-**Ov...</pre>
+The divergence between static and dynamic results indicates effective runtime controls and proper security boundaries during execution, while also highlighting technical debt in dependencies and code quality that could pose future risks. This server shows promise for production use with targeted remediation.
+
+**Recommended Action:** CONDITIONAL APPROVAL with mandatory remediation of cri</pre>
             
         </div>
     </div>
@@ -91,8 +97,8 @@ The modelcontextprotocol/server-filesystem MCP server has been assessed for prod
 
     <div class="section">
         <h2>🤖 ThinkTank Multi-Agent Analysis</h2>
-        <p><strong>Verdict:</strong> FLAGGED</p>
-        <p><strong>Confidence:</strong> 75%</p>
+        <p><strong>Verdict:</strong> APPROVED</p>
+        <p><strong>Confidence:</strong> 85%</p>
         <p><strong>Agent Votes:</strong> 2 Believers, 2 Skeptics, 1 Neutrals</p>
         <p style="margin-top: 15px;"><em>A panel of AI agents with diverse security perspectives analyzed this server. The full debate transcript is available below.</em></p>
     </div>
@@ -101,10 +107,10 @@ The modelcontextprotocol/server-filesystem MCP server has been assessed for prod
         <h2>📥 Download Full Reports</h2>
         <p>All scan reports and debate transcripts are available as compressed JSON files:</p>
         <ul style="line-height: 2; margin-top: 15px;">
-            <li><a href="98900374_artifacts/sast_full_debate.json.gz" download style="color: #667eea; text-decoration: none; font-weight: bold;">🗣️ SAST ThinkTank Full Debate (JSON.GZ)</a> - Complete multi-agent discussion</li>
-            <li><a href="98900374_artifacts/sast_consolidated_report.json.gz" download style="color: #667eea; text-decoration: none; font-weight: bold;">🔍 SAST Consolidated Report (JSON.GZ)</a> - Semgrep, GitLeaks, npm-audit, pip-audit, Trivy</li>
-            <li><a href="98900374_artifacts/dast_report.json.gz" download style="color: #667eea; text-decoration: none; font-weight: bold;">⚡ DAST Report (JSON.GZ)</a> - Promptfoo & MCP-Fuzzer results</li>
-            <li><a href="98900374_artifacts/FINAL_REPORT.json.gz" download style="color: #667eea; text-decoration: none; font-weight: bold;">📊 Final Combined Report (JSON.GZ)</a> - All scans + verdict</li>
+            <li><a href="92937b36_artifacts/sast_full_debate.json.gz" download style="color: #667eea; text-decoration: none; font-weight: bold;">🗣️ SAST ThinkTank Full Debate (JSON.GZ)</a> - Complete multi-agent discussion</li>
+            <li><a href="92937b36_artifacts/sast_consolidated_report.json.gz" download style="color: #667eea; text-decoration: none; font-weight: bold;">🔍 SAST Consolidated Report (JSON.GZ)</a> - Semgrep, GitLeaks, npm-audit, pip-audit, Trivy</li>
+            <li><a href="92937b36_artifacts/dast_report.json.gz" download style="color: #667eea; text-decoration: none; font-weight: bold;">⚡ DAST Report (JSON.GZ)</a> - Promptfoo & MCP-Fuzzer results</li>
+            <li><a href="92937b36_artifacts/FINAL_REPORT.json.gz" download style="color: #667eea; text-decoration: none; font-weight: bold;">📊 Final Combined Report (JSON.GZ)</a> - All scans + verdict</li>
         </ul>
         <p style="margin-top: 15px; color: #666; font-size: 0.9em;">
             <strong>Note:</strong> These are gzipped JSON files. Decompress with <code>gunzip filename.json.gz</code> or use any archive tool.
