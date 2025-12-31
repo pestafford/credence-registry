@@ -1,6 +1,6 @@
 {
   "registry_version": "1.0.0",
-  "last_updated": "2025-12-31T15:52:51.423136Z",
+  "last_updated": "2025-12-31T16:31:31.368485Z",
   "total_servers": 3,
   "verified_servers": 1,
   "servers": [
@@ -9,47 +9,54 @@
       "version": "latest",
       "git_commit": "unknown",
       "git_commit_short": "unknown",
-      "commit_date": "2025-12-31T15:52:51.422871",
+      "commit_date": "2025-12-31T16:31:31.368290",
       "package_hash_sha256": "unknown",
       "verification_status": "flagged",
       "trust_score": 0.63,
-      "last_analyzed": "2025-12-31T15:51:39.945217Z",
-      "analysis_id": "7d9702c5",
+      "risk_score": 3.65,
+      "risk_score_normalized": 36,
+      "last_analyzed": "2025-12-31T16:30:07.961466Z",
+      "analysis_id": "98900374",
       "metadata": {
         "repository_url": "https://github.com/modelcontextprotocol/servers",
         "description": "MCP server: modelcontextprotocol/server-filesystem",
         "maintainer": "Anthropic",
         "stars": 0,
-        "last_commit": "2025-12-31T15:52:51.422871"
+        "last_commit": "2025-12-31T16:31:31.368290"
       },
       "security_analysis": {
         "static_analysis": {
-          "passed": true,
-          "issues_found": 0,
+          "passed": false,
+          "issues_found": 22,
+          "critical_issues": 1,
           "tools_used": [
             "semgrep",
-            "gitleaks"
+            "gitleaks",
+            "npm-audit",
+            "pip-audit",
+            "trivy"
           ]
         },
         "dependency_analysis": {
           "passed": true,
-          "total_vulnerabilities": 0,
-          "npm_vulnerabilities": 0,
+          "total_vulnerabilities": 3,
+          "npm_vulnerabilities": 3,
           "pip_vulnerabilities": 0,
-          "trivy_vulnerabilities": 0,
+          "trivy_critical": 0,
+          "trivy_high": 0,
           "sbom_generated": true
         },
         "thinktank_consensus": {
           "verdict": "FLAGGED",
-          "confidence": 0.85,
+          "confidence": 0.75,
           "believer_votes": 2,
           "skeptic_votes": 2,
           "neutral_votes": 1,
-          "foreperson_synthesis": "Analysis pending"
+          "foreperson_synthesis": "# SECURITY ASSESSMENT REPORT\n## MCP Server: modelcontextprotocol/server-filesystem\n\n---\n\n## EXECUTIVE SUMMARY\n\nThe modelcontextprotocol/server-filesystem MCP server has been assessed for production readiness and presents **moderate security concerns requiring remediation before deployment**. Based on comprehensive analysis of 22 SAST findings, 3 known vulnerabilities (including 1 critical/high severity), and 12 dependencies, the server requires security hardening in several critical areas.\n\n**Ov"
         }
       },
       "badge_url": "badges/modelcontextprotocol-server-filesystem.svg",
-      "report_url": "reports/7d9702c5.html"
+      "report_url": "reports/98900374.html"
     },
     {
       "server_id": "modelcontextprotocol/server-fetch",

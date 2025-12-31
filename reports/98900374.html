@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Security Report: modelcontextprotocol/server-filesystem</title>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; max-width: 900px; margin: 40px auto; padding: 20px; line-height: 1.6; }
+        .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px; border-radius: 8px; margin-bottom: 30px; }
+        .verdict-flagged { display: inline-block; padding: 8px 16px; border-radius: 4px; font-weight: bold; }
+        .verdict-approved { background: #4caf50; color: white; }
+        .verdict-flagged { background: #ff9800; color: white; }
+        .verdict-rejected { background: #f44336; color: white; }
+        .section { background: white; padding: 25px; margin: 20px 0; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+        h2 { color: #333; border-bottom: 2px solid #667eea; padding-bottom: 10px; }
+        .metric { display: inline-block; margin: 10px 20px 10px 0; }
+        .metric-label { color: #666; font-size: 0.9em; }
+        .metric-value { font-size: 1.5em; font-weight: bold; color: #667eea; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🔒 Credence Security Report</h1>
+        <h2 style="margin-top: 10px; font-weight: normal;">modelcontextprotocol/server-filesystem</h2>
+        <p>Analysis ID: 98900374 | 2025-12-31</p>
+    </div>
+
+    <div class="section">
+        <h2>📊 Overall Verdict</h2>
+        <p><span class="verdict-flagged">FLAGGED</span></p>
+        <div class="metric">
+            <div class="metric-label">Risk Score</div>
+            <div class="metric-value">36/100</div>
+        </div>
+        <div class="metric">
+            <div class="metric-label">Trust Score</div>
+            <div class="metric-value">63/100</div>
+        </div>
+        <div class="metric">
+            <div class="metric-label">Confidence</div>
+            <div class="metric-value">75%</div>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>🔍 Static Analysis (SAST)</h2>
+        <p><strong>SAST Findings:</strong> 22</p>
+        <p><strong>Critical/High:</strong> 1</p>
+        <p><strong>Secrets Detected:</strong> 0</p>
+        <p><strong>npm Vulnerabilities:</strong> 3</p>
+        <p><strong>pip Vulnerabilities:</strong> 0</p>
+    </div>
+
+    <div class="section">
+        <h2>⚡ Dynamic Analysis (DAST)</h2>
+        <p><strong>Verdict:</strong> APPROVED</p>
+        <p><strong>Risk Score:</strong> 0.0/10</p>
+        <p><strong>Total Findings:</strong> 0</p>
+        <p><strong>Critical:</strong> 0</p>
+        <p><strong>High:</strong> 0</p>
+    </div>
+
+    <div class="section">
+        <h2>🤖 ThinkTank Multi-Agent Analysis</h2>
+        <p><strong>Confidence:</strong> 75%</p>
+        <p><strong>Agent Votes:</strong> 2 Believers, 2 Skeptics, 1 Neutrals</p>
+        <div style="margin-top: 20px; padding: 15px; background: #f5f5f5; border-radius: 4px;">
+            <pre style="white-space: pre-wrap; font-family: inherit;"># SECURITY ASSESSMENT REPORT
+## MCP Server: modelcontextprotocol/server-filesystem
+
+---
+
+## EXECUTIVE SUMMARY
+
+The modelcontextprotocol/server-filesystem MCP server has been assessed for production readiness and presents **moderate security concerns requiring remediation before deployment**. Based on comprehensive analysis of 22 SAST findings, 3 known vulnerabilities (including 1 critical/high severity), and 12 dependencies, the server requires security hardening in several critical areas.
+
+**Ov...</pre>
+        </div>
+    </div>
+
+    <div style="text-align: center; margin-top: 40px; color: #666;">
+        <p>Powered by <strong>ThinkTank</strong> &amp; <strong>Credence Security Registry</strong></p>
+    </div>
+</body>
+</html>
