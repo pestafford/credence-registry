@@ -1,26 +1,26 @@
 {
   "registry_version": "1.0.0",
-  "last_updated": "2025-12-31T15:24:20.311633Z",
+  "last_updated": "2025-12-31T15:52:51.423136Z",
   "total_servers": 3,
-  "verified_servers": 2,
+  "verified_servers": 1,
   "servers": [
     {
       "server_id": "modelcontextprotocol/server-filesystem",
       "version": "latest",
       "git_commit": "unknown",
       "git_commit_short": "unknown",
-      "commit_date": "2025-12-31T15:24:20.311426",
+      "commit_date": "2025-12-31T15:52:51.422871",
       "package_hash_sha256": "unknown",
-      "verification_status": "approved",
-      "trust_score": 1.0,
-      "last_analyzed": "2025-12-31T15:23:07.348702Z",
-      "analysis_id": "ad9fd5e3",
+      "verification_status": "flagged",
+      "trust_score": 0.63,
+      "last_analyzed": "2025-12-31T15:51:39.945217Z",
+      "analysis_id": "7d9702c5",
       "metadata": {
         "repository_url": "https://github.com/modelcontextprotocol/servers",
         "description": "MCP server: modelcontextprotocol/server-filesystem",
         "maintainer": "Anthropic",
         "stars": 0,
-        "last_commit": "2025-12-31T15:24:20.311426"
+        "last_commit": "2025-12-31T15:52:51.422871"
       },
       "security_analysis": {
         "static_analysis": {
@@ -40,7 +40,7 @@
           "sbom_generated": true
         },
         "thinktank_consensus": {
-          "verdict": "APPROVED",
+          "verdict": "FLAGGED",
           "confidence": 0.85,
           "believer_votes": 2,
           "skeptic_votes": 2,
@@ -49,7 +49,7 @@
         }
       },
       "badge_url": "badges/modelcontextprotocol-server-filesystem.svg",
-      "report_url": "reports/ad9fd5e3.html"
+      "report_url": "reports/7d9702c5.html"
     },
     {
       "server_id": "modelcontextprotocol/server-fetch",
