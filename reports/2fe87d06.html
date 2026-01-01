@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Security Report: modelcontextprotocol/server-filesystem</title>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; max-width: 900px; margin: 40px auto; padding: 20px; line-height: 1.6; }
+        .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px; border-radius: 8px; margin-bottom: 30px; }
+        .verdict-flagged { display: inline-block; padding: 8px 16px; border-radius: 4px; font-weight: bold; }
+        .verdict-approved { background: #4caf50; color: white; }
+        .verdict-flagged { background: #ff9800; color: white; }
+        .verdict-rejected { background: #f44336; color: white; }
+        .section { background: white; padding: 25px; margin: 20px 0; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+        h2 { color: #333; border-bottom: 2px solid #667eea; padding-bottom: 10px; }
+        .metric { display: inline-block; margin: 10px 20px 10px 0; }
+        .metric-label { color: #666; font-size: 0.9em; }
+        .metric-value { font-size: 1.5em; font-weight: bold; color: #667eea; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🔒 Credence Security Report</h1>
+        <h2 style="margin-top: 10px; font-weight: normal;">modelcontextprotocol/server-filesystem</h2>
+        <p>Analysis ID: 2fe87d06 | 2026-01-01</p>
+    </div>
+
+    <div class="section">
+        <h2>📊 Overall Verdict</h2>
+        <p><span class="verdict-flagged">FLAGGED</span></p>
+
+        <!-- Complementary Risk/Trust Visualization -->
+        <div style="margin: 25px 0;">
+            <div style="margin-bottom: 15px;">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                    <span style="color: #f44336; font-weight: bold;">← Risk: 36/100</span>
+                    <span style="color: #999; font-size: 0.9em;">Risk + Trust = 100</span>
+                    <span style="color: #4caf50; font-weight: bold;">Trust: 63/100 →</span>
+                </div>
+                <div style="display: flex; height: 40px; border-radius: 4px; overflow: hidden; border: 2px solid #ddd;">
+                    <div style="background: linear-gradient(90deg, #f44336 0%, #ff9800 100%); width: 36%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 1.1em;">
+                        36%
+                    </div>
+                    <div style="background: linear-gradient(90deg, #8bc34a 0%, #4caf50 100%); width: 63%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 1.1em;">
+                        63%
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="metric">
+            <div class="metric-label">Analysis Confidence</div>
+            <div class="metric-value">75%</div>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>📋 Executive Summary</h2>
+        <div style="padding: 20px; background: #f9f9f9; border-left: 4px solid #667eea; border-radius: 4px;">
+            <pre style="white-space: pre-wrap; font-family: inherit; line-height: 1.6; margin: 0;"># STAKEHOLDER SECURITY ASSESSMENT REPORT
+## MCP Server Filesystem Security Analysis
+
+---
+
+## EXECUTIVE SUMMARY
+
+This assessment evaluates the security posture of the Model Context Protocol (MCP) filesystem server (modelcontextprotocol/server-filesystem) based on comprehensive static and dynamic analysis. The server presents **moderate to high security risks** requiring immediate attention before production deployment, particularly concerning path traversal vulnerabilities and privilege management deficiencies.
+
+**Critical Determination:** The server requires security remediation before enterprise deployment. While the codebase shows no exposed secrets and minimal dependency vulnerabilities, the prevalence of path traversal vectors and container security gaps create unacceptable risk levels for production environments handling sensitive file operations.
+
+---
+
+## KEY FINDINGS AND CONSENSUS POINTS
+
+### Severity Classification
+- **Critical/High Risk Issues:** 1 confirmed (container privilege management)
+- **Medium Risk Issues:** 13 identified (path traversal patterns)
+- **Low Risk Issues:** 8 code quality concerns
+- **Total SAST Findings:** 22 issues detected
+- **Dependency Vulnerabilities:** 3 CVEs across 12 packages (
+
+--- End of Consensus Report ---
+
+Log saved to /home/phil/projects/thinktank/src/infrastructure/logs/run_2026-01-01_07.log</pre>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>🔍 Static Analysis (SAST)</h2>
+        <p><strong>SAST Findings:</strong> 22</p>
+        <p><strong>Critical/High:</strong> 1</p>
+        <p><strong>Secrets Detected:</strong> 0</p>
+        <p><strong>npm Vulnerabilities:</strong> 3</p>
+        <p><strong>pip Vulnerabilities:</strong> 0</p>
+    </div>
+
+    <div class="section">
+        <h2>⚡ Dynamic Analysis (DAST)</h2>
+        <p><strong>Verdict:</strong> APPROVED</p>
+        <p><strong>Risk Score:</strong> 0.0/10</p>
+        <p><strong>Total Findings:</strong> 0</p>
+        <p><strong>Critical:</strong> 0</p>
+        <p><strong>High:</strong> 0</p>
+    </div>
+
+    <div class="section">
+        <h2>🤖 ThinkTank Multi-Agent Analysis</h2>
+        <p><strong>Verdict:</strong> FLAGGED</p>
+        <p><strong>Confidence:</strong> 75%</p>
+        <p><strong>Agent Votes:</strong> 2 Believers, 2 Skeptics, 1 Neutrals</p>
+        <p style="margin-top: 15px;"><em>A panel of AI agents with diverse security perspectives analyzed this server. The full debate transcript is available below.</em></p>
+    </div>
+
+    <div class="section">
+        <h2>📥 Download Full Reports</h2>
+        <p>All scan reports and debate transcripts are available as compressed JSON files:</p>
+        <ul style="line-height: 2; margin-top: 15px;">
+            <li><a href="2fe87d06_artifacts/sast_full_debate.json.gz" download style="color: #667eea; text-decoration: none; font-weight: bold;">🗣️ SAST ThinkTank Full Debate (JSON.GZ)</a> - Complete multi-agent discussion</li>
+            <li><a href="2fe87d06_artifacts/sast_consolidated_report.json.gz" download style="color: #667eea; text-decoration: none; font-weight: bold;">🔍 SAST Consolidated Report (JSON.GZ)</a> - Semgrep, GitLeaks, npm-audit, pip-audit, Trivy</li>
+            <li><a href="2fe87d06_artifacts/dast_report.json.gz" download style="color: #667eea; text-decoration: none; font-weight: bold;">⚡ DAST Report (JSON.GZ)</a> - Promptfoo & MCP-Fuzzer results</li>
+            <li><a href="2fe87d06_artifacts/FINAL_REPORT.json.gz" download style="color: #667eea; text-decoration: none; font-weight: bold;">📊 Final Combined Report (JSON.GZ)</a> - All scans + verdict</li>
+        </ul>
+        <p style="margin-top: 15px; color: #666; font-size: 0.9em;">
+            <strong>Note:</strong> These are gzipped JSON files. Decompress with <code>gunzip filename.json.gz</code> or use any archive tool.
+        </p>
+    </div>
+
+    <div style="text-align: center; margin-top: 40px; color: #666;">
+        <p>Powered by <strong>ThinkTank</strong> &amp; <strong>Credence Security Registry</strong></p>
+    </div>
+</body>
+</html>

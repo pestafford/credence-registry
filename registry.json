@@ -1,6 +1,6 @@
 {
   "registry_version": "1.0.0",
-  "last_updated": "2026-01-01T01:57:32.846939Z",
+  "last_updated": "2026-01-01T18:28:33.802789Z",
   "total_servers": 3,
   "verified_servers": 1,
   "servers": [
@@ -9,20 +9,20 @@
       "version": "latest",
       "git_commit": "unknown",
       "git_commit_short": "unknown",
-      "commit_date": "2026-01-01T01:57:32.846735",
+      "commit_date": "2026-01-01T18:28:33.802448",
       "package_hash_sha256": "unknown",
       "verification_status": "flagged",
       "trust_score": 0.63,
       "risk_score": 3.65,
       "risk_score_normalized": 36,
-      "last_analyzed": "2026-01-01T01:56:40.208216Z",
-      "analysis_id": "5adf5021",
+      "last_analyzed": "2026-01-01T18:27:19.900669Z",
+      "analysis_id": "2fe87d06",
       "metadata": {
         "repository_url": "https://github.com/modelcontextprotocol/servers",
         "description": "MCP server: modelcontextprotocol/server-filesystem",
         "maintainer": "Anthropic",
         "stars": 0,
-        "last_commit": "2026-01-01T01:57:32.846735"
+        "last_commit": "2026-01-01T18:28:33.802448"
       },
       "security_analysis": {
         "static_analysis": {
@@ -52,11 +52,11 @@
           "believer_votes": 2,
           "skeptic_votes": 2,
           "neutral_votes": 1,
-          "foreperson_synthesis": "# STAKEHOLDER SECURITY REPORT\n## Model Context Protocol Server: server-filesystem\n\n---\n\n## EXECUTIVE SUMMARY\n\nThe modelcontextprotocol/server-filesystem has been evaluated for production deployment readiness through comprehensive security analysis. The assessment identifies **moderate to medium-high security risks** that require mandatory remediation before production use.\n\n**Overall Security Verdict:** **FLAGGED FOR REMEDIATION**  \n**Trust Score:** 0.58/1.0  \n**Risk Classification:** Medium-Hig..."
+          "foreperson_synthesis": "# STAKEHOLDER SECURITY ASSESSMENT REPORT\n## MCP Server Filesystem Security Analysis\n\n---\n\n## EXECUTIVE SUMMARY\n\nThis assessment evaluates the security posture of the Model Context Protocol (MCP) filesystem server (modelcontextprotocol/server-filesystem) based on comprehensive static and dynamic analysis. The server presents **moderate to high security risks** requiring immediate attention before production deployment, particularly concerning path traversal vulnerabilities and privilege management deficiencies.\n\n**Critical Determination:** The server requires security remediation before enterprise deployment. While the codebase shows no exposed secrets and minimal dependency vulnerabilities, the prevalence of path traversal vectors and container security gaps create unacceptable risk levels for production environments handling sensitive file operations.\n\n---\n\n## KEY FINDINGS AND CONSENSUS POINTS\n\n### Severity Classification\n- **Critical/High Risk Issues:** 1 confirmed (container privilege management)\n- **Medium Risk Issues:** 13 identified (path traversal patterns)\n- **Low Risk Issues:** 8 code quality concerns\n- **Total SAST Findings:** 22 issues detected\n- **Dependency Vulnerabilities:** 3 CVEs across 12 packages (\n\n--- End of Consensus Report ---\n\nLog saved to /home/phil/projects/thinktank/src/infrastructure/logs/run_2026-01-01_07.log"
         }
       },
       "badge_url": "badges/modelcontextprotocol-server-filesystem.svg",
-      "report_url": "reports/5adf5021.html"
+      "report_url": "reports/2fe87d06.html"
     },
     {
       "server_id": "modelcontextprotocol/server-fetch",
