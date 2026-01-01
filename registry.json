@@ -1,6 +1,6 @@
 {
   "registry_version": "1.0.0",
-  "last_updated": "2026-01-01T20:58:10.526261+00:00",
+  "last_updated": "2026-01-01T21:23:25.905160+00:00",
   "total_servers": 3,
   "verified_servers": 1,
   "servers": [
@@ -60,47 +60,57 @@
     },
     {
       "server_id": "modelcontextprotocol/server-fetch",
-      "version": "unknown",
-      "git_commit": "a37158bc1555ce0b1121ea98a3e740119d7fc8c7",
-      "git_commit_short": "a37158b",
-      "commit_date": "2025-12-17T16:04:30Z",
-      "package_hash_sha256": "a414afba259f1e5c3ae38c2e66f5719300f7a56f3008dd48d1800f2331b3064d",
+      "version": "latest",
+      "git_commit": "unknown",
+      "git_commit_short": "unknown",
+      "commit_date": "2026-01-01T21:23:25.904923+00:00",
+      "package_hash_sha256": "unknown",
       "verification_status": "flagged",
-      "trust_score": 0.72,
-      "last_analyzed": "2025-12-18T17:23:45.876108Z",
-      "analysis_id": "64dc9b4e",
+      "trust_score": 0.57,
+      "risk_score": 4.3,
+      "risk_score_normalized": 43,
+      "last_analyzed": "2026-01-01T21:19:56.870941+00:00",
+      "analysis_id": "ab528177",
       "metadata": {
         "repository_url": "https://github.com/modelcontextprotocol/servers",
-        "description": "MCP server for GitHub API access",
+        "description": "MCP server: modelcontextprotocol/server-fetch",
         "maintainer": "Anthropic",
         "stars": 0,
-        "last_commit": "2025-12-18T17:23:45.875315Z"
+        "last_commit": "2026-01-01T21:23:25.904923+00:00"
       },
       "security_analysis": {
         "static_analysis": {
           "passed": false,
           "issues_found": 1,
+          "critical_issues": 7,
           "tools_used": [
             "semgrep",
-            "gitleaks"
+            "gitleaks",
+            "npm-audit",
+            "pip-audit",
+            "trivy"
           ]
         },
         "dependency_analysis": {
           "passed": true,
-          "vulnerabilities_found": 0,
+          "total_vulnerabilities": 11,
+          "npm_vulnerabilities": 0,
+          "pip_vulnerabilities": 0,
+          "trivy_critical": 1,
+          "trivy_high": 6,
           "sbom_generated": true
         },
         "thinktank_consensus": {
           "verdict": "FLAGGED",
-          "confidence": 0.68,
+          "confidence": 0.75,
           "believer_votes": 2,
           "skeptic_votes": 2,
           "neutral_votes": 1,
-          "foreperson_synthesis": "**QUICK SUMMARY (REGISTRY/QUICK REFERENCE)**\n\n\u2022 **Answer:** Moderate security posture - production deployment acceptable with strict conditions\n\n\u2022 **Key Points:** \n  - Clean baseline: 0 CVEs, 0 secret..."
+          "foreperson_synthesis": "# SECURITY ASSESSMENT REPORT\n## MCP Server: modelcontextprotocol/server-fetch\n\n**Assessment Date:** 2026-01-01  \n**Scan ID:** 20260101_211956  \n**Overall Classification:** CONDITIONAL APPROVAL RECOMMENDED\n\n---\n\n## EXECUTIVE SUMMARY\n\nThis security assessment reveals a server with fundamentally sound application architecture and exemplary runtime security performance, offset by container-level infrastructure vulnerabilities requiring remediation. The server demonstrated zero exploitable vulnerabilities during comprehensive dynamic testing\u2014including prompt injection, fuzzing, and behavioral analysis\u2014validating robust implementation practices. However, static analysis identified 7 critical/high severity CVEs in container dependencies and a privilege management configuration issue that creates unnecessary attack surface.\n\n**Recommendation:** Approve for production deployment contingent upon completion of specific remediation actions within a defined timeline. The runtime security posture supports immediate deployment in properly isolated environments, while container hardening should be prioritized for general production use.\n\n---\n\n## KEY FINDINGS AND CONSENSUS POINTS\n\n### Security Strengths\n- **Zero runtime vulnerabilities** across all dynamic testing protocols (Promptfoo security testing, MCP fuzzing)\n- **No exposed secrets** in codebase or configuration files\n- **Clean application dependencies** with no npm or pip vulnerabilities in direct packages\n- **Comprehensive SBOM** with 38 tracked packages providing full supply chain visibility\n- **Validated protocol implementation** with no crashes or anomalies under adversarial fuzzing conditions\n\n### Security Concerns\n- **7 critical/high severity CVEs** in container base image dependencies (1 critical, 6 high)\n- **Privilege management weakness** (CWE-269) due to missing USER directive in Dockerfile, allowing processes to run as root\n- **4 medium severity vulnerabilities** in container layer requiring monitoring\n- **Incomplete container hardening** creating unnecessary privilege escalation pathways\n\n### Risk Context\nThe identified vulnerabilities primarily affect the container infrastructure layer rather than application logic. The clean DAST results (0.0/10 risk score) demonstrate that the server's core functionality, protocol handling, and input processing are secure. Container vulnerabilities, while numerically concerning, have limited exploitability in typical MCP server deployments that employ standard containerization practices with proper isolation and least-privilege execution.\n\n---\n\n## AREAS OF ALIGNMENT AND DIVERGENCE\n\n### Team Consensus Areas\n- **Runtime security is exemplary:** All analysts agreed the DAST results validate sound implementation practices with no exploitable application-level vulnerabilities\n- **Container remediation is required:** Universal agreement that the Dockerfile privilege management issue must be addressed before general production deployment\n- **CVE severity requires context:** Consensus that container CVEs, while concerning in count, represent infrastructure rather than application-level risks\n- **Deployment is viable with controls:** Agreement that conditional approval with specific remediation timelines is appropriate\n\n### Areas of Divergence\n- **Severity interpretation:** Risk classification ranged from \"moderate-low\" to \"moderate-high\" depending on weight assigned to container CVEs versus runtime behavior\n- **Deployment urgency:** Perspectives varied on whether immediate deployment with compensating controls is acceptable versus requiring full remediation first\n- **Attack surface assessment:** Differing views on practical exploitability of container vulnerabilities in real-world MCP deployment scenarios\n\n### Resolution\nThe assessment converges on conditional approval based on:\n1. Demonstrably secure runtime behavior eliminating application-level concerns\n2. Container vulnerabilities being addressable through standard remediation practices\n3. Risk mitigation through deployment controls during remediation period\n4. Clear improvement pathway with trackable completion criteria\n\n---\n\n## RISK ASSESSMENT AND CONSIDERATIONS\n\n### Critical Risk: Container Privilege Escalation (HIGH PRIORITY)\n**Issue:** Dockerfile lacks USER directive, allowing container processes to run as root  \n**CWE:** CWE-269 (Improper Privilege Management)  \n**Impact:** If an attacker achieves container compromise through another vulnerability, root access provides full container control and potential host escape vectors  \n**Likelihood:** Moderate in environments without additional security layers; Low in properly configured container orchestration platforms  \n**Mitigation Priority:** HIGH - Must be addressed before unrestricted deployment\n\n### Significant Risk: Container Dependency Vulnerabilities\n**Issue:** 7 critical/high severity CVEs in base image dependencies  \n**Impact:** Potential for container escape, denial of service, or information disclosure depending on specific CVE exploitation vectors  \n**Likelihood:** Low to Moderate - Requires specific attack conditions and is mitigated by network isolation and container runtime security  \n**Mitigation Priority:** HIGH - Should be resolved through base image updates within 30 days\n\n### Compensating Controls Assessment\nThe following existing controls significantly reduce exploitation risk:\n- **Network isolation:** MCP servers typically operate in isolated network segments limiting external attack vectors\n- **Container orchestration security:** Modern platforms (Kubernetes, ECS) provide security contexts that enforce least-privilege execution regardless of Dockerfile configuration\n- **Limited attack surface:** MCP protocol specificity reduces exploitation pathways compared to general web services\n- **No application-level vulnerabilities:** Clean DAST results eliminate primary attack entry points\n\n### Attack Surface Analysis\n**External:** Limited - MCP protocol interactions are the primary interface, validated secure through comprehensive testing  \n**Container escape:** Elevated due to root execution and dependency CVEs, but requires initial container compromise  \n**Supply chain:** Well-managed with complete SBOM and no secrets exposure  \n**Data exposure:** Low risk - no PII extraction or information leakage detected during security testing\n\n---\n\n## ACTIONABLE RECOMMENDATIONS WITH IMPLEMENTATION NOTES\n\n### Immediate Actions (Required Before Production Deployment)\n\n**1. Implement Non-Root Container Execution**  \n**Priority:** CRITICAL | **Timeline:** 1-3 days | **Effort:** Low  \n- Add USER directive to Dockerfile creating dedicated non-privileged user\n- Verify application functions correctly under restricted permissions\n- Test all file system access, network bindings, and tool executions\n- **Implementation:** Add these lines to Dockerfile before ENTRYPOINT:\n  ```dockerfile\n  RUN addgroup --system mcp && adduser --system --group mcp\n  USER mcp\n  ```\n- **Validation:** Confirm container processes run as non-root using `docker exec <container> whoami`\n\n**2. Update Container Base Image**  \n**Priority:** HIGH | **Timeline:** 7-14 days | **Effort:** Medium  \n- Identify current base image version and available security patches\n- Update to latest stable release addressing critical/high CVEs\n- Regression test all functionality after base image update\n- Re-scan with Trivy to verify CVE remediation\n- **Implementation:** Update FROM directive in Dockerfile to latest patched version, rebuild, and deploy to staging environment for validation\n- **Target:** Reduce critical/high CVEs to zero; medium CVEs to acceptable risk threshold\n\n**3. Establish Container Security Scanning Pipeline**  \n**Priority:** MEDIUM | **Timeline:** 14-30 days | **Effort:** Medium  \n- Integrate Trivy or equivalent scanning into CI/CD pipeline\n- Set security gates blocking deployment with critical/high vulnerabilities\n- Configure automated alerts for new CVE disclosures affecting deployed containers\n- **Implementation:** Add scanning stage to build pipeline with configurable severity thresholds\n\n### Enhanced Security Measures (Recommended for Hardened Deployment)\n\n**4. Implement Runtime Security Controls**  \n**Priority:** MEDIUM | **Timeline:** 30-60 days | **Effort:** High  \n- Deploy with security context constraints in orchestration platform (e.g., Kubernetes PodSecurityPolicy/PodSecurityStandards)\n- Enable read-only root filesystem where possible\n- Implement network policies restricting container communication to required endpoints only\n- **Implementation:** Define Kubernetes SecurityContext with runAsNonRoot: true, allowPrivilegeEscalation: false, and drop all unnecessary capabilities\n\n**5. Continuous Monitoring and Attestation**  \n**Priority:** LOW | **Timeline:** 60-90 days | **Effort:** Medium  \n- Implement runtime behavior monitoring detecting anomalous activity\n- Generate and publish signed SBOM with each release\n- Establish quarterly security re-assessment schedule\n- **Implementation:** Deploy runtime security monitoring tools (Falco, Aqua Security) with MCP-specific behavioral baselines\n\n### Deployment Strategy Recommendations\n\n**Phase 1: Controlled Deployment (Immediate)**  \n- Deploy to non-production environments and isolated development clusters\n- Implement compensating controls: security contexts forcing non-root execution, network isolation, read-only filesystems\n- Monitor for 7-14 days collecting operational telemetry\n\n**Phase 2: Limited Production (Post-Remediation)**  \n- After completing Actions #1 and #2, approve for production deployment in controlled environments\n- Restrict to internal use cases or trusted user populations initially\n- Maintain enhanced monitoring and incident response readiness\n\n**Phase 3: General Availability (Post-Validation)**  \n- After 30-day production observation period without security incidents\n- Expand to general production use with standard security controls\n- Publish security posture and remediation completion to public registry\n\n---\n\n## TRUST SCORE AND CERTIFICATION\n\n**Recommended Trust Score: 72/100**\n\n**Score Rationale:**\n- **Runtime Security (+35 points):** Exceptional DAST results with zero vulnerabilities across comprehensive testing\n- **Application Code Quality (+20 points):** Clean secret scanning, no application dependency vulnerabilities, proper SBOM\n- **Infrastructure Security (-15 points):** Container privilege management issue and base image CVEs\n- **Transparency (+10 points):** Complete vulnerability disclosure and comprehensive security assessment\n- **Remediation Commitment (+12 points):** Clear improvement pathway with trackable actions\n- **Deployment Readiness (+10 points):** Viable with compensating controls during remediation period\n\n**Certification Status:** CONDITIONAL APPROVAL  \n**Deployment Classification:** Production-Ready with Remediation Requirements  \n**Re-assessment Required:** After completion of Actions #1 and #2; then quarterly\n\n---\n\n## CONCLUSION\n\nThe modelcontextprotocol/server-fetch server demonstrates mature security engineering at the application level with exemplary runtime behavior that eliminates concerns about exploitable application vulnerabilities. The identified issues are infrastructure-related, well-understood, and remediable through standard container hardening practices. \n\nOrganizations can confidently deploy this server in production environments with appropriate compensating controls while the development team addresses container security improvements. The clear remediation pathway, combined with demonstrated commitment to security best practices, supports a positive security outlook for this server's continued operation in the MCP ecosystem.\n\nThis assessment supports publication in the Credence public registry with conditional approval status, transitioning to full approval upon verification of remediation completion.\n\n--- End of Consensus Report ---\n\nLog saved to /home/phil/projects/thinktank/src/infrastructure/logs/run_2026-01-01_15.log"
         }
       },
-      "badge_url": "badges/modelcontextprotocol-server-github.svg",
-      "report_url": "reports/64dc9b4e.html"
+      "badge_url": "badges/modelcontextprotocol-server-fetch.svg",
+      "report_url": "reports/ab528177.html"
     },
     {
       "server_id": "test/registry-test",
