@@ -1,6 +1,6 @@
 {
   "registry_version": "1.0.0",
-  "last_updated": "2025-12-31T21:43:57.235037Z",
+  "last_updated": "2026-01-01T01:57:32.846939Z",
   "total_servers": 3,
   "verified_servers": 1,
   "servers": [
@@ -9,20 +9,20 @@
       "version": "latest",
       "git_commit": "unknown",
       "git_commit_short": "unknown",
-      "commit_date": "2025-12-31T21:43:57.234727",
+      "commit_date": "2026-01-01T01:57:32.846735",
       "package_hash_sha256": "unknown",
       "verification_status": "flagged",
       "trust_score": 0.63,
       "risk_score": 3.65,
       "risk_score_normalized": 36,
-      "last_analyzed": "2025-12-31T21:42:45.083475Z",
-      "analysis_id": "92937b36",
+      "last_analyzed": "2026-01-01T01:56:40.208216Z",
+      "analysis_id": "5adf5021",
       "metadata": {
         "repository_url": "https://github.com/modelcontextprotocol/servers",
         "description": "MCP server: modelcontextprotocol/server-filesystem",
         "maintainer": "Anthropic",
         "stars": 0,
-        "last_commit": "2025-12-31T21:43:57.234727"
+        "last_commit": "2026-01-01T01:57:32.846735"
       },
       "security_analysis": {
         "static_analysis": {
@@ -48,15 +48,15 @@
         },
         "thinktank_consensus": {
           "verdict": "FLAGGED",
-          "confidence": 0.85,
+          "confidence": 0.75,
           "believer_votes": 2,
           "skeptic_votes": 2,
           "neutral_votes": 1,
-          "foreperson_synthesis": "# SECURITY ASSESSMENT REPORT\n## MCP Server: modelcontextprotocol/server-filesystem\n\n**Assessment Date:** December 31, 2025  \n**Scan ID:** 20251231_214245  \n**Classification:** LOW-MODERATE RISK\n\n---\n\n## EXECUTIVE SUMMARY\n\nThe modelcontextprotocol/server-filesystem server demonstrates strong operational security with exceptional runtime behavior, evidenced by zero dynamic analysis findings and a 0.0/10 risk score. However, static analysis reveals 22 code quality findings and 3 npm dependency vuln"
+          "foreperson_synthesis": "# STAKEHOLDER SECURITY REPORT\n## Model Context Protocol Server: server-filesystem\n\n---\n\n## EXECUTIVE SUMMARY\n\nThe modelcontextprotocol/server-filesystem has been evaluated for production deployment readiness through comprehensive security analysis. The assessment identifies **moderate to medium-high security risks** that require mandatory remediation before production use.\n\n**Overall Security Verdict:** **FLAGGED FOR REMEDIATION**  \n**Trust Score:** 0.58/1.0  \n**Risk Classification:** Medium-Hig..."
         }
       },
       "badge_url": "badges/modelcontextprotocol-server-filesystem.svg",
-      "report_url": "reports/92937b36.html"
+      "report_url": "reports/5adf5021.html"
     },
     {
       "server_id": "modelcontextprotocol/server-fetch",
