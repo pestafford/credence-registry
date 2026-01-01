@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Security Report: modelcontextprotocol/server-fetch</title>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; max-width: 900px; margin: 40px auto; padding: 20px; line-height: 1.6; }
+        .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px; border-radius: 8px; margin-bottom: 30px; }
+        .verdict-flagged { display: inline-block; padding: 8px 16px; border-radius: 4px; font-weight: bold; }
+        .verdict-approved { background: #4caf50; color: white; }
+        .verdict-flagged { background: #ff9800; color: white; }
+        .verdict-rejected { background: #f44336; color: white; }
+        .section { background: white; padding: 25px; margin: 20px 0; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+        h2 { color: #333; border-bottom: 2px solid #667eea; padding-bottom: 10px; }
+        .metric { display: inline-block; margin: 10px 20px 10px 0; }
+        .metric-label { color: #666; font-size: 0.9em; }
+        .metric-value { font-size: 1.5em; font-weight: bold; color: #667eea; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🔒 Credence Security Report</h1>
+        <h2 style="margin-top: 10px; font-weight: normal;">modelcontextprotocol/server-fetch</h2>
+        <p>Analysis ID: b8d41967 | 2026-01-01</p>
+    </div>
+
+    <div class="section">
+        <h2>📊 Overall Verdict</h2>
+        <p><span class="verdict-flagged">FLAGGED</span></p>
+
+        <!-- Complementary Risk/Trust Visualization -->
+        <div style="margin: 25px 0;">
+            <div style="margin-bottom: 15px;">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                    <span style="color: #f44336; font-weight: bold;">← Risk: 43/100</span>
+                    <span style="color: #999; font-size: 0.9em;">Risk + Trust = 100</span>
+                    <span style="color: #4caf50; font-weight: bold;">Trust: 57/100 →</span>
+                </div>
+                <div style="display: flex; height: 40px; border-radius: 4px; overflow: hidden; border: 2px solid #ddd;">
+                    <div style="background: linear-gradient(90deg, #f44336 0%, #ff9800 100%); width: 43%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 1.1em;">
+                        43%
+                    </div>
+                    <div style="background: linear-gradient(90deg, #8bc34a 0%, #4caf50 100%); width: 57%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 1.1em;">
+                        57%
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="metric">
+            <div class="metric-label">Analysis Confidence</div>
+            <div class="metric-value">75%</div>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>📋 Executive Summary</h2>
+        <div style="padding: 20px; background: #f9f9f9; border-left: 4px solid #667eea; border-radius: 4px;">
+            <pre style="white-space: pre-wrap; font-family: inherit; line-height: 1.6; margin: 0;"># STAKEHOLDER REPORT: MCP SERVER SECURITY ASSESSMENT
+## modelcontextprotocol/server-fetch (Scan ID: 20260101_222633)
+
+---
+
+## EXECUTIVE SUMMARY
+
+This security assessment evaluates the production readiness of the modelcontextprotocol/server-fetch MCP server through comprehensive static and dynamic analysis. The server demonstrates a **moderate-risk security profile** with excellent runtime behavior but infrastructure-level vulnerabilities requiring remediation before full production deployment.
+
+**Key Verdict**: CONDITIONAL APPROVAL with mandatory remediation timeline
+
+**Overall Risk Rating**: MEDIUM (6.5/10)
+
+**Trust Score Recommendation**: 68/100
+
+The server exhibits solid engineering practices with zero runtime exploitable vulnerabilities across comprehensive dynamic testing. However, critical container security issues and privilege management concerns necessitate immediate attention before unrestricted production use.
+
+---
+
+## KEY FINDINGS AND CONSENSUS POINTS
+
+### Strengths Identified
+
+**1. Exemplary Runtime Security Performance**
+- Zero security findings across all dynamic analysis testing (Promptfoo security suite and MCP fuzzing)
+- Clean 0.0/10 DAST risk score indicates robust operational security
+- Successfully defended against prompt injection, jailbreak attempts, context manipulation, and harmful content generation
+- No crashes, errors, or anomalies during edge case and fuzzing tests
+- Application code demonstrates mature security practices at runtime
+
+**2. Minimal Code-Level Vulnerabilities**
+- Only 1 SAST finding across entire codebase
+- Zero exposed secrets or credentials detected via GitLeaks scanning
+- Clean Python and npm dependency trees with no direct package vulnerabilities
+- 38 documented packages in SBOM provide complete supply chain transparency
+
+**3. Limited Attack Surface**
+- Focused functionality (fetch operations) reduces exposure points
+- No evidence of dangerous MCP protocol implementation flaws
+- Controlled input handling validated through fuzzing results
+
+### Critical Concerns Requiring Action
+
+**1. Container Privilege Misconfiguration (HIGH SEVERITY)**
+- **Issue**: Dockerfile lacks USER specification, causing processes to run as root (CWE-269)
+- **Location**: /tmp/mcp-scan-agggcbuv/server_repo/src/fetch/Dockerfile, line 36
+- **Risk**: Container compromise grants attacker full root access, enabling lateral movement, host escape attempts, and complete container control
+- **Exploitability**: High in multi-tenant environments or compromised dependency scenarios
+
+**2. Container Dependency Vulnerabilities (CRITICAL/HIGH SEVERITY)**
+- **Issue**: 11 known CVEs in container base images and system libraries (7 rated critical/high, 4 medium)
+- **Note**: Significant reporting inconsistency exists—executive summary claims 11 CVEs while detailed Trivy section shows "✓ No container vulnerabilities"
+- **Risk**: Unpatched vulnerabilities in underlying infrastructure may enable privilege escalation, denial of service, or information disclosure
+- **Recommendation**: Requires immediate clarification and verification scan
+
+**3. Data Integrity Concerns**
+- Contradictory vulnerability counts undermine confidence in scan completeness
+- Ambiguity regarding whether reported CVEs affect server operation or represent base image noise
+- Requires validation through independent scanning tools
+
+---
+
+## AREAS OF ALIGNMENT AND DIVERGENCE
+
+### Team Consensus Areas
+
+**Universal Agreement Points:**
+- Runtime security is exemplary with zero exploitable vulnerabilities
+- Container privilege management (root user) requires immediate remediation
+- Server demonstrates mature security engineering at application layer
+- DAST results provide strong confidence in production operational security
+- The single Semgrep finding is legitimate and must be addressed
+
+### Points of Analytical Divergence
+
+**Severity Interpretation of Container CVEs:**
+- **Conservative Position**: 7 critical/high CVEs represent tangible exploit risks requiring immediate resolution before production deployment
+- **Contextual Position**: Container vulnerabilities may be false positives, base image noise, or non-exploitable in typical MCP server deployment contexts (isolated containers, restricted network access, limited attack vectors)
+- **Resolution**: Requires CVE-by-CVE analysis to determine actual exploitability in production threat model
+
+**Production Readiness Timeline:**
+- **Immediate Approval with Controls**: Deploy with compensating controls (non-root user enforcement, network isolation, runtime monitoring) while remediating in parallel
+- **Staged Approval**: Block production until container vulnerabilities are resolved and rescanned
+- **Risk-Based Deployment**: Approve for low-risk, internal, or sandboxed environments while remediating for high-security contexts
+
+---
+
+## RISK ASSESSMENT AND CONSIDERATIONS
+
+### Exploitability Analysis
+
+**High-Risk Scenarios:**
+1. **Multi-tenant deployment environments** where container escape could impact other workloads
+2. **Integration with sensitive data sources** where compromised fetch operations could exfiltrate protected information
+3. **Public-facing deployments** with untrusted input sources increasing attack surface
+4. **Unpatched container runtime environments** amplifying base image vulnerabilities
+
+**Mitigated-Risk Scenarios:**
+1. **Isolated container deployments** with dedicated infrastructure and network segmentation
+2. **Read-only fetch operations** against public data sources without sensitive credential access
+3. **Internal-only use cases** with controlled access and comprehensive monitoring
+4. **Short-lived container instances** in ephemeral environments with frequent rotation
+
+### Attack Surface Contextualization
+
+The MCP server's attack surface is constrained by its focused functionality:
+- **Primary Function**: HTTP fetch operations with content processing
+- **External Dependencies**: Limited to HTTP client libraries (httpx) and parsing tools (beautifulsoup4, lxml)
+- **Input Vectors**: MCP protocol messages requesting fetch operations
+- **Output Vectors**: Processed web content returned through MCP protocol
+
+The clean DAST results indicate these attack vectors are properly validated and secured at the application level. Container-level risks represent infrastructure concerns rather than application logic flaws.
+
+### Compensating Controls Available
+
+Organizations can deploy the following controls to mitigate identified risks pending remediation:
+
+1. **Runtime Security Enforcement**: Force non-root execution through container orchestration policies (Kubernetes SecurityContext, Docker user remapping)
+2. **Network Segmentation**: Deploy in isolated network zones with egress-only internet access and no lateral movement paths
+3. **Container Sandboxing**: Utilize gVisor, Kata Containers, or similar technologies for enhanced isolation
+4. **Runtime Monitoring**: Implement container security monitoring (Falco, Sysdig) for anomaly detection
+5. **Image Scanning Integration**: Mandate CI/CD pipeline scanning with vulnerability gates before deployment
+
+---
+
+## ACTIONABLE RECOMMENDATIONS WITH IMPLEMENTATION NOTES
+
+### Immediate Actions (Before Production Deployment)
+
+**1. Remediate Root User Vulnerability [REQUIRED]**
+- **Action**: Add `USER` directive to Dockerfile specifying non-privileged user
+- **Implementation**: 
+  ```dockerfile
+  RUN addgroup -g 1001 mcpserver && adduser -D -u 1001 -G mcpserver mcpserver
+  USER mcpserver
+  ```
+- **Timeline**: 2-4 hours (includes testing)
+- **Validation**: Re-run Semgrep scan to confirm resolution
+
+**2. Resolve Container Vulnerability Reporting Discrepancy [REQUIRED]**
+- **Action**: Conduct independent Trivy scan with updated vulnerability database
+- **Implementation**: 
+  ```bash
+  trivy image --severity CRITICAL,HIGH modelcontextprotocol/server-fetch:latest
+  ```
+- **Timeline**: 1 hour
+- **Validation**: Document actual CVE count and affected packages with exploitability assessment
+
+**3. Update Container Base Image [HIGH PRIORITY]**
+- **Action**: Rebuild container using latest stable base image with security patches
+- **Implementation**: Update FROM directive to most recent Python slim image, rebuild, rescan
+- **Timeline**: 4-8 hours (includes testing and validation)
+- **Validation**: Trivy scan showing zero critical/high CVEs
+
+### Short-Term Actions (Within 30 Days)
+
+**4. Implement Automated Vulnerability Scanning**
+- **Action**: Integrate container scanning into CI/CD pipeline with vulnerability gates
+- **Tools**: Trivy, Grype, or commercial alternatives (Snyk, Aqua Security)
+- **Policy**: Block deployments with critical CVEs or unaddressed high-severity findings
+- **Timeline**: 1-2 weeks
+
+**5. Establish Security Monitoring**
+- **Action**: Deploy runtime security monitoring for production containers
+- **Metrics**: Process execution monitoring, network connection tracking, file system modifications
+- **Alerting**: Configure notifications for privilege escalation attempts, unexpected network connections, or suspicious file operations
+- **Timeline**: 2-3 weeks
+
+**6. Create Security Runbook**
+- **Action**: Document incident response procedures specific to this MCP server
+- **Contents**: Container isolation procedures, log collection protocols, escalation paths, known vulnerability mitigations
+- **Timeline**: 1 week
+
+### Ongoing Actions
+
+**7. Dependency Update Cadence**
+- **Action**: Establish monthly dependency review and update cycle
+- **Process**: Review SBOM for new CVEs, test updates in staging, deploy to production
+- **Automation**: Dependabot or Renovate for automated pull requests
+
+**8. Quarterly Security Reassessment**
+- **Action**: Re-run comprehensive SAST/DAST analysis quarterly
+- **Scope**: Full Semgrep, Trivy, Promptfoo, and fuzzing suite
+- **Documentation**: Track security posture trends over time
+
+---
+
+## DEPLOYMENT DECISION FRAMEWORK
+
+### Recommended Approval Path: CONDITIONAL PRODUCTION DEPLOYMENT
+
+**Immediate Deployment Approved For:**
+- Internal development and testing environments
+- Sandboxed proof-of-concept implementations
+- Low-risk applications with non-sensitive data
+- Environments with comprehensive compensating controls deployed
+
+**Production Deployment Approved After:**
+- Root user vulnerability remediated (Dockerfile USER directive added)
+- Container vulnerability count verified and documented with exploitability assessment
+- At minimum, critical CVEs resolved through base image updates
+
+**Full Production Certification Requires:**
+- All critical and high-severity container vulnerabilities resolved
+- Automated vulnerability scanning integrated into deployment pipeline
+- Runtime security monitoring operational
+- Security runbook completed and tested
+
+### Trust Score Breakdown (68/100)
+
+- **Application Security**: 95/100 (excellent DAST results, minimal code findings)
+- **Infrastructure Security**: 45/100 (container vulnerabilities, privilege misconfiguration)
+- **Operational Maturity**: 70/100 (good SBOM, needs continuous monitoring)
+- **Transparency**: 60/100 (reporting inconsistencies reduce confidence)
+
+**Weighted Score**: 68/100 represents conditional trust suitable for controlled deployment with remediation roadmap
+
+---
+
+## CONCLUSION
+
+The modelcontextprotocol/server-fetch MCP server demonstrates strong application-level security engineering with exceptional runtime protection against common attack vectors. The zero-finding DAST results across comprehensive security testing provide high confidence in operational security for the core functionality.
+
+However, infrastructure-level concerns—specifically the container privilege misconfiguration and reported dependency vulnerabilities—introduce exploitable risks in certain deployment scenarios. These issues are remediable within short timeframes and do not reflect fundamental architectural flaws.
+
+**Final Recommendation**: APPROVE for conditional production deployment with mandatory remediation of the root user vulnerability and verification of container CVE status. The server is suitable for immediate deployment in controlled environments with appropriate compensating controls, and can be certified for unrestricted production use following completion of recommended remediation actions within a 30-day timeline.
+
+The security foundation is solid; addressing the identified infrastructure gaps will elevate this server to high-trust status suitable for sensitive production workloads.
+
+--- End of Consensus Report ---</pre>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>🔍 Static Analysis (SAST)</h2>
+        <p><strong>SAST Findings:</strong> 1</p>
+        <p><strong>Critical/High:</strong> 7</p>
+        <p><strong>Secrets Detected:</strong> 0</p>
+        <p><strong>npm Vulnerabilities:</strong> 0</p>
+        <p><strong>pip Vulnerabilities:</strong> 0</p>
+    </div>
+
+    <div class="section">
+        <h2>⚡ Dynamic Analysis (DAST)</h2>
+        <p><strong>Verdict:</strong> APPROVED</p>
+        <p><strong>Risk Score:</strong> 0.0/10</p>
+        <p><strong>Total Findings:</strong> 0</p>
+        <p><strong>Critical:</strong> 0</p>
+        <p><strong>High:</strong> 0</p>
+    </div>
+
+    <div class="section">
+        <h2>🤖 ThinkTank Multi-Agent Analysis</h2>
+        <p><strong>Verdict:</strong> FLAGGED</p>
+        <p><strong>Confidence:</strong> 75%</p>
+        <p><strong>Agent Votes:</strong> 2 Believers, 2 Skeptics, 1 Neutrals</p>
+        <p style="margin-top: 15px;"><em>A panel of AI agents with diverse security perspectives analyzed this server. The full debate transcript is available below.</em></p>
+    </div>
+
+    <div class="section">
+        <h2>📥 Download Full Reports</h2>
+        <p>All scan reports and debate transcripts are available as compressed JSON files:</p>
+        <ul style="line-height: 2; margin-top: 15px;">
+            <li><a href="b8d41967_artifacts/sast_full_debate.json.gz" download style="color: #667eea; text-decoration: none; font-weight: bold;">🗣️ SAST ThinkTank Full Debate (JSON.GZ)</a> - Complete multi-agent discussion</li>
+            <li><a href="b8d41967_artifacts/sast_consolidated_report.json.gz" download style="color: #667eea; text-decoration: none; font-weight: bold;">🔍 SAST Consolidated Report (JSON.GZ)</a> - Semgrep, GitLeaks, npm-audit, pip-audit, Trivy</li>
+            <li><a href="b8d41967_artifacts/dast_report.json.gz" download style="color: #667eea; text-decoration: none; font-weight: bold;">⚡ DAST Report (JSON.GZ)</a> - Promptfoo & MCP-Fuzzer results</li>
+            <li><a href="b8d41967_artifacts/FINAL_REPORT.json.gz" download style="color: #667eea; text-decoration: none; font-weight: bold;">📊 Final Combined Report (JSON.GZ)</a> - All scans + verdict</li>
+        </ul>
+        <p style="margin-top: 15px; color: #666; font-size: 0.9em;">
+            <strong>Note:</strong> These are gzipped JSON files. Decompress with <code>gunzip filename.json.gz</code> or use any archive tool.
+        </p>
+    </div>
+
+    <div style="text-align: center; margin-top: 40px; color: #666;">
+        <p>Powered by <strong>ThinkTank</strong> &amp; <strong>Credence Security Registry</strong></p>
+    </div>
+</body>
+</html>
