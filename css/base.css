@@ -1,0 +1,34 @@
+/* ========================================
+   CREDENCE REGISTRY - BASE STYLES
+   Reset and foundational styles
+   ======================================== */
+
+/* CSS Reset */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Base Styles */
+body {
+    font-family: var(--font-family-base);
+    line-height: var(--line-height-base);
+    color: var(--color-text);
+    background: var(--color-background);
+}
+
+/* Container */
+.container {
+    max-width: var(--container-max-width);
+    margin: var(--spacing-xl) auto;
+    padding: 0 var(--spacing-xl);
+}
+
+/* Footer */
+footer {
+    text-align: center;
+    padding: var(--spacing-xl);
+    color: var(--color-text-light);
+    margin-top: var(--spacing-2xl);
+}

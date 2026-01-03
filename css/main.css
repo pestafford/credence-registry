@@ -1,0 +1,13 @@
+/* ========================================
+   CREDENCE REGISTRY - MAIN STYLESHEET
+   Imports all modular CSS files
+   ======================================== */
+
+/* Import design tokens */
+@import url('variables.css');
+
+/* Import base styles */
+@import url('base.css');
+
+/* Import component styles */
+@import url('components.css');

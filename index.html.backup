@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Credence Registry - Verified MCP Servers</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #f5f5f5;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 3rem 2rem;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+        
+        .tagline {
+            font-size: 1.4rem;
+            font-weight: 600;
+            margin-top: 1rem;
+            color: #fff;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+        
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+        
+        .stat-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        
+        .stat-card .number {
+            font-size: 3rem;
+            font-weight: bold;
+            color: #667eea;
+        }
+        
+        .stat-card .label {
+            font-size: 1rem;
+            color: #666;
+            margin-top: 0.5rem;
+        }
+        
+        .search-bar {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+        }
+        
+        .search-bar input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 4px;
+            font-size: 1rem;
+        }
+        
+        .search-bar input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .server-list {
+            display: grid;
+            gap: 1.5rem;
+        }
+        
+        .server-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        
+        .server-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        
+        .server-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 1rem;
+        }
+        
+        .server-title {
+            font-size: 1.5rem;
+            color: #333;
+            margin-bottom: 0.5rem;
+        }
+        
+        .server-id {
+            color: #666;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+        }
+        
+        .status-badge {
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+        
+        .status-verified {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .status-flagged {
+            background: #fff3cd;
+            color: #856404;
+        }
+        
+        .status-rejected {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        
+        .trust-score {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+        
+        .trust-bar {
+            flex: 1;
+            height: 8px;
+            background: #e0e0e0;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        
+        .trust-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #f44336 0%, #ff9800 50%, #4caf50 100%);
+            transition: width 0.3s;
+        }
+        
+        .trust-value {
+            font-weight: 600;
+            color: #667eea;
+        }
+        
+        .server-meta {
+            display: flex;
+            gap: 2rem;
+            margin: 1rem 0;
+            padding: 1rem 0;
+            border-top: 1px solid #e0e0e0;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        .meta-item {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .meta-label {
+            font-size: 0.85rem;
+            color: #666;
+            margin-bottom: 0.25rem;
+        }
+        
+        .meta-value {
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .server-actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        
+        .btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 4px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            transition: opacity 0.2s;
+        }
+        
+        .btn:hover {
+            opacity: 0.8;
+        }
+        
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+        
+        .btn-secondary {
+            background: #e0e0e0;
+            color: #333;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .empty-state h2 {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            color: #667eea;
+        }
+        
+        .empty-state p {
+            font-size: 1.1rem;
+            color: #666;
+            margin-bottom: 2rem;
+        }
+        
+        .submit-section {
+            background: white;
+            padding: 3rem 2rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-top: 3rem;
+            text-align: center;
+        }
+        
+        .submit-section h2 {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            color: #333;
+        }
+        
+        .submit-section p {
+            font-size: 1.1rem;
+            color: #666;
+            margin-bottom: 2rem;
+        }
+        
+        .submit-section .btn {
+            font-size: 1.1rem;
+            padding: 1rem 2rem;
+        }
+        
+        footer {
+            text-align: center;
+            padding: 2rem;
+            color: #666;
+            margin-top: 3rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🔐 Credence Registry</h1>
+        <p>Cryptographically Verified MCP Servers</p>
+        <div class="tagline">MCPS: Secure MCP Servers</div>
+    </div>
+    
+    <div class="container">
+        <div class="stats">
+            <div class="stat-card">
+                <div class="number" id="total-servers">0</div>
+                <div class="label">Total Servers</div>
+            </div>
+            <div class="stat-card">
+                <div class="number" id="verified-servers">0</div>
+                <div class="label">Verified Servers</div>
+            </div>
+            <div class="stat-card">
+                <div class="number">24h</div>
+                <div class="label">Avg Analysis Time</div>
+            </div>
+        </div>
+        
+        <div class="search-bar">
+            <input type="text" id="search" placeholder="Search servers by name or organization...">
+        </div>
+        
+        <div id="server-list" class="server-list">
+            <!-- Server cards will be inserted here by JavaScript -->
+        </div>
+        
+        <div class="empty-state" id="empty-state">
+            <h2>🚀 First Servers Coming Soon</h2>
+            <p>We're currently analyzing the first batch of popular MCP servers from the Smithery registry.</p>
+            <p>Expected launch: <strong>End of December 2025</strong></p>
+        </div>
+        
+        <div class="submit-section">
+            <h2>Get Your MCP Server Verified</h2>
+            <p>Submit your server for comprehensive security analysis by ThinkTank's multi-agent swarm.</p>
+            <a href="#submit" class="btn btn-primary">Submit for Analysis</a>
+        </div>
+    </div>
+    
+    <footer>
+        <p>&copy; 2025 Phil Stafford | Powered by ThinkTank Multi-Agent Analysis</p>
+        <p><a href="https://github.com/pestafford/credence-registry" style="color: #667eea; text-decoration: none;">GitHub</a> | 
+           <a href="#docs" style="color: #667eea; text-decoration: none;">Documentation</a> | 
+           <a href="#api" style="color: #667eea; text-decoration: none;">API</a></p>
+    </footer>
+    
+    <script>
+        // Load registry data
+        async function loadRegistry() {
+            try {
+                const response = await fetch('registry.json');
+                const data = await response.json();
+                
+                // Update stats
+                document.getElementById('total-servers').textContent = data.total_servers;
+                document.getElementById('verified-servers').textContent = data.verified_servers;
+                
+                // Render server list
+                const serverList = document.getElementById('server-list');
+                const emptyState = document.getElementById('empty-state');
+                
+                if (data.servers && data.servers.length > 0) {
+                    emptyState.style.display = 'none';
+                    serverList.innerHTML = data.servers.map(server => renderServerCard(server)).join('');
+                } else {
+                    serverList.style.display = 'none';
+                }
+            } catch (error) {
+                console.error('Failed to load registry:', error);
+            }
+        }
+        
+        function renderServerCard(server) {
+            const statusClass = `status-${server.verification_status}`;
+            const trustPercent = (server.trust_score * 100).toFixed(0);
+            
+            return `
+                <div class="server-card">
+                    <div class="server-header">
+                        <div>
+                            <div class="server-title">${server.metadata.description || server.server_id}</div>
+                            <div class="server-id">${server.server_id}</div>
+                        </div>
+                        <span class="status-badge ${statusClass}">
+                            ${server.verification_status.toUpperCase()}
+                        </span>
+                    </div>
+                    
+                    <div class="trust-score">
+                        <span class="meta-label">Trust Score:</span>
+                        <div class="trust-bar">
+                            <div class="trust-fill" style="width: ${trustPercent}%"></div>
+                        </div>
+                        <span class="trust-value">${trustPercent}%</span>
+                    </div>
+                    
+                    <div class="server-meta">
+                        <div class="meta-item">
+                            <span class="meta-label">Analyzed</span>
+                            <span class="meta-value">${new Date(server.last_analyzed).toLocaleDateString()}</span>
+                        </div>
+                        <div class="meta-item">
+                            <span class="meta-label">Version</span>
+                            <span class="meta-value">${server.version}</span>
+                        </div>
+                        <div class="meta-item">
+                            <span class="meta-label">Maintainer</span>
+                            <span class="meta-value">${server.metadata.maintainer}</span>
+                        </div>
+                    </div>
+                    
+                    <div class="server-actions">
+                        <a href="${server.report_url}" class="btn btn-primary">View Report</a>
+                        <a href="${server.metadata.repository_url}" class="btn btn-secondary">GitHub</a>
+                        <button class="btn btn-secondary" onclick="copyBadge('${server.badge_url}')">Copy Badge</button>
+                    </div>
+                </div>
+            `;
+        }
+        
+        function copyBadge(badgeUrl) {
+            const markdown = `[![Credence Verified](${badgeUrl})](${window.location.origin})`;
+            navigator.clipboard.writeText(markdown);
+            alert('Badge markdown copied to clipboard!');
+        }
+        
+        // Search functionality
+        document.getElementById('search').addEventListener('input', (e) => {
+            const query = e.target.value.toLowerCase();
+            const cards = document.querySelectorAll('.server-card');
+            
+            cards.forEach(card => {
+                const text = card.textContent.toLowerCase();
+                card.style.display = text.includes(query) ? 'block' : 'none';
+            });
+        });
+        
+        // Load on page load
+        loadRegistry();
+    </script>
+</body>
+</html>
