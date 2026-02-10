@@ -247,17 +247,18 @@ jobs:
       - name: Detect lockfiles
         id: lockfile
         run: |
-          cd $SCAN_DIR
           LOCKFILE_FOUND=""
           LOCKFILE_HASH=""
 
-          # Check 7 lockfile types
-          for LF in package-lock.json yarn.lock pnpm-lock.yaml Pipfile.lock poetry.lock Cargo.lock go.sum; do
-            if [ -f "$LF" ]; then
-              LOCKFILE_FOUND="$LF"
-              LOCKFILE_HASH=$(sha256sum "$LF" | awk '{print $1}')
-              break
-            fi
+          # Check scan directory first, then repo root (monorepo support)
+          for SEARCH_DIR in "$SCAN_DIR" "/tmp/target-server"; do
+            for LF in package-lock.json yarn.lock pnpm-lock.yaml Pipfile.lock poetry.lock Cargo.lock go.sum; do
+              if [ -f "$SEARCH_DIR/$LF" ]; then
+                LOCKFILE_FOUND="$LF"
+                LOCKFILE_HASH=$(sha256sum "$SEARCH_DIR/$LF" | awk '{print $1}')
+                break 2
+              fi
+            done
           done
 
           if [ -z "$LOCKFILE_FOUND" ]; then
@@ -383,8 +384,9 @@ jobs:
               core.setOutput('lockfile_name', '${{ steps.lockfile.outputs.lockfile_name }}');
 
             } catch (e) {
+              core.error(`Provenance check failed: ${e.message}`);
               core.setOutput('flags', JSON.stringify(['REPO_API_ERROR']));
-              core.setOutput('is_fork', 'unknown');
+              core.setOutput('is_fork', 'false');
               core.setOutput('lockfile_hash', '${{ steps.lockfile.outputs.lockfile_hash }}');
               core.setOutput('lockfile_name', '${{ steps.lockfile.outputs.lockfile_name }}');
             }
@@ -472,6 +474,12 @@ jobs:
           MCP_WARNINGS=$(jq '.warnings | length' /tmp/mcp-tool-analysis.json 2>/dev/null || echo 0)
           MCP_CRITICAL=$(jq '.critical_count // 0' /tmp/mcp-tool-analysis.json 2>/dev/null || echo 0)
           PROV_FLAGS='${{ steps.provenance.outputs.flags }}'
+          IS_FORK='${{ steps.provenance.outputs.is_fork }}'
+          if [ "$IS_FORK" = "true" ]; then
+            IS_FORK_JSON="true"
+          else
+            IS_FORK_JSON="false"
+          fi
 
           cat > /tmp/scan-summary.json <<EOF
           {
@@ -481,7 +489,7 @@ jobs:
             "commit_sha": "${{ env.TARGET_COMMIT }}",
             "source_hash": "${{ env.SOURCE_HASH }}",
             "source_hash_method": "merkle-tree-sha256",
-            "is_fork": ${{ steps.provenance.outputs.is_fork }},
+            "is_fork": $IS_FORK_JSON,
             "provenance_flags": $PROV_FLAGS,
             "lockfile_name": "${{ steps.provenance.outputs.lockfile_name }}",
             "lockfile_hash": "${{ steps.provenance.outputs.lockfile_hash }}",
