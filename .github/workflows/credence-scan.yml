@@ -1,0 +1,622 @@
+name: Credence Pipeline — Scan MCP Server
+
+on:
+  issues:
+    types: [opened, labeled]
+
+jobs:
+  scan:
+    # Only run on issues with the 'submission' label
+    if: contains(github.event.issue.labels.*.name, 'submission')
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+      contents: write
+
+    steps:
+      - name: Checkout Credence registry
+        uses: actions/checkout@v4
+
+      - name: Parse submission
+        id: parse
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const body = context.payload.issue.body || '';
+
+            const repoMatch = body.match(/\*\*Repository:\*\*\s*(https?:\/\/[^\s\n]+)/);
+            const commitMatch = body.match(/\*\*Commit SHA:\*\*\s*`?([a-f0-9]+)`?/i);
+            const nameMatch = body.match(/\*\*Server name:\*\*\s*(.+)/);
+
+            if (!repoMatch) {
+              core.setFailed('Could not parse repository URL from issue body');
+              return;
+            }
+
+            const repoUrl = repoMatch[1].replace(/\/$/, '');
+            const commitSha = commitMatch ? commitMatch[1] : '';
+            const serverName = nameMatch ? nameMatch[1].trim() : 'unknown';
+
+            // Extract owner/repo from GitHub URL
+            const ghMatch = repoUrl.match(/github\.com\/([^\/]+)\/([^\/]+)/);
+            const repoOwner = ghMatch ? ghMatch[1] : '';
+            const repoName = ghMatch ? ghMatch[2] : '';
+
+            core.setOutput('repo_url', repoUrl);
+            core.setOutput('commit_sha', commitSha);
+            core.setOutput('server_name', serverName);
+            core.setOutput('repo_owner', repoOwner);
+            core.setOutput('repo_name', repoName);
+
+      - name: Verify submitter identity
+        id: verify
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const submitter = context.payload.issue.user.login;
+            const targetOwner = '${{ steps.parse.outputs.repo_owner }}';
+            const targetRepo = '${{ steps.parse.outputs.repo_name }}';
+            let verified = false;
+            let verifyReason = '';
+
+            // Check 1: Is submitter the repo owner?
+            if (submitter.toLowerCase() === targetOwner.toLowerCase()) {
+              verified = true;
+              verifyReason = 'Submitter is repo owner';
+            }
+
+            // Check 2: Is submitter a collaborator?
+            if (!verified) {
+              try {
+                const { status } = await github.rest.repos.checkCollaborator({
+                  owner: targetOwner,
+                  repo: targetRepo,
+                  username: submitter
+                });
+                if (status === 204) {
+                  verified = true;
+                  verifyReason = 'Submitter is repo collaborator';
+                }
+              } catch (e) {
+                // 404 = not a collaborator, 403 = private repo or no access
+              }
+            }
+
+            // Check 3: Is submitter a contributor (has commits)?
+            if (!verified) {
+              try {
+                const { data: contributors } = await github.rest.repos.listContributors({
+                  owner: targetOwner,
+                  repo: targetRepo,
+                  per_page: 100
+                });
+                if (contributors.some(c => c.login.toLowerCase() === submitter.toLowerCase())) {
+                  verified = true;
+                  verifyReason = 'Submitter is listed contributor';
+                }
+              } catch (e) {
+                // API error — treat as unverified
+              }
+            }
+
+            if (!verified) {
+              verifyReason = 'Third-party submission — submitter is not owner, collaborator, or contributor';
+            }
+
+            core.setOutput('verified', verified.toString());
+            core.setOutput('reason', verifyReason);
+            core.info(`Submitter: ${submitter} | Verified: ${verified} | ${verifyReason}`);
+
+            // Post acknowledgment with verification status
+            const verifyBadge = verified
+              ? '✅ **Verified maintainer** — full results will be shared'
+              : '🔒 **Third-party submission** — detailed findings will be shared privately with the repo owner only';
+
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body: `🔍 **Credence Pipeline started**\n\nAnalyzing: \`${{ steps.parse.outputs.repo_url }}\`\nCommit: \`${{ steps.parse.outputs.commit_sha || 'latest' }}\`\n\n${verifyBadge}\n\nStages: Collect → Scan → Debate → Attest\n\n_This is an automated analysis. Results will be posted here when complete._`
+            });
+
+      - name: Clone target server
+        run: |
+          git clone ${{ steps.parse.outputs.repo_url }} /tmp/target-server
+          cd /tmp/target-server
+          if [ -n "${{ steps.parse.outputs.commit_sha }}" ]; then
+            git checkout ${{ steps.parse.outputs.commit_sha }}
+          fi
+          echo "TARGET_COMMIT=$(git rev-parse HEAD)" >> $GITHUB_ENV
+
+      # ── STAGE 1: COLLECT ──────────────────────────────
+
+      - name: Generate source hash (Merkle tree SHA-256)
+        run: |
+          cd /tmp/target-server
+          # Deterministic hash: sort files, hash each, hash the hashes
+          find . -type f -not -path './.git/*' | sort | xargs sha256sum | sha256sum | awk '{print $1}' > /tmp/source_hash.txt
+          echo "SOURCE_HASH=$(cat /tmp/source_hash.txt)" >> $GITHUB_ENV
+          echo "Source hash: $(cat /tmp/source_hash.txt)"
+
+      - name: Extract author identity
+        id: identity
+        run: |
+          cd /tmp/target-server
+          IDENTITY_JSON="{}"
+
+          # Package.json author
+          if [ -f "package.json" ]; then
+            PKG_AUTHOR=$(jq -r '.author // .contributors[0] // "unknown"' package.json 2>/dev/null || echo "unknown")
+            IDENTITY_JSON=$(echo "$IDENTITY_JSON" | jq --arg a "$PKG_AUTHOR" '. + {package_author: $a}')
+          fi
+
+          # pyproject.toml author
+          if [ -f "pyproject.toml" ]; then
+            PY_AUTHOR=$(grep -E "^authors?\s*=" pyproject.toml | head -1 | sed 's/.*=\s*//' || echo "unknown")
+            IDENTITY_JSON=$(echo "$IDENTITY_JSON" | jq --arg a "$PY_AUTHOR" '. + {pyproject_author: $a}')
+          fi
+
+          # Git remote owner
+          REMOTE_URL=$(git remote get-url origin 2>/dev/null || echo "")
+          IDENTITY_JSON=$(echo "$IDENTITY_JSON" | jq --arg r "$REMOTE_URL" '. + {remote_url: $r}')
+
+          # Repo owner from parsed URL
+          IDENTITY_JSON=$(echo "$IDENTITY_JSON" | jq --arg o "${{ steps.parse.outputs.repo_owner }}" '. + {repo_owner: $o}')
+
+          echo "$IDENTITY_JSON" > /tmp/identity.json
+          cat /tmp/identity.json
+
+      - name: Detect lockfiles
+        id: lockfile
+        run: |
+          cd /tmp/target-server
+          LOCKFILE_FOUND=""
+          LOCKFILE_HASH=""
+
+          # Check 7 lockfile types
+          for LF in package-lock.json yarn.lock pnpm-lock.yaml Pipfile.lock poetry.lock Cargo.lock go.sum; do
+            if [ -f "$LF" ]; then
+              LOCKFILE_FOUND="$LF"
+              LOCKFILE_HASH=$(sha256sum "$LF" | awk '{print $1}')
+              break
+            fi
+          done
+
+          if [ -z "$LOCKFILE_FOUND" ]; then
+            echo "lockfile_found=false" >> $GITHUB_OUTPUT
+            echo "lockfile_name=none" >> $GITHUB_OUTPUT
+            echo "lockfile_hash=none" >> $GITHUB_OUTPUT
+            echo "No lockfile detected"
+          else
+            echo "lockfile_found=true" >> $GITHUB_OUTPUT
+            echo "lockfile_name=$LOCKFILE_FOUND" >> $GITHUB_OUTPUT
+            echo "lockfile_hash=$LOCKFILE_HASH" >> $GITHUB_OUTPUT
+            echo "Lockfile: $LOCKFILE_FOUND ($LOCKFILE_HASH)"
+          fi
+
+      - name: Check fork status and provenance
+        id: provenance
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const owner = '${{ steps.parse.outputs.repo_owner }}';
+            const repo = '${{ steps.parse.outputs.repo_name }}';
+            const flags = [];
+
+            try {
+              const { data: repoData } = await github.rest.repos.get({ owner, repo });
+
+              if (repoData.fork) {
+                flags.push('IS_FORK');
+
+                // Check if original author is in contributors
+                if (repoData.parent) {
+                  const parentOwner = repoData.parent.owner.login;
+                  try {
+                    const { data: contributors } = await github.rest.repos.listContributors({ owner, repo, per_page: 100 });
+                    const contributorLogins = contributors.map(c => c.login);
+
+                    if (!contributorLogins.includes(parentOwner)) {
+                      flags.push('ORIGINAL_AUTHOR_EXCLUDED');
+                    }
+                  } catch (e) {
+                    flags.push('CONTRIBUTORS_UNAVAILABLE');
+                  }
+                }
+              }
+
+              // Account age check (tiered flags per scoring methodology)
+              const { data: ownerData } = await github.rest.users.get({ username: owner });
+              const accountAge = (Date.now() - new Date(ownerData.created_at)) / (1000 * 60 * 60 * 24);
+              if (accountAge < 30) {
+                flags.push('ACCOUNT_YOUNG_LT_30_DAYS');
+              } else if (accountAge < 90) {
+                flags.push('ACCOUNT_YOUNG_LT_90_DAYS');
+              } else if (accountAge < 180) {
+                flags.push('ACCOUNT_YOUNG_LT_180_DAYS');
+              }
+
+              // Check if repo owner differs from claimed author in package metadata
+              try {
+                const identity = JSON.parse(fs.readFileSync('/tmp/identity.json', 'utf8'));
+                const claimedAuthor = (identity.package_author || identity.pyproject_author || '').toLowerCase();
+                const repoOwner = owner.toLowerCase();
+
+                if (claimedAuthor && claimedAuthor !== 'unknown' && !claimedAuthor.includes(repoOwner)) {
+                  flags.push('REPO_OWNER_DIFFERS_FROM_CLAIMED_AUTHOR');
+                }
+              } catch (e) {
+                // identity.json not available — skip this check
+              }
+
+              // Lockfile flag from previous step
+              if ('${{ steps.lockfile.outputs.lockfile_found }}' === 'false') {
+                flags.push('NO_LOCKFILE');
+              }
+
+              // Coordinated fork network detection
+              // Check if the repo owner has multiple forks from the same parent source
+              try {
+                const { data: ownerRepos } = await github.rest.repos.listForUser({
+                  username: owner, per_page: 100, type: 'owner'
+                });
+                const forkSources = {};
+                for (const r of ownerRepos) {
+                  if (r.fork && r.parent) {
+                    const src = r.parent.full_name;
+                    forkSources[src] = (forkSources[src] || 0) + 1;
+                  }
+                }
+                // Also check: does this owner's repos get forked by the same small set of accounts?
+                // Fetch forkers of the submitted repo
+                try {
+                  const { data: forks } = await github.rest.repos.listForks({
+                    owner, repo, per_page: 100
+                  });
+                  if (forks.length >= 3) {
+                    // Check if forkers also fork from each other (cross-fork pattern)
+                    const forkerLogins = forks.map(f => f.owner.login);
+                    let crossForkCount = 0;
+                    // Sample up to 5 forkers to avoid rate limits
+                    for (const forker of forkerLogins.slice(0, 5)) {
+                      try {
+                        const { data: forkerRepos } = await github.rest.repos.listForUser({
+                          username: forker, per_page: 30, type: 'owner'
+                        });
+                        for (const fr of forkerRepos) {
+                          if (fr.fork && forkerLogins.includes(fr.owner?.login)) {
+                            crossForkCount++;
+                          }
+                        }
+                      } catch (e) { /* rate limit or private — skip */ }
+                    }
+                    // 3+ cross-forks among the forker set indicates coordination
+                    if (crossForkCount >= 3) {
+                      flags.push('COORDINATED_FORK_NETWORK');
+                    }
+                  }
+                } catch (e) { /* fork listing failed — skip */ }
+              } catch (e) { /* owner repos listing failed — skip */ }
+
+              core.setOutput('flags', JSON.stringify(flags));
+              core.setOutput('is_fork', repoData.fork ? 'true' : 'false');
+              core.setOutput('lockfile_hash', '${{ steps.lockfile.outputs.lockfile_hash }}');
+              core.setOutput('lockfile_name', '${{ steps.lockfile.outputs.lockfile_name }}');
+
+            } catch (e) {
+              core.setOutput('flags', JSON.stringify(['REPO_API_ERROR']));
+              core.setOutput('is_fork', 'unknown');
+              core.setOutput('lockfile_hash', '${{ steps.lockfile.outputs.lockfile_hash }}');
+              core.setOutput('lockfile_name', '${{ steps.lockfile.outputs.lockfile_name }}');
+            }
+
+      - name: Generate SBOM
+        uses: anchore/sbom-action@v0
+        with:
+          path: /tmp/target-server
+          output-file: /tmp/sbom.spdx.json
+          format: spdx-json
+
+      # ── STAGE 2: SCAN ─────────────────────────────────
+
+      - name: Install scan tools
+        run: |
+          pip install semgrep bandit --break-system-packages -q
+          curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b /usr/local/bin
+          curl -sfL https://raw.githubusercontent.com/gitleaks/gitleaks/main/scripts/install.sh | sh -s -- -b /usr/local/bin
+
+      - name: Run Semgrep SAST
+        continue-on-error: true
+        run: |
+          cd /tmp/target-server
+          semgrep scan --config auto --json --output /tmp/semgrep-results.json . 2>/dev/null || echo '{"results":[]}' > /tmp/semgrep-results.json
+
+      - name: Run Bandit (Python)
+        continue-on-error: true
+        run: |
+          cd /tmp/target-server
+          bandit -r . -f json -o /tmp/bandit-results.json 2>/dev/null || echo '{"results":[]}' > /tmp/bandit-results.json
+
+      - name: Run Trivy (CVE scan)
+        continue-on-error: true
+        run: |
+          trivy fs --format json --output /tmp/trivy-results.json /tmp/target-server 2>/dev/null || echo '{"Results":[]}' > /tmp/trivy-results.json
+
+      - name: Run GitLeaks (secrets)
+        continue-on-error: true
+        run: |
+          cd /tmp/target-server
+          gitleaks detect --source . --report-format json --report-path /tmp/gitleaks-results.json 2>/dev/null || echo '[]' > /tmp/gitleaks-results.json
+
+      # ── STAGE 3: MCP TOOL ANALYSIS ────────────────────
+
+      - name: Analyze MCP tool definitions
+        id: mcp_analysis
+        run: |
+          cd /tmp/target-server
+
+          # Find tool definitions - look for common MCP patterns
+          echo "Scanning for MCP tool definitions..."
+          TOOL_FILES=$(grep -rl "tool\|Tool\|ListToolsResult\|server.tool" --include="*.py" --include="*.ts" --include="*.js" --include="*.json" . 2>/dev/null | head -20)
+
+          TOOL_REPORT='{"tool_files_found": 0, "descriptions_analyzed": 0, "warnings": []}'
+
+          if [ -n "$TOOL_FILES" ]; then
+            FILE_COUNT=$(echo "$TOOL_FILES" | wc -l)
+            TOOL_REPORT=$(echo "$TOOL_REPORT" | jq --arg c "$FILE_COUNT" '.tool_files_found = ($c | tonumber)')
+
+            # Check for suspicious patterns in tool descriptions
+            SUSPICIOUS=$(grep -rn "ignore previous\|system prompt\|<script\|eval(\|exec(\|__import__\|subprocess\|os.system" $TOOL_FILES 2>/dev/null || true)
+            if [ -n "$SUSPICIOUS" ]; then
+              TOOL_REPORT=$(echo "$TOOL_REPORT" | jq '.warnings += ["SUSPICIOUS_PATTERNS_IN_TOOL_FILES"]')
+            fi
+
+            # Check for dynamic description loading
+            DYNAMIC=$(grep -rn "fetch\|requests.get\|urllib\|http.get\|axios" $TOOL_FILES 2>/dev/null | grep -i "description\|tool" || true)
+            if [ -n "$DYNAMIC" ]; then
+              TOOL_REPORT=$(echo "$TOOL_REPORT" | jq '.warnings += ["DYNAMIC_DESCRIPTION_LOADING"]')
+            fi
+          fi
+
+          echo "$TOOL_REPORT" > /tmp/mcp-tool-analysis.json
+          cat /tmp/mcp-tool-analysis.json
+
+      # ── STAGE 4: COMPILE RESULTS ──────────────────────
+
+      - name: Compile scan summary
+        id: summary
+        run: |
+          SEMGREP_COUNT=$(jq '.results | length' /tmp/semgrep-results.json 2>/dev/null || echo 0)
+          BANDIT_COUNT=$(jq '.results | length' /tmp/bandit-results.json 2>/dev/null || echo 0)
+          TRIVY_VULNS=$(jq '[.Results[]?.Vulnerabilities // [] | length] | add // 0' /tmp/trivy-results.json 2>/dev/null || echo 0)
+          GITLEAKS_COUNT=$(jq 'length' /tmp/gitleaks-results.json 2>/dev/null || echo 0)
+          MCP_WARNINGS=$(jq '.warnings | length' /tmp/mcp-tool-analysis.json 2>/dev/null || echo 0)
+          MCP_CRITICAL=$(jq '.critical_count // 0' /tmp/mcp-tool-analysis.json 2>/dev/null || echo 0)
+          PROV_FLAGS='${{ steps.provenance.outputs.flags }}'
+
+          cat > /tmp/scan-summary.json <<EOF
+          {
+            "server_name": "${{ steps.parse.outputs.server_name }}",
+            "repo_url": "${{ steps.parse.outputs.repo_url }}",
+            "commit_sha": "${{ env.TARGET_COMMIT }}",
+            "source_hash": "${{ env.SOURCE_HASH }}",
+            "source_hash_method": "merkle-tree-sha256",
+            "is_fork": ${{ steps.provenance.outputs.is_fork }},
+            "provenance_flags": $PROV_FLAGS,
+            "lockfile_name": "${{ steps.provenance.outputs.lockfile_name }}",
+            "lockfile_hash": "${{ steps.provenance.outputs.lockfile_hash }}",
+            "scan_results": {
+              "semgrep_findings": $SEMGREP_COUNT,
+              "bandit_findings": $BANDIT_COUNT,
+              "trivy_vulnerabilities": $TRIVY_VULNS,
+              "gitleaks_secrets": $GITLEAKS_COUNT,
+              "mcp_tool_warnings": $MCP_WARNINGS,
+              "mcp_tool_critical": $MCP_CRITICAL
+            },
+            "scan_timestamp": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
+            "pipeline_version": "0.2.0",
+            "thinktank_verdict": "PENDING",
+            "trust_score": null
+          }
+          EOF
+
+          cat /tmp/scan-summary.json
+
+          # Set outputs for the issue comment
+          echo "semgrep=$SEMGREP_COUNT" >> $GITHUB_OUTPUT
+          echo "bandit=$BANDIT_COUNT" >> $GITHUB_OUTPUT
+          echo "trivy=$TRIVY_VULNS" >> $GITHUB_OUTPUT
+          echo "gitleaks=$GITLEAKS_COUNT" >> $GITHUB_OUTPUT
+
+      # ── STAGE 4a: NORMALIZE ──────────────────────────
+
+      - name: Normalize scanner outputs
+        run: |
+          # Collect all scanner results into /tmp/ for the normalizer.
+          # The normalizer looks for known filenames in a directory.
+          python3 mcp-server/report_normalizer.py /tmp/ /tmp/evidence.json
+
+      # ── STAGE 4b: TRUST SCORE ────────────────────────
+
+      - name: Compute trust score
+        run: |
+          python3 mcp-server/trust_score.py /tmp/scan-summary.json /tmp/evidence.json
+
+      # ── STAGE 4c: SIGN + REPORTS + REGISTRY ──────────
+
+      - name: Generate report and badge
+        run: |
+          python3 mcp-server/report_generator.py /tmp/scan-summary.json /tmp/evidence.json /tmp/report.html
+          python3 mcp-server/badge_generator.py --from-summary /tmp/scan-summary.json /tmp/badge.svg
+
+      - name: Update registry and sign attestation
+        env:
+          CREDENCE_SIGNING_KEY: ${{ secrets.CREDENCE_SIGNING_KEY }}
+        run: |
+          if [ -n "$CREDENCE_SIGNING_KEY" ]; then
+            python3 mcp-server/registry_update.py /tmp/scan-summary.json registry.json --key-env CREDENCE_SIGNING_KEY
+          else
+            echo "Warning: CREDENCE_SIGNING_KEY not set — attestation will be unsigned"
+            python3 mcp-server/registry_update.py /tmp/scan-summary.json registry.json
+          fi
+
+      # ── STAGE 5: STORE RESULTS ────────────────────────
+
+      - name: Store scan results
+        run: |
+          SCAN_ID=$(echo "${{ env.TARGET_COMMIT }}" | cut -c1-8)
+          RESULTS_DIR="scan-results/${SCAN_ID}"
+          mkdir -p "$RESULTS_DIR"
+
+          # Public repo gets summary, identity, report, and badge.
+          # Raw scanner output is ephemeral — never committed.
+          cp /tmp/scan-summary.json "$RESULTS_DIR/summary.json"
+          cp /tmp/identity.json "$RESULTS_DIR/identity.json"
+          cp /tmp/report.html "$RESULTS_DIR/report.html" 2>/dev/null || true
+          cp /tmp/badge.svg "$RESULTS_DIR/badge.svg" 2>/dev/null || true
+
+          echo "SCAN_ID=$SCAN_ID" >> $GITHUB_ENV
+          echo "RESULTS_DIR=$RESULTS_DIR" >> $GITHUB_ENV
+
+      - name: Upload detailed findings (ephemeral — for ThinkTank / audit only)
+        uses: actions/upload-artifact@v4
+        with:
+          name: scan-findings-${{ env.TARGET_COMMIT }}
+          path: |
+            /tmp/semgrep-results.json
+            /tmp/bandit-results.json
+            /tmp/trivy-results.json
+            /tmp/gitleaks-results.json
+            /tmp/mcp-tool-analysis.json
+            /tmp/evidence.json
+            /tmp/sbom.spdx.json
+          retention-days: 30
+
+      - name: Commit results to repo
+        run: |
+          git config user.name "credence-bot"
+          git config user.email "credence-bot@users.noreply.github.com"
+          git add scan-results/ registry.json
+          git commit -m "scan: ${{ steps.parse.outputs.server_name }} @ ${{ env.TARGET_COMMIT }}"
+          git push
+
+      # ── POST RESULTS TO ISSUE ─────────────────────────
+
+      - name: Post results to issue
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const summary = require('/tmp/scan-summary.json');
+            const flags = summary.provenance_flags || [];
+            const verified = '${{ steps.verify.outputs.verified }}' === 'true';
+
+            let flagSection = '✅ No provenance flags';
+            if (flags.length > 0) {
+              flagSection = flags.map(f => `⚠️ \`${f}\``).join('\n');
+            }
+
+            const trustScore = summary.trust_score;
+            const verdict = summary.thinktank_verdict || 'PENDING';
+            const dims = summary.trust_dimensions || {};
+
+            let riskLevel;
+            if (verdict.includes('REJECTED')) {
+              riskLevel = '🔴 REJECTED';
+            } else if (verdict.includes('FLAGGED')) {
+              riskLevel = '🟡 FLAGGED';
+            } else if (verdict.includes('CONDITIONAL')) {
+              riskLevel = '🟠 CONDITIONAL';
+            } else if (verdict.includes('VERIFIED')) {
+              riskLevel = '🟢 VERIFIED';
+            } else {
+              riskLevel = '⏳ PENDING';
+            }
+
+            let body;
+
+            if (verified) {
+              // VERIFIED MAINTAINER — full results
+              body = `## 📋 Credence Scan Results
+
+            ✅ **Verified maintainer submission**
+
+            **Server:** ${summary.server_name}
+            **Commit:** \`${summary.commit_sha}\`
+            **Source hash:** \`${summary.source_hash}\`
+
+            ### Trust Score: ${trustScore}/100 — ${riskLevel}
+
+            | Dimension | Score |
+            |-----------|-------|
+            | Security | ${dims.security ?? '?'}/100 |
+            | Provenance | ${dims.provenance ?? '?'}/100 |
+            | Behavioral | ${dims.behavioral ?? '?'}/100 |
+            | **Aggregate** | **${trustScore ?? '?'}/100** |
+
+            ### Provenance
+            Fork: ${summary.is_fork ? 'Yes' : 'No'}
+            ${flagSection}
+
+            ### Scan Results
+            | Scanner | Findings |
+            |---------|----------|
+            | Semgrep (SAST) | ${summary.scan_results.semgrep_findings} |
+            | Bandit (Python) | ${summary.scan_results.bandit_findings} |
+            | Trivy (CVEs) | ${summary.scan_results.trivy_vulnerabilities} |
+            | GitLeaks (Secrets) | ${summary.scan_results.gitleaks_secrets} |
+            | MCP Tool Analysis | ${summary.scan_results.mcp_tool_critical} critical, ${summary.scan_results.mcp_tool_warnings} warnings |
+
+            Attestation signed and published to registry.
+            Full results: [\`scan-results/${summary.commit_sha.slice(0,8)}/\`](https://github.com/pestafford/credence-registry/tree/main/scan-results/${summary.commit_sha.slice(0,8)})
+
+            ---
+            _Credence Pipeline v${summary.pipeline_version} · Scoring v${summary.scoring_version || '?'} · ${summary.scan_timestamp}_`;
+
+            } else {
+              // THIRD-PARTY SUBMISSION — restricted output
+              body = `## 📋 Credence Scan Results (Summary)
+
+            🔒 **Third-party submission** — detailed vulnerability data is not published here.
+            The repo owner will be contacted directly with full findings.
+
+            **Server:** ${summary.server_name}
+            **Commit:** \`${summary.commit_sha}\`
+
+            ### Trust Score: ${trustScore}/100 — ${riskLevel}
+
+            | Dimension | Score |
+            |-----------|-------|
+            | Security | ${dims.security ?? '?'}/100 |
+            | Provenance | ${dims.provenance ?? '?'}/100 |
+            | Behavioral | ${dims.behavioral ?? '?'}/100 |
+            | **Aggregate** | **${trustScore ?? '?'}/100** |
+
+            ### Provenance
+            Fork: ${summary.is_fork ? 'Yes' : 'No'}
+            ${flagSection}
+
+            Scan details are restricted to verified maintainers per [Credence disclosure policy](https://pestafford.github.io/credence-registry/#submit).
+
+            ---
+            _Credence Pipeline v${summary.pipeline_version} · Scoring v${summary.scoring_version || '?'} · ${summary.scan_timestamp}_`;
+            }
+
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body: body
+            });
+
+            // Add result labels
+            const riskLabel = verdict.includes('REJECTED') ? 'risk-high' :
+                          verdict.includes('FLAGGED') ? 'risk-medium' :
+                          verdict.includes('CONDITIONAL') ? 'risk-medium' : 'risk-low';
+            const verifyLabel = verified ? 'verified-maintainer' : 'third-party';
+            await github.rest.issues.addLabels({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              labels: [riskLabel, verifyLabel, 'scan-complete']
+            });

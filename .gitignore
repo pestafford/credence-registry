@@ -1,0 +1,58 @@
+# ── PRIVATE KEYS — NEVER COMMIT ─────────────────
+# The ed25519 signing key. Goes in GitHub Secrets only.
+credence_key
+*.pem
+*.key
+
+# ── Python ──────────────────────────────────────
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+*.whl
+.eggs/
+
+# ── Virtual environments ────────────────────────
+.venv/
+venv/
+env/
+ENV/
+
+# ── IDE / Editor ────────────────────────────────
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.project
+.settings/
+
+# ── OS junk ─────────────────────────────────────
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# ── Pipeline outputs (generated at runtime) ─────
+# These are created by the tools during scans.
+# Scan results ARE committed (by the Action), but
+# local test outputs should not be.
+*.badge.svg
+/tmp/
+
+# ── Local dev/test artifacts ────────────────────
+test-*/
+/evidence.json
+/tool-analysis.json
+/scan-summary.json
+*.tar.gz
+
+# ── Dev docs (not deployed) ────────────────────
+HANDOFF.md
+DEPLOY.md
+THINKTANK_INTERFACE.md
+credence-docs/
+/credence-scan.yml

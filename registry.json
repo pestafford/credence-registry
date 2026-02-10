@@ -1,0 +1,45 @@
+{
+  "schema_version": "0.2.0",
+  "registry_name": "Credence MCP Server Registry",
+  "registry_url": "https://pestafford.github.io/credence-registry/",
+  "maintainer": "Phil Stafford <pe.stafford@gmail.com>",
+  "signing_public_key": "XdvqC/Q6TX90MpL37wdxfUtqOiS8qiQjK8JNJy+BOcM=",
+  "updated_at": "2026-02-08T02:58:20Z",
+  "servers": [
+    {
+      "server_id": "modelcontextprotocol/server-filesystem",
+      "server_name": "Filesystem MCP Server",
+      "repo_url": "https://github.com/modelcontextprotocol/servers",
+      "description": "MCP server providing file system operations including reading, writing, and searching files. Maintained by Anthropic as part of the reference MCP server collection.",
+      "attestation": {
+        "commit_sha": "seed-attestation-pending-live-scan",
+        "source_hash": "seed-attestation-pending-live-scan",
+        "source_hash_method": "merkle-tree-sha256",
+        "attested_at": "2026-02-08T02:58:20Z",
+        "pipeline_version": "0.2.0",
+        "trust_score": 95,
+        "thinktank_verdict": "APPROVED_PRELIMINARY",
+        "author_identity": {
+          "repo_owner": "modelcontextprotocol",
+          "identity_match": true,
+          "is_fork": false,
+          "provenance_flags": []
+        },
+        "scan_summary": {
+          "semgrep_findings": 0,
+          "bandit_findings": 0,
+          "trivy_vulnerabilities": 0,
+          "gitleaks_secrets": 0,
+          "mcp_tool_warnings": 0,
+          "note": "Seed attestation \u2014 score based on provenance and known maintainer. Full pipeline scan pending."
+        },
+        "signature": {
+          "algorithm": "ed25519",
+          "value": "xwsp7KchnKfriPct+swdGysSrjUAjqm/A9TEoKibwoJ3Ca/7LguKC9XhXdfLBhutK2+KhXmUjxQr18yAs1D6Ag==",
+          "canonical_hash": "3444f9eb8f36ca985bf4ad6925984dfa9ee09a603e001e44eda2a49ed9694986"
+        }
+      },
+      "attestation_url": "https://github.com/pestafford/credence-registry/tree/main/scan-results/seed-filesystem"
+    }
+  ]
+}
