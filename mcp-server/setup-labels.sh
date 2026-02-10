@@ -15,6 +15,7 @@ declare -A LABELS=(
   ["third-party"]="808080:Submitter is not affiliated with the repo"
   ["attestation-published"]="0075ca:Signed attestation added to registry"
   ["disclosure-pending"]="fbca04:Findings under remediation window"
+  ["pending-review"]="c2e0c6:Submission awaiting maintainer review before scanning"
 )
 
 echo "Creating labels in $REPO..."
