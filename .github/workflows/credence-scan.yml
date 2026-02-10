@@ -306,7 +306,7 @@ jobs:
               }
 
               // Account age check (tiered flags per scoring methodology)
-              const { data: ownerData } = await github.rest.users.get({ username: owner });
+              const { data: ownerData } = await github.rest.users.getByUsername({ username: owner });
               const accountAge = (Date.now() - new Date(ownerData.created_at)) / (1000 * 60 * 60 * 24);
               if (accountAge < 30) {
                 flags.push('ACCOUNT_YOUNG_LT_30_DAYS');
