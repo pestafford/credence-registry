@@ -563,11 +563,12 @@
             .hero .subtitle { font-size: 1rem; }
             .threat-grid { grid-template-columns: 1fr; }
             .cta-links { flex-direction: column; align-items: center; }
-            .nav-right { gap: 12px; }
-            .nav-link { font-size: 0.75rem; }
+            .nav-right { gap: 8px; }
+            .nav-link { font-size: 0.7rem; }
+            .nav-title { display: none; }
             .form-row { grid-template-columns: 1fr; }
             .dashboard-stats { flex-wrap: wrap; }
-            .table-wrapper { display: none; }
+            .table-wrapper.is-loaded { display: none !important; }
             .server-card-mobile { display: block; }
         }
     </style>
@@ -1072,7 +1073,9 @@ $ credence check modelcontextprotocol/server-github
                 });
 
                 tbody.innerHTML = rowsHtml;
-                document.getElementById('dashboard-table').style.display = 'block';
+                var tableEl = document.getElementById('dashboard-table');
+                tableEl.style.display = 'block';
+                tableEl.classList.add('is-loaded');
                 mobileEl.innerHTML = mobileHtml;
             })
             .catch(function() {
