@@ -527,8 +527,23 @@ jobs:
       # ── STAGE 4b: TRUST SCORE ────────────────────────
 
       - name: Compute trust score
+        id: score
         run: |
           python3 mcp-server/trust_score.py /tmp/scan-summary.json /tmp/evidence.json
+
+          # Extract verdict for disclosure gating
+          VERDICT=$(jq -r '.thinktank_verdict' /tmp/scan-summary.json)
+          TRUST_SCORE=$(jq -r '.trust_score' /tmp/scan-summary.json)
+          echo "verdict=$VERDICT" >> $GITHUB_OUTPUT
+          echo "trust_score=$TRUST_SCORE" >> $GITHUB_OUTPUT
+
+          # FLAGGED or REJECTED → responsible disclosure window
+          if echo "$VERDICT" | grep -qE "FLAGGED|REJECTED"; then
+            echo "publish=false" >> $GITHUB_OUTPUT
+            echo "Disclosure hold: $VERDICT ($TRUST_SCORE/100) — results will not be published"
+          else
+            echo "publish=true" >> $GITHUB_OUTPUT
+          fi
 
       # ── STAGE 4c: SIGN + REPORTS + REGISTRY ──────────
 
@@ -538,6 +553,7 @@ jobs:
           python3 mcp-server/badge_generator.py --from-summary /tmp/scan-summary.json /tmp/badge.svg
 
       - name: Update registry and sign attestation
+        if: steps.score.outputs.publish == 'true'
         env:
           CREDENCE_SIGNING_KEY: ${{ secrets.CREDENCE_SIGNING_KEY }}
         run: |
@@ -551,16 +567,15 @@ jobs:
       # ── STAGE 5: STORE RESULTS ────────────────────────
 
       - name: Store scan results
+        if: steps.score.outputs.publish == 'true'
         run: |
           SCAN_ID=$(echo "${{ env.TARGET_COMMIT }}" | cut -c1-8)
           RESULTS_DIR="scan-results/${SCAN_ID}"
           mkdir -p "$RESULTS_DIR"
 
-          # Public repo gets summary, identity, report, and badge.
-          # Raw scanner output is ephemeral — never committed.
+          # Public: summary (aggregate scores/counts only) + badge.
+          # Detailed findings are NEVER committed.
           cp /tmp/scan-summary.json "$RESULTS_DIR/summary.json"
-          cp /tmp/identity.json "$RESULTS_DIR/identity.json"
-          cp /tmp/report.html "$RESULTS_DIR/report.html" 2>/dev/null || true
           cp /tmp/badge.svg "$RESULTS_DIR/badge.svg" 2>/dev/null || true
 
           echo "SCAN_ID=$SCAN_ID" >> $GITHUB_ENV
@@ -581,6 +596,7 @@ jobs:
           retention-days: 30
 
       - name: Commit results to repo
+        if: steps.score.outputs.publish == 'true'
         run: |
           git config user.name "credence-bot"
           git config user.email "credence-bot@users.noreply.github.com"
@@ -597,11 +613,7 @@ jobs:
             const summary = require('/tmp/scan-summary.json');
             const flags = summary.provenance_flags || [];
             const verified = '${{ steps.verify.outputs.verified }}' === 'true';
-
-            let flagSection = '✅ No provenance flags';
-            if (flags.length > 0) {
-              flagSection = flags.map(f => `⚠️ \`${f}\``).join('\n');
-            }
+            const publish = '${{ steps.score.outputs.publish }}' === 'true';
 
             const trustScore = summary.trust_score;
             const verdict = summary.thinktank_verdict || 'PENDING';
@@ -609,26 +621,47 @@ jobs:
             const serverPath = summary.server_path || '';
             const pathLine = serverPath ? `\n**Server path:** \`${serverPath}\`` : '';
 
-            let riskLevel;
-            if (verdict.includes('REJECTED')) {
-              riskLevel = '🔴 REJECTED';
-            } else if (verdict.includes('FLAGGED')) {
-              riskLevel = '🟡 FLAGGED';
-            } else if (verdict.includes('CONDITIONAL')) {
-              riskLevel = '🟠 CONDITIONAL';
-            } else if (verdict.includes('VERIFIED')) {
-              riskLevel = '🟢 VERIFIED';
-            } else {
-              riskLevel = '⏳ PENDING';
-            }
-
             let body;
 
-            if (verified) {
-              // VERIFIED MAINTAINER — full results
-              body = `## 📋 Credence Scan Results
+            if (!publish) {
+              // ── DISCLOSURE HOLD ──
+              // Score is FLAGGED or REJECTED. Do not publish any results.
+              // The maintainer will be contacted privately.
+              body = `## Credence Scan Complete
 
-            ✅ **Verified maintainer submission**
+            **Server:** ${summary.server_name}${pathLine}
+            **Commit:** \`${summary.commit_sha}\`
+
+            Scan complete. Results are under responsible disclosure review and will not be published at this time.
+
+            The repository maintainer will be contacted directly.
+
+            ---
+            _Credence Pipeline v${summary.pipeline_version} · ${summary.scan_timestamp}_`;
+
+            } else {
+              // ── PUBLISHABLE (VERIFIED or CONDITIONAL) ──
+              let flagSection = 'No provenance flags';
+              if (flags.length > 0) {
+                flagSection = flags.map(f => `\`${f}\``).join(', ');
+              }
+
+              let riskLevel;
+              if (verdict.includes('CONDITIONAL')) {
+                riskLevel = 'CONDITIONAL';
+              } else if (verdict.includes('VERIFIED')) {
+                riskLevel = 'VERIFIED';
+              } else {
+                riskLevel = verdict;
+              }
+
+              const verifyNote = verified
+                ? 'Verified maintainer submission'
+                : 'Third-party submission';
+
+              body = `## Credence Scan Results
+
+            ${verifyNote}
 
             **Server:** ${summary.server_name}${pathLine}
             **Commit:** \`${summary.commit_sha}\`
@@ -643,49 +676,9 @@ jobs:
             | Behavioral | ${dims.behavioral ?? '?'}/100 |
             | **Aggregate** | **${trustScore ?? '?'}/100** |
 
-            ### Provenance
-            Fork: ${summary.is_fork ? 'Yes' : 'No'}
-            ${flagSection}
-
-            ### Scan Results
-            | Scanner | Findings |
-            |---------|----------|
-            | Semgrep (SAST) | ${summary.scan_results.semgrep_findings} |
-            | Bandit (Python) | ${summary.scan_results.bandit_findings} |
-            | Trivy (CVEs) | ${summary.scan_results.trivy_vulnerabilities} |
-            | GitLeaks (Secrets) | ${summary.scan_results.gitleaks_secrets} |
-            | MCP Tool Analysis | ${summary.scan_results.mcp_tool_critical} critical, ${summary.scan_results.mcp_tool_warnings} warnings |
+            Provenance flags: ${flagSection}
 
             Attestation signed and published to registry.
-            Full results: [\`scan-results/${summary.commit_sha.slice(0,8)}/\`](https://github.com/pestafford/credence-registry/tree/main/scan-results/${summary.commit_sha.slice(0,8)})
-
-            ---
-            _Credence Pipeline v${summary.pipeline_version} · Scoring v${summary.scoring_version || '?'} · ${summary.scan_timestamp}_`;
-
-            } else {
-              // THIRD-PARTY SUBMISSION — restricted output
-              body = `## 📋 Credence Scan Results (Summary)
-
-            🔒 **Third-party submission** — detailed vulnerability data is not published here.
-            The repo owner will be contacted directly with full findings.
-
-            **Server:** ${summary.server_name}${pathLine}
-            **Commit:** \`${summary.commit_sha}\`
-
-            ### Trust Score: ${trustScore}/100 — ${riskLevel}
-
-            | Dimension | Score |
-            |-----------|-------|
-            | Security | ${dims.security ?? '?'}/100 |
-            | Provenance | ${dims.provenance ?? '?'}/100 |
-            | Behavioral | ${dims.behavioral ?? '?'}/100 |
-            | **Aggregate** | **${trustScore ?? '?'}/100** |
-
-            ### Provenance
-            Fork: ${summary.is_fork ? 'Yes' : 'No'}
-            ${flagSection}
-
-            Scan details are restricted to verified maintainers per [Credence disclosure policy](https://pestafford.github.io/credence-registry/#submit).
 
             ---
             _Credence Pipeline v${summary.pipeline_version} · Scoring v${summary.scoring_version || '?'} · ${summary.scan_timestamp}_`;
@@ -698,14 +691,18 @@ jobs:
               body: body
             });
 
-            // Add result labels
-            const riskLabel = verdict.includes('REJECTED') ? 'risk-high' :
-                          verdict.includes('FLAGGED') ? 'risk-medium' :
-                          verdict.includes('CONDITIONAL') ? 'risk-medium' : 'risk-low';
+            // Labels
             const verifyLabel = verified ? 'verified-maintainer' : 'third-party';
+            const labels = [verifyLabel, 'scan-complete'];
+            if (!publish) {
+              labels.push('disclosure-pending');
+            } else {
+              const riskLabel = verdict.includes('CONDITIONAL') ? 'risk-medium' : 'risk-low';
+              labels.push(riskLabel);
+            }
             await github.rest.issues.addLabels({
               owner: context.repo.owner,
               repo: context.repo.repo,
               issue_number: context.issue.number,
-              labels: [riskLabel, verifyLabel, 'scan-complete']
+              labels: labels
             });
