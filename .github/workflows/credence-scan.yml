@@ -28,12 +28,15 @@ jobs:
             }
 
             const repoUrl = repoMatch[1].replace(/\/$/, '');
+            const pathMatch = body.match(/\*\*Server path:\*\*\s*(.+)/);
+            const serverPath = pathMatch ? pathMatch[1].trim() : '';
+            const pathNote = serverPath ? `\nServer path: \`${serverPath}\`` : '';
 
             await github.rest.issues.createComment({
               owner: context.repo.owner,
               repo: context.repo.repo,
               issue_number: context.issue.number,
-              body: `**Submission received**\n\nRepository: \`${repoUrl}\`\n\nA Credence maintainer will review this submission. Scanning begins when the \`submission\` label is applied.\n\n_This is an automated acknowledgment._`
+              body: `**Submission received**\n\nRepository: \`${repoUrl}\`${pathNote}\n\nA Credence maintainer will review this submission. Scanning begins when the \`submission\` label is applied.\n\n_This is an automated acknowledgment._`
             });
 
             await github.rest.issues.addLabels({
@@ -86,6 +89,7 @@ jobs:
             const repoMatch = body.match(/\*\*Repository:\*\*\s*(https?:\/\/[^\s\n]+)/);
             const commitMatch = body.match(/\*\*Commit SHA:\*\*\s*`?([a-f0-9]+)`?/i);
             const nameMatch = body.match(/\*\*Server name:\*\*\s*(.+)/);
+            const pathMatch = body.match(/\*\*Server path:\*\*\s*(.+)/);
 
             if (!repoMatch) {
               core.setFailed('Could not parse repository URL from issue body');
@@ -95,6 +99,7 @@ jobs:
             const repoUrl = repoMatch[1].replace(/\/$/, '');
             const commitSha = commitMatch ? commitMatch[1] : '';
             const serverName = nameMatch ? nameMatch[1].trim() : 'unknown';
+            const serverPath = pathMatch ? pathMatch[1].trim().replace(/^\/+|\/+$/g, '') : '';
 
             // Extract owner/repo from GitHub URL
             const ghMatch = repoUrl.match(/github\.com\/([^\/]+)\/([^\/]+)/);
@@ -104,6 +109,7 @@ jobs:
             core.setOutput('repo_url', repoUrl);
             core.setOutput('commit_sha', commitSha);
             core.setOutput('server_name', serverName);
+            core.setOutput('server_path', serverPath);
             core.setOutput('repo_owner', repoOwner);
             core.setOutput('repo_name', repoName);
 
@@ -166,11 +172,14 @@ jobs:
             core.setOutput('reason', verifyReason);
             core.info(`Submitter: ${submitter} | Verified: ${verified} | ${verifyReason}`);
 
+            const serverPath = '${{ steps.parse.outputs.server_path }}';
+            const pathLine = serverPath ? `\nServer path: \`${serverPath}\`` : '';
+
             await github.rest.issues.createComment({
               owner: context.repo.owner,
               repo: context.repo.repo,
               issue_number: context.issue.number,
-              body: `**Scan started**\n\nAnalyzing: \`${{ steps.parse.outputs.repo_url }}\`\nCommit: \`${{ steps.parse.outputs.commit_sha || 'latest' }}\`\n\nStages: Collect → Scan → Score → Attest\n\n_Results will be posted here when complete._`
+              body: `**Scan started**\n\nAnalyzing: \`${{ steps.parse.outputs.repo_url }}\`${pathLine}\nCommit: \`${{ steps.parse.outputs.commit_sha || 'latest' }}\`\n\nStages: Collect → Scan → Score → Attest\n\n_Results will be posted here when complete._`
             });
 
       - name: Clone target server
@@ -182,11 +191,26 @@ jobs:
           fi
           echo "TARGET_COMMIT=$(git rev-parse HEAD)" >> $GITHUB_ENV
 
+          # Set SCAN_DIR: subdirectory if specified, otherwise full repo
+          SERVER_PATH="${{ steps.parse.outputs.server_path }}"
+          if [ -n "$SERVER_PATH" ]; then
+            SCAN_DIR="/tmp/target-server/$SERVER_PATH"
+            if [ ! -d "$SCAN_DIR" ]; then
+              echo "Error: server path '$SERVER_PATH' does not exist in this repo"
+              ls -la /tmp/target-server/
+              exit 1
+            fi
+          else
+            SCAN_DIR="/tmp/target-server"
+          fi
+          echo "SCAN_DIR=$SCAN_DIR" >> $GITHUB_ENV
+          echo "Scan directory: $SCAN_DIR"
+
       # ── STAGE 1: COLLECT ──────────────────────────────
 
       - name: Generate source hash (Merkle tree SHA-256)
         run: |
-          cd /tmp/target-server
+          cd $SCAN_DIR
           # Deterministic hash: sort files, hash each, hash the hashes
           find . -type f -not -path './.git/*' | sort | xargs sha256sum | sha256sum | awk '{print $1}' > /tmp/source_hash.txt
           echo "SOURCE_HASH=$(cat /tmp/source_hash.txt)" >> $GITHUB_ENV
@@ -195,7 +219,7 @@ jobs:
       - name: Extract author identity
         id: identity
         run: |
-          cd /tmp/target-server
+          cd $SCAN_DIR
           IDENTITY_JSON="{}"
 
           # Package.json author
@@ -223,7 +247,7 @@ jobs:
       - name: Detect lockfiles
         id: lockfile
         run: |
-          cd /tmp/target-server
+          cd $SCAN_DIR
           LOCKFILE_FOUND=""
           LOCKFILE_HASH=""
 
@@ -368,7 +392,7 @@ jobs:
       - name: Generate SBOM
         uses: anchore/sbom-action@v0
         with:
-          path: /tmp/target-server
+          path: ${{ env.SCAN_DIR }}
           output-file: /tmp/sbom.spdx.json
           format: spdx-json
 
@@ -383,24 +407,24 @@ jobs:
       - name: Run Semgrep SAST
         continue-on-error: true
         run: |
-          cd /tmp/target-server
+          cd $SCAN_DIR
           semgrep scan --config auto --json --output /tmp/semgrep-results.json . 2>/dev/null || echo '{"results":[]}' > /tmp/semgrep-results.json
 
       - name: Run Bandit (Python)
         continue-on-error: true
         run: |
-          cd /tmp/target-server
+          cd $SCAN_DIR
           bandit -r . -f json -o /tmp/bandit-results.json 2>/dev/null || echo '{"results":[]}' > /tmp/bandit-results.json
 
       - name: Run Trivy (CVE scan)
         continue-on-error: true
         run: |
-          trivy fs --format json --output /tmp/trivy-results.json /tmp/target-server 2>/dev/null || echo '{"Results":[]}' > /tmp/trivy-results.json
+          trivy fs --format json --output /tmp/trivy-results.json $SCAN_DIR 2>/dev/null || echo '{"Results":[]}' > /tmp/trivy-results.json
 
       - name: Run GitLeaks (secrets)
         continue-on-error: true
         run: |
-          cd /tmp/target-server
+          cd $SCAN_DIR
           gitleaks detect --source . --report-format json --report-path /tmp/gitleaks-results.json 2>/dev/null || echo '[]' > /tmp/gitleaks-results.json
 
       # ── STAGE 3: MCP TOOL ANALYSIS ────────────────────
@@ -408,7 +432,7 @@ jobs:
       - name: Analyze MCP tool definitions
         id: mcp_analysis
         run: |
-          cd /tmp/target-server
+          cd $SCAN_DIR
 
           # Find tool definitions - look for common MCP patterns
           echo "Scanning for MCP tool definitions..."
@@ -452,6 +476,7 @@ jobs:
           cat > /tmp/scan-summary.json <<EOF
           {
             "server_name": "${{ steps.parse.outputs.server_name }}",
+            "server_path": "${{ steps.parse.outputs.server_path }}",
             "repo_url": "${{ steps.parse.outputs.repo_url }}",
             "commit_sha": "${{ env.TARGET_COMMIT }}",
             "source_hash": "${{ env.SOURCE_HASH }}",
@@ -573,6 +598,8 @@ jobs:
             const trustScore = summary.trust_score;
             const verdict = summary.thinktank_verdict || 'PENDING';
             const dims = summary.trust_dimensions || {};
+            const serverPath = summary.server_path || '';
+            const pathLine = serverPath ? `\n**Server path:** \`${serverPath}\`` : '';
 
             let riskLevel;
             if (verdict.includes('REJECTED')) {
@@ -595,7 +622,7 @@ jobs:
 
             ✅ **Verified maintainer submission**
 
-            **Server:** ${summary.server_name}
+            **Server:** ${summary.server_name}${pathLine}
             **Commit:** \`${summary.commit_sha}\`
             **Source hash:** \`${summary.source_hash}\`
 
@@ -634,7 +661,7 @@ jobs:
             🔒 **Third-party submission** — detailed vulnerability data is not published here.
             The repo owner will be contacted directly with full findings.
 
-            **Server:** ${summary.server_name}
+            **Server:** ${summary.server_name}${pathLine}
             **Commit:** \`${summary.commit_sha}\`
 
             ### Trust Score: ${trustScore}/100 — ${riskLevel}
