@@ -408,29 +408,28 @@
 
         /* DASHBOARD */
         .dashboard-stats {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 16px;
-            margin-bottom: 32px;
+            display: flex;
+            gap: 12px;
+            margin-bottom: 20px;
         }
         .stat-card {
-            padding: 20px;
+            padding: 10px 16px;
             border: 1px solid var(--border-color);
-            border-radius: 8px;
+            border-radius: 6px;
             background: var(--bg-card);
-            text-align: center;
+            display: flex;
+            align-items: baseline;
+            gap: 8px;
         }
         .stat-value {
             font-family: 'IBM Plex Mono', monospace;
-            font-size: 1.8rem;
+            font-size: 1.1rem;
             font-weight: 600;
             color: var(--orange);
-            line-height: 1.2;
         }
         .stat-label {
-            font-size: 0.8rem;
+            font-size: 0.72rem;
             color: var(--text-muted);
-            margin-top: 4px;
         }
 
         .server-table {
@@ -439,12 +438,12 @@
         }
         .server-table thead th {
             font-family: 'IBM Plex Mono', monospace;
-            font-size: 0.7rem;
+            font-size: 0.65rem;
             font-weight: 500;
             color: var(--text-muted);
             text-transform: uppercase;
             letter-spacing: 0.08em;
-            padding: 10px 12px;
+            padding: 7px 10px;
             text-align: left;
             border-bottom: 1px solid var(--border-color);
         }
@@ -456,8 +455,8 @@
             background: var(--bg-card-hover);
         }
         .server-table td {
-            padding: 14px 12px;
-            font-size: 0.85rem;
+            padding: 8px 10px;
+            font-size: 0.8rem;
             vertical-align: middle;
         }
         .server-name-link {
@@ -465,7 +464,7 @@
             text-decoration: none;
             font-family: 'IBM Plex Mono', monospace;
             font-weight: 500;
-            font-size: 0.82rem;
+            font-size: 0.78rem;
         }
         .server-name-link:hover {
             color: var(--orange);
@@ -478,11 +477,11 @@
         .score-badge {
             display: inline-block;
             font-family: 'IBM Plex Mono', monospace;
-            font-size: 0.82rem;
+            font-size: 0.75rem;
             font-weight: 600;
-            padding: 3px 10px;
+            padding: 2px 8px;
             border-radius: 4px;
-            min-width: 42px;
+            min-width: 36px;
             text-align: center;
         }
         .score-badge.green {
@@ -502,20 +501,20 @@
         }
         .dim-scores {
             font-family: 'IBM Plex Mono', monospace;
-            font-size: 0.72rem;
+            font-size: 0.68rem;
             color: var(--text-muted);
         }
         .dim-scores span {
             display: inline-block;
-            margin-right: 8px;
+            margin-right: 6px;
         }
         .verdict-cell {
             font-family: 'IBM Plex Mono', monospace;
-            font-size: 0.75rem;
+            font-size: 0.7rem;
             font-weight: 500;
         }
         .scan-date {
-            font-size: 0.78rem;
+            font-size: 0.72rem;
             color: var(--text-muted);
         }
         .dashboard-empty {
@@ -545,7 +544,7 @@
             .nav-right { gap: 12px; }
             .nav-link { font-size: 0.75rem; }
             .form-row { grid-template-columns: 1fr; }
-            .dashboard-stats { grid-template-columns: 1fr; }
+            .dashboard-stats { flex-wrap: wrap; }
             .table-wrapper { display: none; }
             .server-card-mobile { display: block; }
         }
@@ -969,11 +968,16 @@ $ credence check modelcontextprotocol/server-github
                     return new Date(b.attestation.attested_at) - new Date(a.attestation.attested_at);
                 });
 
-                // Stats
+                // Stats — only count disclosed (non-preliminary) for avg score
                 var totalScanned = servers.length;
-                var avgScore = Math.round(servers.reduce(function(sum, s) {
-                    return sum + (s.attestation.trust_score || 0);
-                }, 0) / totalScanned);
+                var disclosed = servers.filter(function(s) {
+                    return (s.attestation.thinktank_verdict || '').indexOf('PRELIMINARY') === -1;
+                });
+                var avgScore = disclosed.length > 0
+                    ? Math.round(disclosed.reduce(function(sum, s) {
+                        return sum + (s.attestation.trust_score || 0);
+                    }, 0) / disclosed.length)
+                    : '—';
                 var latestDate = servers[0].attestation.attested_at;
 
                 var statsEl = document.getElementById('dashboard-stats');
@@ -981,7 +985,7 @@ $ credence check modelcontextprotocol/server-github
                     '<div class="stat-card"><div class="stat-value">' + totalScanned + '</div><div class="stat-label">Servers scanned</div></div>' +
                     '<div class="stat-card"><div class="stat-value">' + avgScore + '</div><div class="stat-label">Average trust score</div></div>' +
                     '<div class="stat-card"><div class="stat-value">' + timeAgo(latestDate) + '</div><div class="stat-label">Latest scan</div></div>';
-                statsEl.style.display = 'grid';
+                statsEl.style.display = 'flex';
 
                 // Table rows (desktop)
                 var tbody = document.getElementById('server-tbody');
@@ -993,45 +997,66 @@ $ credence check modelcontextprotocol/server-github
                     var a = entry.attestation;
                     var score = a.trust_score;
                     var dims = a.trust_dimensions || {};
-                    var badgeClass = scoreBadgeClass(score);
-                    var vLabel = verdictLabel(a.thinktank_verdict);
-                    var vColor = verdictColor(a.thinktank_verdict);
                     var name = serverDisplayName(entry);
                     var link = serverRepoLink(entry);
                     var date = timeAgo(a.attested_at);
                     var commitShort = (a.commit_sha || '').substring(0, 8);
                     var attestUrl = entry.attestation_url || '#';
+                    var isPreliminary = (a.thinktank_verdict || '').indexOf('PRELIMINARY') !== -1;
 
-                    // Dimension scores
-                    var dimHtml = '';
-                    if (dims.security !== undefined) {
-                        dimHtml = '<span>S:' + dims.security + '</span>' +
-                                  '<span>P:' + dims.provenance + '</span>' +
-                                  '<span>B:' + dims.behavioral + '</span>';
+                    if (isPreliminary) {
+                        // Disclosure pending — don't show scores or dimensions publicly
+                        rowsHtml += '<tr>' +
+                            '<td><a href="' + link + '" target="_blank" rel="noopener" class="server-name-link">' + name + '</a>' +
+                            (commitShort ? '<br><span class="server-path">' + commitShort + '</span>' : '') +
+                            '</td>' +
+                            '<td colspan="3"><span class="verdict-cell" style="color:var(--text-muted)">DISCLOSURE PENDING</span></td>' +
+                            '<td><a href="' + attestUrl + '" target="_blank" rel="noopener" class="scan-date" style="color:var(--text-muted); text-decoration:none;">' + date + '</a></td>' +
+                            '</tr>';
+
+                        mobileHtml += '<div class="server-card-mobile" style="padding:16px 0; border-bottom:1px solid var(--border-subtle);">' +
+                            '<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">' +
+                            '<a href="' + link + '" target="_blank" rel="noopener" class="server-name-link">' + name + '</a>' +
+                            '<span class="verdict-cell" style="color:var(--text-muted)">DISCLOSURE PENDING</span>' +
+                            '</div>' +
+                            '<div style="display:flex; justify-content:space-between; align-items:center;">' +
+                            '<span class="scan-date">' + date + '</span>' +
+                            '</div>' +
+                            '</div>';
+                    } else {
+                        var badgeClass = scoreBadgeClass(score);
+                        var vLabel = verdictLabel(a.thinktank_verdict);
+                        var vColor = verdictColor(a.thinktank_verdict);
+
+                        var dimHtml = '';
+                        if (dims.security !== undefined) {
+                            dimHtml = '<span>S:' + dims.security + '</span>' +
+                                      '<span>P:' + dims.provenance + '</span>' +
+                                      '<span>B:' + dims.behavioral + '</span>';
+                        }
+
+                        rowsHtml += '<tr>' +
+                            '<td><a href="' + link + '" target="_blank" rel="noopener" class="server-name-link">' + name + '</a>' +
+                            (commitShort ? '<br><span class="server-path">' + commitShort + '</span>' : '') +
+                            '</td>' +
+                            '<td><span class="score-badge ' + badgeClass + '">' + score + '</span></td>' +
+                            '<td><div class="dim-scores">' + dimHtml + '</div></td>' +
+                            '<td><span class="verdict-cell" style="color:' + vColor + '">' + vLabel + '</span></td>' +
+                            '<td><a href="' + attestUrl + '" target="_blank" rel="noopener" class="scan-date" style="color:var(--text-muted); text-decoration:none;">' + date + '</a></td>' +
+                            '</tr>';
+
+                        mobileHtml += '<div class="server-card-mobile" style="padding:16px 0; border-bottom:1px solid var(--border-subtle);">' +
+                            '<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">' +
+                            '<a href="' + link + '" target="_blank" rel="noopener" class="server-name-link">' + name + '</a>' +
+                            '<span class="score-badge ' + badgeClass + '">' + score + '</span>' +
+                            '</div>' +
+                            '<div class="dim-scores" style="margin-bottom:6px;">' + dimHtml + '</div>' +
+                            '<div style="display:flex; justify-content:space-between; align-items:center;">' +
+                            '<span class="verdict-cell" style="color:' + vColor + '">' + vLabel + '</span>' +
+                            '<a href="' + attestUrl + '" target="_blank" rel="noopener" class="scan-date" style="color:var(--text-muted); text-decoration:none;">' + date + '</a>' +
+                            '</div>' +
+                            '</div>';
                     }
-
-                    rowsHtml += '<tr>' +
-                        '<td><a href="' + link + '" target="_blank" rel="noopener" class="server-name-link">' + name + '</a>' +
-                        (commitShort ? '<br><span class="server-path">' + commitShort + '</span>' : '') +
-                        '</td>' +
-                        '<td><span class="score-badge ' + badgeClass + '">' + score + '</span></td>' +
-                        '<td><div class="dim-scores">' + dimHtml + '</div></td>' +
-                        '<td><span class="verdict-cell" style="color:' + vColor + '">' + vLabel + '</span></td>' +
-                        '<td><a href="' + attestUrl + '" target="_blank" rel="noopener" class="scan-date" style="color:var(--text-muted); text-decoration:none;">' + date + '</a></td>' +
-                        '</tr>';
-
-                    // Mobile card
-                    mobileHtml += '<div class="server-card-mobile" style="padding:16px 0; border-bottom:1px solid var(--border-subtle);">' +
-                        '<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">' +
-                        '<a href="' + link + '" target="_blank" rel="noopener" class="server-name-link">' + name + '</a>' +
-                        '<span class="score-badge ' + badgeClass + '">' + score + '</span>' +
-                        '</div>' +
-                        '<div class="dim-scores" style="margin-bottom:6px;">' + dimHtml + '</div>' +
-                        '<div style="display:flex; justify-content:space-between; align-items:center;">' +
-                        '<span class="verdict-cell" style="color:' + vColor + '">' + vLabel + '</span>' +
-                        '<a href="' + attestUrl + '" target="_blank" rel="noopener" class="scan-date" style="color:var(--text-muted); text-decoration:none;">' + date + '</a>' +
-                        '</div>' +
-                        '</div>';
                 });
 
                 tbody.innerHTML = rowsHtml;
