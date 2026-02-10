@@ -125,13 +125,13 @@
 
         /* HERO */
         .hero {
-            padding: 80px 0 60px;
+            padding: 60px 0 40px;
             text-align: center;
         }
         .hero-logo {
-            width: 120px;
-            height: 120px;
-            margin-bottom: 32px;
+            width: 100px;
+            height: 100px;
+            margin-bottom: 24px;
             filter: drop-shadow(0 0 30px var(--glow));
         }
         .hero h1 {
@@ -407,28 +407,37 @@
         }
 
         /* DASHBOARD */
+        .dashboard-section {
+            padding: 24px 0 20px;
+        }
+        .dashboard-container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
         .dashboard-stats {
             display: flex;
-            gap: 12px;
-            margin-bottom: 20px;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 12px;
         }
         .stat-card {
-            padding: 10px 16px;
+            padding: 6px 12px;
             border: 1px solid var(--border-color);
-            border-radius: 6px;
+            border-radius: 5px;
             background: var(--bg-card);
             display: flex;
             align-items: baseline;
-            gap: 8px;
+            gap: 6px;
         }
         .stat-value {
             font-family: 'IBM Plex Mono', monospace;
-            font-size: 1.1rem;
+            font-size: 0.9rem;
             font-weight: 600;
             color: var(--orange);
         }
         .stat-label {
-            font-size: 0.72rem;
+            font-size: 0.65rem;
             color: var(--text-muted);
         }
 
@@ -438,25 +447,24 @@
         }
         .server-table thead th {
             font-family: 'IBM Plex Mono', monospace;
-            font-size: 0.65rem;
+            font-size: 0.6rem;
             font-weight: 500;
             color: var(--text-muted);
             text-transform: uppercase;
             letter-spacing: 0.08em;
-            padding: 7px 10px;
+            padding: 5px 8px;
             text-align: left;
             border-bottom: 1px solid var(--border-color);
         }
         .server-table tbody tr {
             border-bottom: 1px solid var(--border-subtle);
-            transition: background 0.15s;
         }
         .server-table tbody tr:hover {
             background: var(--bg-card-hover);
         }
         .server-table td {
-            padding: 8px 10px;
-            font-size: 0.8rem;
+            padding: 6px 8px;
+            font-size: 0.75rem;
             vertical-align: middle;
         }
         .server-name-link {
@@ -464,24 +472,24 @@
             text-decoration: none;
             font-family: 'IBM Plex Mono', monospace;
             font-weight: 500;
-            font-size: 0.78rem;
+            font-size: 0.72rem;
         }
         .server-name-link:hover {
             color: var(--orange);
         }
         .server-path {
-            font-size: 0.72rem;
+            font-size: 0.62rem;
             color: var(--text-muted);
             font-family: 'IBM Plex Mono', monospace;
         }
         .score-badge {
             display: inline-block;
             font-family: 'IBM Plex Mono', monospace;
-            font-size: 0.75rem;
+            font-size: 0.7rem;
             font-weight: 600;
-            padding: 2px 8px;
-            border-radius: 4px;
-            min-width: 36px;
+            padding: 1px 7px;
+            border-radius: 3px;
+            min-width: 32px;
             text-align: center;
         }
         .score-badge.green {
@@ -499,33 +507,24 @@
             color: #C0392B;
             border: 1px solid rgba(192, 57, 43, 0.3);
         }
-        .dim-scores {
-            font-family: 'IBM Plex Mono', monospace;
-            font-size: 0.68rem;
-            color: var(--text-muted);
-        }
-        .dim-scores span {
-            display: inline-block;
-            margin-right: 6px;
-        }
         .verdict-cell {
             font-family: 'IBM Plex Mono', monospace;
-            font-size: 0.7rem;
+            font-size: 0.65rem;
             font-weight: 500;
         }
         .scan-date {
-            font-size: 0.72rem;
+            font-size: 0.65rem;
             color: var(--text-muted);
         }
         .dashboard-empty {
             text-align: center;
-            padding: 40px 20px;
+            padding: 20px 16px;
             color: var(--text-muted);
-            font-size: 0.9rem;
+            font-size: 0.8rem;
         }
         .table-wrapper {
             border: 1px solid var(--border-color);
-            border-radius: 8px;
+            border-radius: 6px;
             overflow: hidden;
             background: var(--bg-card);
         }
@@ -581,12 +580,8 @@
     </div>
 </section>
 
-<section class="section" id="registry">
-    <div class="container">
-        <div class="section-label">Registry</div>
-        <h2>Scanned servers</h2>
-        <p>Live trust scores from the Credence pipeline. Each entry is cryptographically attested at a pinned commit.</p>
-
+<section class="section dashboard-section" id="registry">
+    <div class="dashboard-container">
         <div id="dashboard-stats" class="dashboard-stats" style="display:none;"></div>
 
         <div id="dashboard-table" class="table-wrapper" style="display:none;">
@@ -595,7 +590,6 @@
                     <tr>
                         <th>Server</th>
                         <th>Score</th>
-                        <th>Dimensions</th>
                         <th>Verdict</th>
                         <th>Scanned</th>
                     </tr>
@@ -607,7 +601,7 @@
         <div id="dashboard-mobile"></div>
 
         <div id="dashboard-empty" class="dashboard-empty" style="display:none;">
-            No servers have been scanned yet. <a href="#submit" style="color: var(--orange);">Submit one</a>.
+            No servers scanned yet. <a href="#submit" style="color: var(--orange);">Submit one</a>.
         </div>
     </div>
 </section>
@@ -1005,57 +999,34 @@ $ credence check modelcontextprotocol/server-github
                     var isPreliminary = (a.thinktank_verdict || '').indexOf('PRELIMINARY') !== -1;
 
                     if (isPreliminary) {
-                        // Disclosure pending — don't show scores or dimensions publicly
                         rowsHtml += '<tr>' +
-                            '<td><a href="' + link + '" target="_blank" rel="noopener" class="server-name-link">' + name + '</a>' +
-                            (commitShort ? '<br><span class="server-path">' + commitShort + '</span>' : '') +
-                            '</td>' +
-                            '<td colspan="3"><span class="verdict-cell" style="color:var(--text-muted)">DISCLOSURE PENDING</span></td>' +
-                            '<td><a href="' + attestUrl + '" target="_blank" rel="noopener" class="scan-date" style="color:var(--text-muted); text-decoration:none;">' + date + '</a></td>' +
+                            '<td><a href="' + link + '" target="_blank" rel="noopener" class="server-name-link">' + name + '</a></td>' +
+                            '<td colspan="2"><span class="verdict-cell" style="color:var(--text-muted)">DISCLOSURE PENDING</span></td>' +
+                            '<td class="scan-date">' + date + '</td>' +
                             '</tr>';
 
-                        mobileHtml += '<div class="server-card-mobile" style="padding:16px 0; border-bottom:1px solid var(--border-subtle);">' +
-                            '<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">' +
+                        mobileHtml += '<div class="server-card-mobile" style="padding:10px 0; border-bottom:1px solid var(--border-subtle);">' +
+                            '<div style="display:flex; justify-content:space-between; align-items:center;">' +
                             '<a href="' + link + '" target="_blank" rel="noopener" class="server-name-link">' + name + '</a>' +
                             '<span class="verdict-cell" style="color:var(--text-muted)">DISCLOSURE PENDING</span>' +
-                            '</div>' +
-                            '<div style="display:flex; justify-content:space-between; align-items:center;">' +
-                            '<span class="scan-date">' + date + '</span>' +
-                            '</div>' +
-                            '</div>';
+                            '</div></div>';
                     } else {
                         var badgeClass = scoreBadgeClass(score);
                         var vLabel = verdictLabel(a.thinktank_verdict);
                         var vColor = verdictColor(a.thinktank_verdict);
 
-                        var dimHtml = '';
-                        if (dims.security !== undefined) {
-                            dimHtml = '<span>S:' + dims.security + '</span>' +
-                                      '<span>P:' + dims.provenance + '</span>' +
-                                      '<span>B:' + dims.behavioral + '</span>';
-                        }
-
                         rowsHtml += '<tr>' +
-                            '<td><a href="' + link + '" target="_blank" rel="noopener" class="server-name-link">' + name + '</a>' +
-                            (commitShort ? '<br><span class="server-path">' + commitShort + '</span>' : '') +
-                            '</td>' +
+                            '<td><a href="' + link + '" target="_blank" rel="noopener" class="server-name-link">' + name + '</a></td>' +
                             '<td><span class="score-badge ' + badgeClass + '">' + score + '</span></td>' +
-                            '<td><div class="dim-scores">' + dimHtml + '</div></td>' +
                             '<td><span class="verdict-cell" style="color:' + vColor + '">' + vLabel + '</span></td>' +
                             '<td><a href="' + attestUrl + '" target="_blank" rel="noopener" class="scan-date" style="color:var(--text-muted); text-decoration:none;">' + date + '</a></td>' +
                             '</tr>';
 
-                        mobileHtml += '<div class="server-card-mobile" style="padding:16px 0; border-bottom:1px solid var(--border-subtle);">' +
-                            '<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">' +
+                        mobileHtml += '<div class="server-card-mobile" style="padding:10px 0; border-bottom:1px solid var(--border-subtle);">' +
+                            '<div style="display:flex; justify-content:space-between; align-items:center;">' +
                             '<a href="' + link + '" target="_blank" rel="noopener" class="server-name-link">' + name + '</a>' +
                             '<span class="score-badge ' + badgeClass + '">' + score + '</span>' +
-                            '</div>' +
-                            '<div class="dim-scores" style="margin-bottom:6px;">' + dimHtml + '</div>' +
-                            '<div style="display:flex; justify-content:space-between; align-items:center;">' +
-                            '<span class="verdict-cell" style="color:' + vColor + '">' + vLabel + '</span>' +
-                            '<a href="' + attestUrl + '" target="_blank" rel="noopener" class="scan-date" style="color:var(--text-muted); text-decoration:none;">' + date + '</a>' +
-                            '</div>' +
-                            '</div>';
+                            '</div></div>';
                     }
                 });
 
