@@ -5,15 +5,74 @@ on:
     types: [opened, labeled]
 
 jobs:
+  # ── JOB 1: ACKNOWLEDGE ─────────────────────────
+  # Fires on issue open. Validates format and tells the submitter
+  # that a maintainer will review before scanning begins.
+  acknowledge:
+    if: github.event.action == 'opened'
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+    steps:
+      - name: Acknowledge submission
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const body = context.payload.issue.body || '';
+            const repoMatch = body.match(/\*\*Repository:\*\*\s*(https?:\/\/[^\s\n]+)/);
+
+            if (!repoMatch) {
+              // Not a scan submission — ignore
+              core.info('Issue does not match submission format, skipping');
+              return;
+            }
+
+            const repoUrl = repoMatch[1].replace(/\/$/, '');
+
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body: `**Submission received**\n\nRepository: \`${repoUrl}\`\n\nA Credence maintainer will review this submission. Scanning begins when the \`submission\` label is applied.\n\n_This is an automated acknowledgment._`
+            });
+
+            await github.rest.issues.addLabels({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              labels: ['pending-review']
+            });
+
+  # ── JOB 2: SCAN ────────────────────────────────
+  # Fires only when a collaborator adds the 'submission' label.
+  # This is the gate — no label, no scan.
   scan:
-    # Only run on issues with the 'submission' label
-    if: contains(github.event.issue.labels.*.name, 'submission')
+    if: >-
+      github.event.action == 'labeled' &&
+      github.event.label.name == 'submission'
     runs-on: ubuntu-latest
     permissions:
       issues: write
       contents: write
 
     steps:
+      # Gate: verify the person who added the label has write access
+      - name: Verify label was added by collaborator
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const sender = context.payload.sender.login;
+            const { data: permLevel } = await github.rest.repos.getCollaboratorPermissionLevel({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              username: sender
+            });
+            const allowed = ['admin', 'write'];
+            if (!allowed.includes(permLevel.permission)) {
+              core.setFailed(`Scan blocked: ${sender} has '${permLevel.permission}' access, needs 'write' or 'admin'`);
+            }
+            core.info(`Label added by ${sender} (${permLevel.permission}) — scan authorized`);
+
       - name: Checkout Credence registry
         uses: actions/checkout@v4
 
@@ -107,16 +166,11 @@ jobs:
             core.setOutput('reason', verifyReason);
             core.info(`Submitter: ${submitter} | Verified: ${verified} | ${verifyReason}`);
 
-            // Post acknowledgment with verification status
-            const verifyBadge = verified
-              ? '✅ **Verified maintainer** — full results will be shared'
-              : '🔒 **Third-party submission** — detailed findings will be shared privately with the repo owner only';
-
             await github.rest.issues.createComment({
               owner: context.repo.owner,
               repo: context.repo.repo,
               issue_number: context.issue.number,
-              body: `🔍 **Credence Pipeline started**\n\nAnalyzing: \`${{ steps.parse.outputs.repo_url }}\`\nCommit: \`${{ steps.parse.outputs.commit_sha || 'latest' }}\`\n\n${verifyBadge}\n\nStages: Collect → Scan → Debate → Attest\n\n_This is an automated analysis. Results will be posted here when complete._`
+              body: `**Scan started**\n\nAnalyzing: \`${{ steps.parse.outputs.repo_url }}\`\nCommit: \`${{ steps.parse.outputs.commit_sha || 'latest' }}\`\n\nStages: Collect → Scan → Score → Attest\n\n_Results will be posted here when complete._`
             });
 
       - name: Clone target server
