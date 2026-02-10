@@ -63,22 +63,19 @@
             transition: background 0.3s ease, color 0.3s ease;
             position: relative;
         }
-        .grain-overlay {
+        #grain-overlay {
             position: fixed;
             inset: 0;
             pointer-events: none;
             z-index: 9999;
-            opacity: 0.045;
+            opacity: 0.06;
+            background-repeat: repeat;
             mask-image: linear-gradient(to right,
                 rgba(0,0,0,1) 0%, rgba(0,0,0,0) 18%,
                 rgba(0,0,0,0) 82%, rgba(0,0,0,1) 100%);
             -webkit-mask-image: linear-gradient(to right,
                 rgba(0,0,0,1) 0%, rgba(0,0,0,0) 18%,
                 rgba(0,0,0,0) 82%, rgba(0,0,0,1) 100%);
-        }
-        .grain-overlay svg {
-            width: 100%;
-            height: 100%;
         }
 
         .container {
@@ -577,14 +574,7 @@
 </head>
 <body>
 
-<div class="grain-overlay" aria-hidden="true">
-    <svg xmlns="http://www.w3.org/2000/svg">
-        <filter id="grain">
-            <feTurbulence type="fractalNoise" baseFrequency="0.65" numOctaves="3" stitchTiles="stitch"/>
-        </filter>
-        <rect width="100%" height="100%" filter="url(#grain)"/>
-    </svg>
-</div>
+<div id="grain-overlay" aria-hidden="true"></div>
 
 <nav>
     <div class="container">
@@ -674,8 +664,8 @@
             <div class="pipe-card">
                 <span class="pipe-num">03</span>
                 <div>
-                    <h3>Debate</h3>
-                    <p><a href="https://github.com/pestafford/thinktank-demo" target="_blank" rel="noopener" style="color: var(--orange); text-decoration: none;">ThinkTank</a> multi-agent adversarial analysis. Believer, skeptic, and neutral agents argue about findings. The skeptic is primed with real MCP attack patterns — SmartLoader TTPs, tool poisoning, rug pulls. Produces confidence-scored verdict.</p>
+                    <h3 style="color: var(--orange);">Debate</h3>
+                    <p><a href="https://github.com/pestafford/thinktank-demo" target="_blank" rel="noopener" style="color: var(--orange); text-decoration: none;">ThinkTank</a> multi-agent adversarial analysis. Believer, skeptic, and neutral agents argue about findings. The skeptic is primed with real MCP attack patterns — SmartLoader TTPs, tool poisoning, rug pulls. Produces confidence-scored verdict. Probabilistic issues require probabilistic solutions.</p>
                 </div>
             </div>
             <div class="pipe-card">
@@ -914,6 +904,22 @@ $ credence check modelcontextprotocol/server-github
 </footer>
 
 <script>
+    // Generate noise texture via canvas
+    (function() {
+        var c = document.createElement('canvas');
+        c.width = 128; c.height = 128;
+        var ctx = c.getContext('2d');
+        var img = ctx.createImageData(128, 128);
+        for (var i = 0; i < img.data.length; i += 4) {
+            var v = Math.random() * 255 | 0;
+            img.data[i] = v; img.data[i+1] = v; img.data[i+2] = v;
+            img.data[i+3] = 255;
+        }
+        ctx.putImageData(img, 0, 0);
+        document.getElementById('grain-overlay').style.backgroundImage =
+            'url(' + c.toDataURL('image/png') + ')';
+    })();
+
     function toggleTheme() {
         const html = document.documentElement;
         const current = html.getAttribute('data-theme');
