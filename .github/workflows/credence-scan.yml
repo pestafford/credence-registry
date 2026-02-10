@@ -403,6 +403,7 @@ jobs:
       - name: Install scan tools
         run: |
           pip install semgrep bandit cryptography --break-system-packages -q
+          pip install ./mcp-server --break-system-packages -q
           curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b /usr/local/bin
           curl -sfL https://raw.githubusercontent.com/gitleaks/gitleaks/main/scripts/install.sh | sh -s -- -b /usr/local/bin
 
@@ -522,14 +523,14 @@ jobs:
         run: |
           # Collect all scanner results into /tmp/ for the normalizer.
           # The normalizer looks for known filenames in a directory.
-          python3 mcp-server/report_normalizer.py /tmp/ /tmp/evidence.json
+          python3 -m credence_mcp.report_normalizer /tmp/ /tmp/evidence.json
 
       # ── STAGE 4b: TRUST SCORE ────────────────────────
 
       - name: Compute trust score
         id: score
         run: |
-          python3 mcp-server/trust_score.py /tmp/scan-summary.json /tmp/evidence.json
+          python3 -m credence_mcp.trust_score /tmp/scan-summary.json /tmp/evidence.json
 
           # Extract verdict for disclosure gating
           VERDICT=$(jq -r '.thinktank_verdict' /tmp/scan-summary.json)
@@ -549,8 +550,8 @@ jobs:
 
       - name: Generate report and badge
         run: |
-          python3 mcp-server/report_generator.py /tmp/scan-summary.json /tmp/evidence.json /tmp/report.html
-          python3 mcp-server/badge_generator.py --from-summary /tmp/scan-summary.json /tmp/badge.svg
+          python3 -m credence_mcp.report_generator /tmp/scan-summary.json /tmp/evidence.json /tmp/report.html
+          python3 -m credence_mcp.badge_generator --from-summary /tmp/scan-summary.json /tmp/badge.svg
 
       - name: Update registry and sign attestation
         if: steps.score.outputs.publish == 'true'
@@ -558,10 +559,10 @@ jobs:
           CREDENCE_SIGNING_KEY: ${{ secrets.CREDENCE_SIGNING_KEY }}
         run: |
           if [ -n "$CREDENCE_SIGNING_KEY" ]; then
-            python3 mcp-server/registry_update.py /tmp/scan-summary.json registry.json --key-env CREDENCE_SIGNING_KEY
+            python3 -m credence_mcp.registry_update /tmp/scan-summary.json registry.json --key-env CREDENCE_SIGNING_KEY
           else
             echo "Warning: CREDENCE_SIGNING_KEY not set — attestation will be unsigned"
-            python3 mcp-server/registry_update.py /tmp/scan-summary.json registry.json
+            python3 -m credence_mcp.registry_update /tmp/scan-summary.json registry.json
           fi
 
       # ── STAGE 5: STORE RESULTS ────────────────────────

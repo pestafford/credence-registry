@@ -16,7 +16,7 @@ import sys
 from datetime import datetime, timezone
 from pathlib import Path
 
-from signing import sign_attestation_from_pem
+from credence_mcp.signing import sign_attestation_from_pem
 
 
 def build_attestation(summary: dict) -> dict:

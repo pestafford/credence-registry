@@ -39,7 +39,7 @@ from pathlib import Path
 
 import httpx
 
-from config_resolver import (
+from credence_mcp.config_resolver import (
     find_config_file,
     resolve_all,
     resolve_server,
@@ -61,7 +61,7 @@ def _get_public_key():
     try:
         resp = httpx.get(PUBLIC_KEY_URL, timeout=10.0)
         if resp.status_code == 200:
-            from signing import load_public_key_pem
+            from credence_mcp.signing import load_public_key_pem
             _public_key_cache = load_public_key_pem(resp.text)
             return _public_key_cache
     except Exception:
@@ -82,7 +82,7 @@ def _verify_signature(server: dict) -> tuple[bool | None, str]:
         return None, "could not fetch public key"
 
     try:
-        from signing import verify_attestation
+        from credence_mcp.signing import verify_attestation
         valid, msg = verify_attestation(att, pubkey)
         return valid, msg
     except Exception as e:

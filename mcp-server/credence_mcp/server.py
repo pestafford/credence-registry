@@ -79,7 +79,7 @@ async def _fetch_public_key():
         async with httpx.AsyncClient(timeout=10.0) as client:
             resp = await client.get(PUBLIC_KEY_URL)
             if resp.status_code == 200:
-                from signing import load_public_key_pem
+                from credence_mcp.signing import load_public_key_pem
                 _public_key_cache = load_public_key_pem(resp.text)
                 return _public_key_cache
     except Exception:
@@ -98,7 +98,7 @@ async def _verify_server_signature(attestation: dict) -> dict:
         return {"verified": None, "message": "could not fetch public key"}
 
     try:
-        from signing import verify_attestation
+        from credence_mcp.signing import verify_attestation
         valid, msg = verify_attestation(attestation, pubkey)
         return {"verified": valid, "message": msg}
     except Exception as e:
@@ -556,7 +556,7 @@ async def credence_audit_config(params: dict = {}) -> str:
         Audit results for all configured servers
     """
     try:
-        from config_resolver import find_config_file, resolve_all
+        from credence_mcp.config_resolver import find_config_file, resolve_all
     except ImportError:
         return json.dumps({
             "status": "error",

@@ -775,12 +775,15 @@
         </div>
 
         <div class="code-block" style="margin-top: 24px;">
-<pre><span class="comment"># Add to claude_desktop_config.json</span>
+<pre><span class="comment"># Install</span>
+$ pip install git+https://github.com/pestafford/credence-registry.git#subdirectory=mcp-server
+
+<span class="comment"># Add to claude_desktop_config.json</span>
 {
   <span class="key">"mcpServers"</span>: {
     <span class="key">"credence"</span>: {
-      <span class="key">"command"</span>: <span class="val">"python"</span>,
-      <span class="key">"args"</span>: [<span class="val">"-m"</span>, <span class="val">"credence_server"</span>]
+      <span class="key">"command"</span>: <span class="val">"python3"</span>,
+      <span class="key">"args"</span>: [<span class="val">"-m"</span>, <span class="val">"credence_mcp.server"</span>]
     }
   }
 }

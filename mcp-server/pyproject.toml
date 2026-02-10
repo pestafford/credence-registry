@@ -2,7 +2,7 @@
 name = "credence-mcp"
 version = "0.2.0"
 description = "Install-time trust verification for MCP servers. Cryptographic attestation registry with CLI and MCP server interface."
-readme = "README.md"
+readme = {text = "Credence MCP — Install-time trust verification for MCP servers.", content-type = "text/plain"}
 license = { text = "MIT" }
 requires-python = ">=3.10"
 authors = [
@@ -24,20 +24,15 @@ dependencies = [
 ]
 
 [project.scripts]
-credence = "credence_cli:main"
-credence-keygen = "keygen:main"
-credence-analyze = "mcp_tool_analyzer:main"
-credence-normalize = "report_normalizer:main"
-credence-report = "report_generator:main"
-credence-badge = "badge_generator:main"
-credence-thinktank = "thinktank_adapter:main"
-credence-score = "trust_score:main"
-credence-registry-update = "registry_update:main"
+credence = "credence_mcp.cli:main"
 
 [project.urls]
 Homepage = "https://pestafford.github.io/credence-registry/"
 Repository = "https://github.com/pestafford/credence-registry"
 Documentation = "https://securingthesingularity.com"
+
+[tool.hatch.build.targets.wheel]
+packages = ["credence_mcp"]
 
 [build-system]
 requires = ["hatchling"]
