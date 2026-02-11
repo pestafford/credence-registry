@@ -354,17 +354,19 @@ jobs:
                     owner, repo, per_page: 100
                   });
                   if (forks.length >= 3) {
-                    // Check if forkers also fork from each other (cross-fork pattern)
-                    const forkerLogins = forks.map(f => f.owner.login);
+                    // Check if forkers fork each other's repos (ring pattern)
+                    const forkerLogins = new Set(forks.map(f => f.owner.login));
                     let crossForkCount = 0;
                     // Sample up to 5 forkers to avoid rate limits
-                    for (const forker of forkerLogins.slice(0, 5)) {
+                    for (const forker of [...forkerLogins].slice(0, 5)) {
                       try {
                         const { data: forkerRepos } = await github.rest.repos.listForUser({
                           username: forker, per_page: 30, type: 'owner'
                         });
                         for (const fr of forkerRepos) {
-                          if (fr.fork && forkerLogins.includes(fr.owner?.login)) {
+                          // Check if this fork's SOURCE repo is owned by another forker
+                          if (fr.fork && fr.parent && forkerLogins.has(fr.parent.owner?.login)
+                              && fr.parent.owner?.login !== forker) {
                             crossForkCount++;
                           }
                         }
@@ -575,6 +577,7 @@ jobs:
               --server-cmd "deliberation-mcp"
 
             # Copy deliberation artifacts to /tmp for reliable artifact upload
+            rm -rf /tmp/deliberation-transcript/
             cp -r .deliberations/ /tmp/deliberation-transcript/ 2>/dev/null || true
 
             # Re-extract verdict after deliberation may have updated it
