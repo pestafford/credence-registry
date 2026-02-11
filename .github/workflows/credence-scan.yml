@@ -619,7 +619,7 @@ jobs:
           echo "SCAN_ID=$SCAN_ID" >> $GITHUB_ENV
           echo "RESULTS_DIR=$RESULTS_DIR" >> $GITHUB_ENV
 
-      - name: Upload detailed findings (ephemeral — for deliberation / audit only)
+      - name: Upload detailed findings (ephemeral — for remediation / audit only)
         uses: actions/upload-artifact@v4
         with:
           name: scan-findings-${{ env.TARGET_COMMIT }}
@@ -631,7 +631,16 @@ jobs:
             /tmp/mcp-tool-analysis.json
             /tmp/evidence.json
             /tmp/sbom.spdx.json
-          retention-days: 30
+            /tmp/report.html
+          retention-days: 90
+
+      - name: Upload deliberation transcript (ephemeral — audit trail)
+        if: hashFiles('.deliberations/**') != ''
+        uses: actions/upload-artifact@v4
+        with:
+          name: deliberation-${{ env.TARGET_COMMIT }}
+          path: .deliberations/
+          retention-days: 90
 
       - name: Commit results to repo
         if: steps.score.outputs.publish == 'true'
