@@ -574,10 +574,8 @@ jobs:
               --timeout 300 \
               --server-cmd "deliberation-mcp"
 
-            # Show where session artifacts landed
-            echo "CWD: $(pwd)"
-            find . -path './.deliberations/*' -type f 2>/dev/null && echo "Found .deliberations/ in CWD" || true
-            find / -name '.deliberations' -type d 2>/dev/null | head -5 || true
+            # Copy deliberation artifacts to /tmp for reliable artifact upload
+            cp -r .deliberations/ /tmp/deliberation-transcript/ 2>/dev/null || true
 
             # Re-extract verdict after deliberation may have updated it
             VERDICT=$(jq -r '.thinktank_verdict' /tmp/scan-summary.json)
@@ -648,7 +646,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: deliberation-${{ env.TARGET_COMMIT }}
-          path: ${{ github.workspace }}/.deliberations/
+          path: /tmp/deliberation-transcript/
           if-no-files-found: ignore
           retention-days: 90
 
