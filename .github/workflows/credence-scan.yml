@@ -574,6 +574,11 @@ jobs:
               --timeout 300 \
               --server-cmd "deliberation-mcp"
 
+            # Show where session artifacts landed
+            echo "CWD: $(pwd)"
+            find . -path './.deliberations/*' -type f 2>/dev/null || echo "No .deliberations/ in CWD"
+            find /tmp -path '*/.deliberations/*' -type f 2>/dev/null || echo "No .deliberations/ in /tmp"
+
             # Re-extract verdict after deliberation may have updated it
             VERDICT=$(jq -r '.thinktank_verdict' /tmp/scan-summary.json)
             TRUST_SCORE=$(jq -r '.trust_score' /tmp/scan-summary.json)
