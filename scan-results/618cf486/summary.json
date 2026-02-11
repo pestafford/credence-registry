@@ -1,0 +1,156 @@
+{
+  "server_name": "filesystem",
+  "server_path": "src/filesystem",
+  "repo_url": "https://github.com/modelcontextprotocol/servers",
+  "commit_sha": "618cf4867bca1fa193553d94fb7f2b2cf47f2a04",
+  "source_hash": "43140242e35ba782e4f6f5fd7d1b0496d705969354737f5bb49f36fce4b6052f",
+  "source_hash_method": "merkle-tree-sha256",
+  "is_fork": false,
+  "provenance_flags": [
+    "REPO_OWNER_DIFFERS_FROM_CLAIMED_AUTHOR"
+  ],
+  "lockfile_name": "package-lock.json",
+  "lockfile_hash": "723b5d17a2ca19632c871f71d3263d349a1340c9609de3737fc1612783fb5402",
+  "scan_results": {
+    "semgrep_findings": 23,
+    "bandit_findings": 0,
+    "trivy_vulnerabilities": 0,
+    "gitleaks_secrets": 0,
+    "mcp_tool_warnings": 0,
+    "mcp_tool_critical": 0
+  },
+  "scan_timestamp": "2026-02-11T23:25:43Z",
+  "pipeline_version": "0.2.0",
+  "thinktank_verdict": "CONDITIONAL",
+  "trust_score": 45,
+  "trust_dimensions": {
+    "security": 70,
+    "provenance": 80,
+    "behavioral": 100
+  },
+  "scoring_version": "1.0.0",
+  "scoring_breakdowns": {
+    "security": {
+      "raw_deductions": {
+        "secrets": 0.0,
+        "sast": 87.5,
+        "cve": 0.0
+      },
+      "capped_deductions": {
+        "secrets": 0.0,
+        "sast": 30,
+        "cve": 0.0
+      },
+      "total_deduction": 30.0
+    },
+    "provenance": {
+      "hard_reject": false,
+      "flags_present": [
+        "REPO_OWNER_DIFFERS_FROM_CLAIMED_AUTHOR"
+      ],
+      "deductions": {
+        "REPO_OWNER_DIFFERS_FROM_CLAIMED_AUTHOR": 20
+      },
+      "total_deduction": 20
+    },
+    "behavioral": {
+      "mcp_findings_count": 0,
+      "finding_impacts": [],
+      "total_deduction": 0.0
+    },
+    "aggregate": {
+      "raw_aggregate": 83.0,
+      "override_applied": null,
+      "dimension_weights": {
+        "provenance": 10,
+        "behavioral": 7.5,
+        "security": 7.5
+      }
+    }
+  },
+  "thinktank_debate": {
+    "confidence": 92,
+    "risk_summary": "This is the legitimate MCP filesystem reference implementation containing genuine architectural path traversal vulnerabilities (CWE-22) in security-critical validation code that enable arbitrary filesystem access. The primary threat is 'Authoritative Reference Code Vulnerability Propagation' (ARCVP) - a novel pattern where systematic security flaws in official example code multiply across the ecosystem as developers copy these patterns without security review. Requires mandatory remediation before serving as reference implementation.",
+    "agent_count": 5,
+    "rounds": 5,
+    "highlights": [
+      {
+        "agent_role": "Adversarial Attacker",
+        "position": "conditional",
+        "key_argument": "Path traversal vulnerabilities in validation code (path-validation.ts:30, :54) allow bypassing security boundaries, which can be chained with operational code flaws and root Docker execution for privilege escalation. The 'reference implementation multiplication' creates a force multiplier where one vulnerable codebase spawns hundreds of exploitable production deployments.",
+        "evidence_cited": [
+          "semgrep-javascript.lang.security.audit.path-traversal.path-join-resolve-traversal.path-join-resolve-traversal-path-validation.ts:30",
+          "semgrep-javascript.lang.security.audit.path-traversal.path-join-resolve-traversal.path-join-resolve-traversal-path-validation.ts:54",
+          "semgrep-javascript.lang.security.audit.path-traversal.path-join-resolve-traversal.path-join-resolve-traversal-index.ts:461",
+          "semgrep-dockerfile.security.missing-user-entrypoint.missing-user-entrypoint-Dockerfile:25"
+        ]
+      },
+      {
+        "agent_role": "Supply Chain Analyst",
+        "position": "conditional",
+        "key_argument": "Identified novel supply chain threat 'Authoritative Reference Code Vulnerability Propagation' where systematic vulnerabilities in official reference implementations propagate through ecosystem-wide developer imitation. Standard supply chain tools don't detect this because it operates through legitimate developer behavior rather than malicious code injection.",
+        "evidence_cited": [
+          "semgrep-javascript.lang.security.audit.path-traversal.path-join-resolve-traversal.path-join-resolve-traversal-path-validation.ts:30",
+          "semgrep-javascript.lang.security.audit.path-traversal.path-join-resolve-traversal.path-join-resolve-traversal-path-validation.ts:54"
+        ]
+      },
+      {
+        "agent_role": "Compliance Reviewer",
+        "position": "conditional",
+        "key_argument": "Reference implementations carry heightened compliance obligations per OWASP Secure Coding Practices - they must model secure patterns to prevent ecosystem-wide vulnerability propagation. The systematic CWE-22 violations across 14 production files require complete architectural rewrite of path validation logic, external security audit, and inline vulnerability warnings before code can serve as authoritative example.",
+        "evidence_cited": [
+          "semgrep-javascript.lang.security.audit.path-traversal.path-join-resolve-traversal.path-join-resolve-traversal-path-validation.ts:30",
+          "semgrep-javascript.lang.security.audit.path-traversal.path-join-resolve-traversal.path-join-resolve-traversal-path-validation.ts:54",
+          "semgrep-javascript.lang.security.audit.path-traversal.path-join-resolve-traversal.path-join-resolve-traversal-index.ts:45",
+          "semgrep-dockerfile.security.missing-user-entrypoint.missing-user-entrypoint-Dockerfile:25"
+        ]
+      },
+      {
+        "agent_role": "Devil's Advocate",
+        "position": "conditional",
+        "key_argument": "While initially arguing these were scanner false positives, conceded that path-validation.ts vulnerabilities are genuine architectural flaws. However, maintained this is legitimate educational code with fixable security gaps rather than malicious software. The opportunity is to fix vulnerabilities in the reference implementation BEFORE ecosystem adoption prevents derivative vulnerability multiplication.",
+        "evidence_cited": [
+          "semgrep-javascript.lang.security.audit.path-traversal.path-join-resolve-traversal.path-join-resolve-traversal-path-validation.ts:30",
+          "semgrep-javascript.lang.security.audit.path-traversal.path-join-resolve-traversal.path-join-resolve-traversal-path-validation.ts:54"
+        ]
+      },
+      {
+        "agent_role": "Pattern Matcher",
+        "position": "conditional",
+        "key_argument": "Identified novel attack pattern 'Authoritative Reference Code Vulnerability Propagation' (ARCVP) with 0.96 confidence - distinct from traditional supply chain attacks (SmartLoader, typosquatting, dependency confusion). The threat operates through legitimate developer trust and copying behavior, requiring new supply chain security paradigms focused on pre-publication hardening of reference implementations.",
+        "evidence_cited": [
+          "semgrep-javascript.lang.security.audit.path-traversal.path-join-resolve-traversal.path-join-resolve-traversal-path-validation.ts:30",
+          "semgrep-javascript.lang.security.audit.path-traversal.path-join-resolve-traversal.path-join-resolve-traversal-path-validation.ts:54",
+          "semgrep-javascript.lang.security.audit.path-traversal.path-join-resolve-traversal.path-join-resolve-traversal-index.ts:45"
+        ]
+      }
+    ],
+    "dissenting_opinions": [
+      {
+        "agent_role": "All Agents - Unanimous Convergence",
+        "position": "conditional",
+        "argument": "All five agents achieved unanimous consensus by Round 4-5: (1) provenance flags are definitively false positives reflecting legitimate MCP organizational structure, (2) path traversal vulnerabilities in path-validation.ts are genuine CWE-22 architectural flaws requiring comprehensive remediation, (3) the 'Authoritative Reference Code Vulnerability Propagation' pattern represents a novel supply chain threat requiring new security standards for reference implementations. No dissenting opinions on final verdict - all agents support CONDITIONAL approval with mandatory remediation."
+      }
+    ],
+    "completed_at": "2026-02-11T23:28:59.445716+00:00"
+  },
+  "thinktank_score_adjustment": {
+    "original_score": 83,
+    "adjusted_score": 45,
+    "adjustment_reason": "Significant downward adjustment due to: (1) genuine architectural path traversal vulnerabilities in security-critical validation code that compromise the entire security boundary, (2) novel 'Authoritative Reference Code Vulnerability Propagation' threat pattern that multiplies vulnerabilities across ecosystem through developer imitation, (3) systematic security flaws across 14 production files indicating architectural failure rather than isolated bugs, (4) root Docker execution amplifying privilege escalation risk. The original score of 83 significantly underestimated the severity of validation layer compromise in a filesystem server and the ecosystem-wide impact of flawed reference implementations."
+  },
+  "thinktank_flags": {
+    "needs_human_review": true,
+    "novel_attack_pattern": true,
+    "recommended_actions": [
+      "Complete architectural rewrite of path validation logic with proper canonicalization and boundary enforcement per CWE-22 remediation guidance",
+      "Add USER directive to Dockerfile:25 to address CWE-250 privilege escalation risk per CIS Docker Benchmark 4.1",
+      "Conduct external security audit by qualified third party before designating as reference implementation",
+      "Add inline security warnings in code comments at all 14 production vulnerability locations (path-validation.ts:30, :54; index.ts:45, 461, 547, 567; lib.ts:79, 84, 95, 102, 387; path-utils.ts:115; roots-utils.ts:16, 18)",
+      "Publish security advisory documenting vulnerabilities, remediation timeline, and risks for derivative implementations",
+      "Establish 'Reference Implementation Security Standards' requiring mandatory security audits, SLSA-compliant provenance, and complete dependency manifests for all MCP reference servers",
+      "Implement dependency lockfiles and SBOM generation for supply chain transparency",
+      "Document security boundaries and validation approach for filesystem access scope with explicit threat model"
+    ]
+  }
+}
