@@ -556,11 +556,14 @@ jobs:
       # ── STAGE 4c: DELIBERATION ────────────────────────
 
       - name: Run adversarial deliberation
-        if: steps.score.outputs.publish == 'true'
+        id: deliberation
         continue-on-error: true
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
         run: |
+          # Inherit preliminary publish decision (ensures downstream has a value even if we error)
+          echo "publish=${{ steps.score.outputs.publish }}" >> $GITHUB_OUTPUT
+
           if [ -z "$ANTHROPIC_API_KEY" ]; then
             echo "ANTHROPIC_API_KEY not set — skipping deliberation, keeping preliminary score"
           elif ! command -v deliberation-mcp &>/dev/null; then
@@ -591,7 +594,7 @@ jobs:
           python3 -m credence_mcp.badge_generator --from-summary /tmp/scan-summary.json /tmp/badge.svg
 
       - name: Update registry and sign attestation
-        if: steps.score.outputs.publish == 'true'
+        if: steps.deliberation.outputs.publish == 'true'
         env:
           CREDENCE_SIGNING_KEY: ${{ secrets.CREDENCE_SIGNING_KEY }}
         run: |
@@ -605,7 +608,7 @@ jobs:
       # ── STAGE 5: STORE RESULTS ────────────────────────
 
       - name: Store scan results
-        if: steps.score.outputs.publish == 'true'
+        if: steps.deliberation.outputs.publish == 'true'
         run: |
           SCAN_ID=$(echo "${{ env.TARGET_COMMIT }}" | cut -c1-8)
           RESULTS_DIR="scan-results/${SCAN_ID}"
@@ -645,7 +648,7 @@ jobs:
           retention-days: 90
 
       - name: Commit results to repo
-        if: steps.score.outputs.publish == 'true'
+        if: steps.deliberation.outputs.publish == 'true'
         run: |
           git config user.name "credence-bot"
           git config user.email "credence-bot@users.noreply.github.com"
@@ -662,7 +665,7 @@ jobs:
             const summary = require('/tmp/scan-summary.json');
             const flags = summary.provenance_flags || [];
             const verified = '${{ steps.verify.outputs.verified }}' === 'true';
-            const publish = '${{ steps.score.outputs.publish }}' === 'true';
+            const publish = '${{ steps.deliberation.outputs.publish }}' === 'true';
 
             const trustScore = summary.trust_score;
             const verdict = summary.thinktank_verdict || 'PENDING';
