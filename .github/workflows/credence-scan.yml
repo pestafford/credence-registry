@@ -401,9 +401,16 @@ jobs:
       # ── STAGE 2: SCAN ─────────────────────────────────
 
       - name: Install scan tools
+        env:
+          DELIBERATION_PAT: ${{ secrets.DELIBERATION_PAT }}
         run: |
           pip install semgrep bandit cryptography --break-system-packages -q
           pip install ./mcp-server --break-system-packages -q
+          if [ -n "$DELIBERATION_PAT" ]; then
+            pip install git+https://${DELIBERATION_PAT}@github.com/pestafford/deliberation-mcp.git --break-system-packages -q
+          else
+            echo "DELIBERATION_PAT not set — deliberation-mcp will not be installed"
+          fi
           curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b /usr/local/bin
           curl -sfL https://raw.githubusercontent.com/gitleaks/gitleaks/main/scripts/install.sh | sh -s -- -b /usr/local/bin
 
@@ -556,11 +563,13 @@ jobs:
         run: |
           if [ -z "$ANTHROPIC_API_KEY" ]; then
             echo "ANTHROPIC_API_KEY not set — skipping deliberation, keeping preliminary score"
+          elif ! command -v deliberation-mcp &>/dev/null; then
+            echo "deliberation-mcp not installed — skipping deliberation, keeping preliminary score"
           else
             python3 -m credence_mcp.deliberation_adapter run /tmp/ /tmp/scan-summary.json \
               --repo /tmp/target-server \
               --timeout 300 \
-              --server-cmd "python -m server"
+              --server-cmd "deliberation-mcp"
 
             # Re-extract verdict after deliberation may have updated it
             VERDICT=$(jq -r '.thinktank_verdict' /tmp/scan-summary.json)

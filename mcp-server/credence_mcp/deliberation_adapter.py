@@ -202,7 +202,7 @@ def invoke(
     Args:
         request: The deliberation request payload (from build_request).
         server_command: Command to start the deliberation server.
-                       Defaults to ["python", "-m", "server"].
+                       Defaults to ["deliberation-mcp"].
         timeout: Seconds to wait for the deliberation to complete.
                  A 5-agent, 5-round deliberation typically takes 15-25 LLM calls.
 
@@ -214,7 +214,7 @@ def invoke(
         RuntimeError: If the server returns an error or invalid response.
     """
     if server_command is None:
-        server_command = ["python", "-m", "server"]
+        server_command = ["deliberation-mcp"]
 
     # Start the MCP server as a subprocess
     proc = subprocess.Popen(
