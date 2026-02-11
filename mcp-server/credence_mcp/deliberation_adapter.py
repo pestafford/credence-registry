@@ -32,8 +32,11 @@ Usage (Python):
 """
 
 import json
+import queue
 import subprocess
 import sys
+import threading
+import time
 import uuid
 from datetime import datetime, timezone
 from pathlib import Path
@@ -83,14 +86,16 @@ def build_request(
 
     # ── Optional: repo context ──
     readme = ""
-    package_metadata = None
+    package_metadata = ""
     if repo_dir:
         repo_path = Path(repo_dir)
         readme = _load_text(repo_path / "README.md")
-        package_metadata = (
+        raw = (
             _load_json(repo_path / "package.json")
             or _load_toml_raw(repo_path / "pyproject.toml")
         )
+        if raw:
+            package_metadata = json.dumps(raw) if isinstance(raw, dict) else str(raw)
 
     # ── Assemble request ──
     request = {
@@ -143,8 +148,8 @@ def _build_provenance(summary: dict, identity: dict | None, submitter: str | Non
         "repo_owner": author.get("repo_owner", identity.get("repo_owner", "")),
         "submitter": submitter or identity.get("submitter", ""),
         "submitter_is_verified": identity.get("verified", False),
-        "account_age_days": identity.get("account_age_days"),
-        "contributor_count": identity.get("contributor_count"),
+        "account_age_days": identity.get("account_age_days") or 0,
+        "contributor_count": identity.get("contributor_count") or 0,
     }
 
 
@@ -194,10 +199,11 @@ def invoke(
     """
     Call the deliberate_credence tool on the deliberation-mcp server via stdio.
 
-    Uses the MCP JSON-RPC protocol over stdin/stdout:
-      1. Send initialize request
-      2. Send tools/call with deliberate_credence and the payload
-      3. Parse the response
+    Uses the MCP JSON-RPC protocol over stdin/stdout with proper sequencing:
+      1. Send initialize request, wait for response
+      2. Send initialized notification
+      3. Send tools/call with deliberate_credence, wait for response
+      4. Parse the deliberation result
 
     Args:
         request: The deliberation request payload (from build_request).
@@ -223,11 +229,56 @@ def invoke(
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
         text=True,
+        bufsize=1,  # line-buffered
     )
 
+    # Background thread reads stdout lines into a queue
+    responses: queue.Queue[str] = queue.Queue()
+
+    def _reader():
+        try:
+            for line in proc.stdout:
+                line = line.strip()
+                if line:
+                    responses.put(line)
+        except (ValueError, OSError):
+            pass  # pipe closed
+
+    reader_thread = threading.Thread(target=_reader, daemon=True)
+    reader_thread.start()
+
+    def _send(msg: dict):
+        proc.stdin.write(json.dumps(msg) + "\n")
+        proc.stdin.flush()
+
+    def _wait_for(msg_id: int, step_timeout: float) -> dict:
+        """Read lines from queue until we get a JSON-RPC response with the given id."""
+        deadline = time.monotonic() + step_timeout
+        while True:
+            remaining = deadline - time.monotonic()
+            if remaining <= 0:
+                raise TimeoutError(
+                    f"Timed out waiting for response id={msg_id} after {step_timeout}s"
+                )
+            try:
+                line = responses.get(timeout=min(remaining, 1.0))
+            except queue.Empty:
+                if proc.poll() is not None:
+                    raise RuntimeError(
+                        f"Deliberation server exited unexpectedly (code {proc.returncode})"
+                    )
+                continue
+            try:
+                msg = json.loads(line)
+            except json.JSONDecodeError:
+                continue  # skip non-JSON lines (logging, etc.)
+            if msg.get("id") == msg_id:
+                return msg
+            # else: notification or different id — keep reading
+
     try:
-        # MCP JSON-RPC: initialize
-        init_request = {
+        # Step 1: Initialize
+        _send({
             "jsonrpc": "2.0",
             "id": 1,
             "method": "initialize",
@@ -236,10 +287,16 @@ def invoke(
                 "capabilities": {},
                 "clientInfo": {"name": "credence-pipeline", "version": "0.2.0"},
             },
-        }
+        })
+        init_resp = _wait_for(msg_id=1, step_timeout=15)
+        if "error" in init_resp:
+            raise RuntimeError(f"Initialize failed: {init_resp['error']}")
 
-        # MCP JSON-RPC: tools/call deliberate_credence
-        tool_call = {
+        # Step 2: Send initialized notification (no response expected)
+        _send({"jsonrpc": "2.0", "method": "notifications/initialized"})
+
+        # Step 3: Call deliberate_credence tool
+        _send({
             "jsonrpc": "2.0",
             "id": 2,
             "method": "tools/call",
@@ -249,54 +306,40 @@ def invoke(
                     "payload": json.dumps(request),
                 },
             },
-        }
+        })
+        tool_resp = _wait_for(msg_id=2, step_timeout=timeout)
 
-        # Send both requests (newline-delimited JSON-RPC)
-        stdin_data = json.dumps(init_request) + "\n" + json.dumps(tool_call) + "\n"
-
-        stdout_data, stderr_data = proc.communicate(input=stdin_data, timeout=timeout)
-
-        if proc.returncode not in (0, None):
+        if "error" in tool_resp:
             raise RuntimeError(
-                f"Deliberation server exited with code {proc.returncode}: {stderr_data[:500]}"
+                f"Deliberation server error: {tool_resp['error'].get('message', tool_resp['error'])}"
             )
 
-        # Parse responses — look for the tools/call response (id=2)
-        for line in stdout_data.strip().split("\n"):
-            line = line.strip()
-            if not line:
-                continue
-            try:
-                msg = json.loads(line)
-            except json.JSONDecodeError:
-                continue
-
-            if msg.get("id") == 2:
-                if "error" in msg:
+        # Step 4: Extract the tool result
+        result = tool_resp.get("result", {})
+        content = result.get("content", [])
+        for item in content:
+            if item.get("type") == "text":
+                text = item["text"]
+                if not text:
+                    raise RuntimeError("Deliberation returned empty text content")
+                try:
+                    return json.loads(text)
+                except json.JSONDecodeError:
+                    # The server may return the result directly as a dict
+                    # rather than as a JSON string, or it may be plain text
                     raise RuntimeError(
-                        f"Deliberation server error: {msg['error'].get('message', msg['error'])}"
+                        f"Deliberation returned non-JSON text ({len(text)} chars): "
+                        f"{text[:500]}"
                     )
-                # Extract the tool result content
-                result = msg.get("result", {})
-                content = result.get("content", [])
-                for item in content:
-                    if item.get("type") == "text":
-                        return json.loads(item["text"])
 
-                raise RuntimeError(
-                    f"No text content in deliberation response: {json.dumps(result)[:500]}"
-                )
-
+        # No text content — dump the full response for debugging
         raise RuntimeError(
-            f"No response with id=2 from deliberation server. stdout: {stdout_data[:500]}"
+            f"No text content in deliberation response. "
+            f"Full result: {json.dumps(tool_resp)[:1000]}"
         )
 
-    except subprocess.TimeoutExpired:
-        proc.kill()
-        raise TimeoutError(
-            f"Deliberation timed out after {timeout}s. "
-            "Falling back to preliminary score."
-        )
+    except TimeoutError:
+        raise
     finally:
         if proc.poll() is None:
             proc.terminate()
