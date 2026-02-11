@@ -208,7 +208,7 @@ async def credence_check_server(params: CheckServerInput) -> str:
     """Check whether an MCP server has a Credence attestation and what its trust status is.
 
     Use this BEFORE installing or connecting to an MCP server you haven't used before.
-    Returns the trust score, provenance flags, scan results, and ThinkTank verdict
+    Returns the trust score, provenance flags, scan results, and verdict
     if an attestation exists. If no attestation exists, returns a warning.
 
     Args:
@@ -293,7 +293,7 @@ def _build_human_message(risk, recommendation, verdict, flags, trust_score):
     if recommendation == "DO_NOT_INSTALL":
         msg = "This server has been analyzed by Credence and is NOT recommended for installation. "
         if verdict == "REJECTED":
-            msg += "ThinkTank adversarial analysis rejected it. "
+            msg += "Adversarial analysis rejected it. "
         if flags:
             msg += f"Provenance flags: {', '.join(flags)}. "
         return msg + "Do not connect to this server."
@@ -307,7 +307,7 @@ def _build_human_message(risk, recommendation, verdict, flags, trust_score):
 
     return (
         f"This server has a Credence attestation with trust score {trust_score}/100. "
-        f"ThinkTank verdict: {verdict}. No provenance flags. Safe to install."
+        f"Verdict: {verdict}. No provenance flags. Safe to install."
     )
 
 

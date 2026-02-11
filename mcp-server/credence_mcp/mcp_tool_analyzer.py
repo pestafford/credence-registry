@@ -17,7 +17,7 @@ Static analysis checks (bucket 1 — no LLM required):
   12. Version/time/env-gated conditional registration (4 patterns)
   13. Tool description hashing (SHA-256 per tool for rug pull detection)
 
-Deferred to ThinkTank (bucket 3 — requires adversarial reasoning):
+Deferred to deliberation-mcp (bucket 3 — requires adversarial reasoning):
   - ATPA: output poisoning via error handlers, return values, follow-up prompts
   - Cross-tool contamination: descriptions referencing/influencing other tools
   - Intent analysis for typosquats vs. innocent typos

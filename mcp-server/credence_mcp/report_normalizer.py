@@ -4,7 +4,7 @@ Credence Report Normalizer — Unified evidence format from all scanner outputs.
 
 Takes raw output from Semgrep, Bandit, Trivy, GitLeaks, npm audit, pip-audit,
 ESLint, and MCP Tool Analyzer and normalizes to a single evidence.json with
-consistent schema. This is the input for ThinkTank adversarial analysis.
+consistent schema. This is the input for deliberation-mcp adversarial analysis.
 
 Usage:
     python report_normalizer.py /path/to/scan-results/ [output.json]
