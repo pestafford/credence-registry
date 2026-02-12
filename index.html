@@ -184,6 +184,16 @@
             border-radius: 50%;
             animation: pulse 2s infinite;
         }
+        .progress-line {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-top: 16px;
+        }
+        .progress-line a {
+            color: var(--text-secondary);
+            text-decoration: none;
+        }
+        .progress-line a:hover { color: var(--orange); }
         @keyframes pulse {
             0%, 100% { opacity: 1; }
             50% { opacity: 0.4; }
@@ -603,6 +613,7 @@
             <span class="status-dot"></span>
             In active development
         </div>
+        <p id="progress-line" class="progress-line" style="display:none;"></p>
     </div>
 </section>
 
@@ -1064,9 +1075,18 @@ $ credence check modelcontextprotocol/server-github
                 tableEl.style.display = 'block';
                 tableEl.classList.add('is-loaded');
                 mobileEl.innerHTML = mobileHtml;
+
+                // Progress line
+                var progressEl = document.getElementById('progress-line');
+                progressEl.innerHTML = totalScanned + ' of ~17,000 MCP servers scanned. Adding more every week. <a href="https://glama.ai/mcp/servers" target="_blank" rel="noopener">Ecosystem count via Glama</a>.';
+                progressEl.style.display = 'block';
             })
             .catch(function() {
                 document.getElementById('dashboard-empty').style.display = 'block';
+                // Show progress line even with no data
+                var progressEl = document.getElementById('progress-line');
+                progressEl.innerHTML = '~17,000 MCP servers in the wild. We\'re scanning as fast as we can. <a href="https://glama.ai/mcp/servers" target="_blank" rel="noopener">Ecosystem count via Glama</a>.';
+                progressEl.style.display = 'block';
             });
     }
 
