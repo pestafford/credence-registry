@@ -4,7 +4,7 @@
   "registry_url": "https://pestafford.github.io/credence-registry/",
   "maintainer": "Phil Stafford <pe.stafford@gmail.com>",
   "signing_public_key": "XdvqC/Q6TX90MpL37wdxfUtqOiS8qiQjK8JNJy+BOcM=",
-  "updated_at": "2026-02-12T13:27:02Z",
+  "updated_at": "2026-02-12T14:55:51Z",
   "servers": [
     {
       "server_id": "modelcontextprotocol/server-filesystem",
@@ -41,7 +41,7 @@
         "commit_sha": "618cf4867bca1fa193553d94fb7f2b2cf47f2a04",
         "source_hash": "43140242e35ba782e4f6f5fd7d1b0496d705969354737f5bb49f36fce4b6052f",
         "source_hash_method": "merkle-tree-sha256",
-        "attested_at": "2026-02-12T13:27:02Z",
+        "attested_at": "2026-02-12T14:55:51Z",
         "pipeline_version": "0.2.0",
         "scoring_version": "1.0.0",
         "trust_score": 91,
@@ -61,8 +61,8 @@
         "lockfile_hash": "723b5d17a2ca19632c871f71d3263d349a1340c9609de3737fc1612783fb5402",
         "signature": {
           "algorithm": "ed25519",
-          "value": "qaBthTYX9ye/5cUAIP7/04wAZ9PC7TGf7bsLz5IvOTffOrCd4BhZaXCbJdWhzJD2X8QwXqbEc4p/adh1/dCEBg==",
-          "canonical_hash": "e5d36922ebec9f712ea99661220ede4d9d42739dccaa225dda115e626276d971"
+          "value": "2JVcfpoB8LRgKvLZfKXMfA5WsdK7PiBpcKtmZs5N18X1o4kOlft766W7EeoTdyOzAyVn+i0DwMLGqr1O1lr3Cw==",
+          "canonical_hash": "8d0e45c2accad2dc458a81f24354adfb5c00f5877b8a49d15eaca907819964fa"
         }
       },
       "attestation_url": "https://github.com/pestafford/credence-registry/tree/main/scan-results/618cf486"
