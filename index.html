@@ -588,7 +588,7 @@
             <a href="registry.html" class="nav-link">Registry</a>
             <a href="#submit" class="nav-link">Submit</a>
             <a href="https://github.com/pestafford/credence-registry/tree/main/mcp-server" class="nav-link">Install</a>
-            <a href="https://medium.com/@pe.stafford" class="nav-link">Research</a>
+            <a href="research.html" class="nav-link">Research</a>
             <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">◐</button>
         </div>
     </div>
@@ -659,7 +659,7 @@
                 <span class="pipe-num">02</span>
                 <div>
                     <h3>Scan</h3>
-                    <p>SAST via Semgrep and Bandit. Dependency CVE scanning via Trivy. Secrets detection via GitLeaks. MCP-specific tool analysis: description poisoning, schema poisoning, rug pull risk, permission scope, cross-tool contamination, name collision.</p>
+                    <p>SAST via Semgrep and Bandit. Dependency CVE scanning via Trivy. Secrets detection via GitLeaks. MCP-specific tool analysis: suspicious patterns in tool definitions, dynamic description loading.</p>
                 </div>
             </div>
             <div class="pipe-card">
@@ -673,7 +673,7 @@
                 <span class="pipe-num">04</span>
                 <div>
                     <h3>Attest</h3>
-                    <p>Cryptographically sign the analysis. Publish attestation with source hash, author identity, provenance flags, scan results, verdict, and trust score. Pin to exact commit — new commits invalidate attestation.</p>
+                    <p>Cryptographically sign the analysis. Publish attestation with source hash, author identity, provenance flags, verdict, and trust score. Pin to exact commit — new commits invalidate attestation.</p>
                 </div>
             </div>
         </div>
@@ -691,13 +691,17 @@
   <span class="key">"source_hash"</span>: <span class="val">"sha256:def789..."</span>,
   <span class="key">"source_hash_method"</span>: <span class="val">"merkle-tree-sha256"</span>,
   <span class="key">"author_identity"</span>: {
-    <span class="key">"claimed_author"</span>: <span class="val">"Anthropic"</span>,
     <span class="key">"repo_owner"</span>: <span class="val">"modelcontextprotocol"</span>,
     <span class="key">"identity_match"</span>: <span class="val">true</span>,
     <span class="key">"provenance_flags"</span>: <span class="val">[]</span>
   },
-  <span class="key">"trust_score"</span>: <span class="val">92</span>,
-  <span class="key">"thinktank_verdict"</span>: <span class="val">"APPROVED"</span>,
+  <span class="key">"trust_score"</span>: <span class="val">91</span>,
+  <span class="key">"trust_dimensions"</span>: {
+    <span class="key">"security"</span>: <span class="val">70</span>,
+    <span class="key">"provenance"</span>: <span class="val">100</span>,
+    <span class="key">"behavioral"</span>: <span class="val">100</span>
+  },
+  <span class="key">"thinktank_verdict"</span>: <span class="val">"VERIFIED"</span>,
   <span class="key">"signature"</span>: <span class="val">"ed25519:..."</span>  <span class="comment">// verify before install</span>
 }</pre>
         </div>
@@ -732,12 +736,12 @@
             <div class="threat-item">
                 <h4>Rug pull risk</h4>
                 <p>Dynamic tool descriptions, external config loading, version-gated behavior changes.</p>
-                <div class="coverage">Static analysis + tool description hashing</div>
+                <div class="coverage">Static analysis + dynamic loading detection</div>
             </div>
             <div class="threat-item">
-                <h4>Dependency confusion</h4>
-                <p>Lockfile tampering, missing lockfiles, dependency substitution.</p>
-                <div class="coverage">Separate lockfile hash verification</div>
+                <h4>Dependency integrity</h4>
+                <p>Missing lockfiles and lockfile drift across attestations.</p>
+                <div class="coverage">Lockfile presence verification + hash pinning</div>
             </div>
         </div>
         <p style="margin-top: 24px; font-size: 0.85rem; color: var(--text-muted);">Credence provides install-time trust data. It's complementary to runtime tools — Docker MCP Catalog, ToolHive, Solo.io Agent Mesh — that handle enforcement after installation. Defense in depth.</p>
@@ -790,9 +794,9 @@ $ pip install git+https://github.com/pestafford/credence-registry.git#subdirecto
 
 <span class="comment"># Or from the terminal</span>
 $ credence check modelcontextprotocol/server-github
-<span class="val">  Trust score:  92/100</span>
-<span class="val">  Verdict:      APPROVED</span>
-<span class="val">  ✔ SAFE TO INSTALL</span></pre>
+<span class="val">  Trust score:  91/100</span>
+<span class="val">  Verdict:      VERIFIED</span>
+<span class="val">  ✔ VERIFIED</span></pre>
         </div>
     </div>
 </section>
@@ -808,14 +812,14 @@ $ credence check modelcontextprotocol/server-github
                 <span class="pipe-num" style="color: var(--text-secondary);">▣</span>
                 <div>
                     <h3>Submitter verification</h3>
-                    <p>When a server is submitted, the pipeline checks whether the submitter is the repo owner or a listed collaborator via GitHub API. Verified maintainers receive full scan results. Third-party submitters receive a risk tier and provenance summary only — no vulnerability details. This prevents Credence from being used as a free recon tool against other people's code.</p>
+                    <p>When a server is submitted, the pipeline checks whether the submitter is the repo owner or a listed collaborator via GitHub API. Verified maintainers are identified via GitHub API and notified directly when issues are found. Third-party submitters receive a verdict and provenance summary only — no vulnerability details. This prevents Credence from being used as a recon tool against other people's code.</p>
                 </div>
             </div>
             <div class="pipe-card">
                 <span class="pipe-num" style="color: #6B9E4F;">●</span>
                 <div>
                     <h3>Low — Informational findings</h3>
-                    <p>Minor SAST findings, low-severity CVEs in transitive dependencies, style issues. Published in the attestation as-is. No hold on publication. Maintainer notified via GitHub issue with suggested fixes.</p>
+                    <p>Minor SAST findings, low-severity CVEs in transitive dependencies, style issues. Reflected in the trust score dimensions. No hold on publication. Maintainer notified via GitHub issue with suggested fixes.</p>
                 </div>
             </div>
             <div class="pipe-card">
@@ -894,7 +898,7 @@ $ credence check modelcontextprotocol/server-github
             <a href="https://github.com/pestafford/credence-registry/tree/main/mcp-server" class="btn btn-secondary">
                 Install the MCP server
             </a>
-            <a href="https://medium.com/@pe.stafford" class="btn btn-secondary">
+            <a href="research.html" class="btn btn-secondary">
                 Read the research
             </a>
         </div>
@@ -903,7 +907,7 @@ $ credence check modelcontextprotocol/server-github
 
 <footer>
     <div class="container">
-        <p>© 2026 <a href="https://medium.com/@pe.stafford">Phil Stafford</a> · Powered by Multi-Agent Adversarial Deliberation · <a href="https://securingthesingularity.com">Singularity Systems</a></p>
+        <p>© 2026 Phil Stafford · MIT License · <a href="https://github.com/pestafford/credence-registry">GitHub</a></p>
     </div>
 </footer>
 

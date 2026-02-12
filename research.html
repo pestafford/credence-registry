@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Research — Credence</title>
+    <meta name="description" content="Research, writing, and references behind the Credence MCP attestation registry.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --orange: #B8522A;
+            --orange-light: #C96235;
+            --orange-dim: #8E3F1F;
+            --gray-100: #F5F5F5;
+            --gray-200: #E0E0E0;
+            --gray-300: #B0B0B0;
+            --gray-400: #808080;
+            --gray-500: #606060;
+            --gray-600: #505050;
+            --gray-700: #383838;
+            --gray-800: #252525;
+            --gray-900: #1A1A1A;
+            --black: #111111;
+        }
+
+        [data-theme="dark"] {
+            --bg-primary: var(--black);
+            --bg-secondary: var(--gray-900);
+            --bg-card: var(--gray-800);
+            --bg-card-hover: var(--gray-700);
+            --text-primary: var(--gray-100);
+            --text-secondary: var(--gray-300);
+            --text-muted: var(--gray-400);
+            --border-color: var(--gray-700);
+            --border-subtle: var(--gray-800);
+            --code-bg: var(--gray-900);
+            --glow: rgba(184, 82, 42, 0.15);
+        }
+
+        [data-theme="light"] {
+            --bg-primary: #F7F6F4;
+            --bg-secondary: #FFFFFF;
+            --bg-card: #FFFFFF;
+            --bg-card-hover: #F0EEEB;
+            --text-primary: var(--gray-900);
+            --text-secondary: var(--gray-600);
+            --text-muted: var(--gray-500);
+            --border-color: #D8D4CE;
+            --border-subtle: #EBE8E4;
+            --code-bg: #EDEAE6;
+            --glow: rgba(184, 82, 42, 0.08);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'IBM Plex Sans', -apple-system, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            transition: background 0.3s ease, color 0.3s ease;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        /* NAV */
+        nav {
+            padding: 20px 0;
+            border-bottom: 1px solid var(--border-subtle);
+        }
+        nav .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .nav-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .nav-logo {
+            width: 36px;
+            height: 36px;
+        }
+        .nav-title {
+            font-family: 'IBM Plex Mono', monospace;
+            font-weight: 600;
+            font-size: 1.1rem;
+            letter-spacing: 0.02em;
+        }
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        .nav-link {
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+        .nav-link:hover { color: var(--orange); }
+        .nav-link.active { color: var(--orange); }
+
+        .theme-toggle {
+            background: none;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 6px 10px;
+            cursor: pointer;
+            color: var(--text-secondary);
+            font-size: 1rem;
+            transition: border-color 0.2s, color 0.2s;
+        }
+        .theme-toggle:hover {
+            border-color: var(--orange);
+            color: var(--orange);
+        }
+
+        /* PAGE HEADER */
+        .page-header {
+            padding: 48px 0 32px;
+        }
+        .page-header h1 {
+            font-family: 'Space Mono', monospace;
+            font-size: 1.8rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            margin-bottom: 8px;
+        }
+        .page-header p {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            max-width: 700px;
+        }
+
+        /* SECTIONS */
+        .section {
+            padding: 40px 0;
+            border-top: 1px solid var(--border-subtle);
+        }
+        .section-label {
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 0.75rem;
+            color: var(--orange);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 12px;
+        }
+        .section h2 {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+
+        /* LINK LIST */
+        .link-list {
+            list-style: none;
+        }
+        .link-list li {
+            padding: 14px 0;
+            border-bottom: 1px solid var(--border-subtle);
+        }
+        .link-list li:last-child {
+            border-bottom: none;
+        }
+        .link-title {
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+        .link-title a {
+            color: var(--text-primary);
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+        .link-title a:hover {
+            color: var(--orange);
+        }
+        .link-meta {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-top: 4px;
+        }
+        .link-desc {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-top: 4px;
+        }
+
+        /* FOOTER */
+        footer {
+            padding: 32px 0;
+            border-top: 1px solid var(--border-subtle);
+            text-align: center;
+            margin-top: 40px;
+        }
+        footer p {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+        footer a {
+            color: var(--text-secondary);
+            text-decoration: none;
+        }
+        footer a:hover { color: var(--orange); }
+
+        /* RESPONSIVE */
+        @media (max-width: 640px) {
+            .page-header h1 { font-size: 1.4rem; }
+            .nav-right { gap: 8px; }
+            .nav-link { font-size: 0.7rem; }
+            .nav-title { display: none; }
+        }
+    </style>
+</head>
+<body>
+
+<nav>
+    <div class="container">
+        <div class="nav-left">
+            <a href="index.html"><img src="credencelogo.png" alt="Credence" class="nav-logo"></a>
+            <a href="index.html" style="text-decoration:none; color:inherit;"><span class="nav-title">Credence</span></a>
+        </div>
+        <div class="nav-right">
+            <a href="https://github.com/pestafford/credence-registry" class="nav-link">GitHub</a>
+            <a href="registry.html" class="nav-link">Registry</a>
+            <a href="index.html#submit" class="nav-link">Submit</a>
+            <a href="https://github.com/pestafford/credence-registry/tree/main/mcp-server" class="nav-link">Install</a>
+            <a href="research.html" class="nav-link active">Research</a>
+            <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">&#9684;</button>
+        </div>
+    </div>
+</nav>
+
+<div class="container">
+    <div class="page-header">
+        <h1>Research &amp; Writing</h1>
+        <p>Background research, design decisions, and external work that informed Credence. This project sits at the intersection of MCP security, software supply chain integrity, and multi-agent AI systems.</p>
+    </div>
+
+    <section class="section">
+        <div class="section-label">Writing</div>
+        <h2>Blog posts</h2>
+        <ul class="link-list">
+            <li>
+                <div class="link-title"><a href="https://medium.com/@pe.stafford" target="_blank" rel="noopener">MCP Security and the Case for Cryptographic Attestation</a></div>
+                <div class="link-meta">Medium &middot; 2026</div>
+                <div class="link-desc">Why the MCP ecosystem needs a trust layer beyond social signals, and how Credence approaches the problem.</div>
+            </li>
+            <li>
+                <div class="link-title"><a href="https://medium.com/@pe.stafford" target="_blank" rel="noopener">Multi-Agent Adversarial Deliberation for Security Analysis</a></div>
+                <div class="link-meta">Medium &middot; 2026</div>
+                <div class="link-desc">The design behind Credence's five-agent debate system: why probabilistic security issues require probabilistic solutions.</div>
+            </li>
+            <li>
+                <div class="link-title"><a href="https://medium.com/@pe.stafford" target="_blank" rel="noopener">All posts on Medium &rarr;</a></div>
+                <div class="link-meta">medium.com/@pe.stafford</div>
+            </li>
+        </ul>
+    </section>
+
+    <section class="section">
+        <div class="section-label">Project</div>
+        <h2>Documentation</h2>
+        <ul class="link-list">
+            <li>
+                <div class="link-title"><a href="https://github.com/pestafford/credence-registry" target="_blank" rel="noopener">GitHub Repository</a></div>
+                <div class="link-desc">Source code, attestation schema, scan pipeline, and MCP server implementation.</div>
+            </li>
+            <li>
+                <div class="link-title"><a href="https://github.com/pestafford/credence-registry/tree/main/mcp-server" target="_blank" rel="noopener">MCP Server Source</a></div>
+                <div class="link-desc">The Credence MCP server and CLI. Install it to check attestations from Claude Desktop, Claude Code, or any MCP client.</div>
+            </li>
+            <li>
+                <div class="link-title"><a href="https://github.com/pestafford/credence-registry/blob/main/registry.json" target="_blank" rel="noopener">Attestation Schema &amp; Registry</a></div>
+                <div class="link-desc">The live registry file. Trust scores, verdicts, provenance data, and Ed25519 signatures for every scanned server.</div>
+            </li>
+            <li>
+                <div class="link-title"><a href="https://github.com/pestafford/credence-registry/blob/main/.github/workflows/credence-scan.yml" target="_blank" rel="noopener">Scan Pipeline (GitHub Action)</a></div>
+                <div class="link-desc">The CI workflow that runs the full Credence pipeline: collect, scan, deliberate, attest, sign, publish.</div>
+            </li>
+        </ul>
+    </section>
+
+    <section class="section">
+        <div class="section-label">References</div>
+        <h2>Work that informed Credence</h2>
+        <ul class="link-list">
+            <li>
+                <div class="link-title"><a href="https://www.straiker.ai/blog/smartloader-clones-oura-ring-mcp-to-deploy-supply-chain-attack" target="_blank" rel="noopener">SmartLoader: Cloned Repos Deploy Supply Chain Attack via MCP</a></div>
+                <div class="link-meta">Straiker STAR Labs &middot; 2025</div>
+                <div class="link-desc">The attack that demonstrated why social signals (stars, forks, README quality) are insufficient for MCP trust decisions.</div>
+            </li>
+            <li>
+                <div class="link-title"><a href="https://github.com/ossf/scorecard" target="_blank" rel="noopener">OpenSSF Scorecard</a></div>
+                <div class="link-meta">Open Source Security Foundation</div>
+                <div class="link-desc">Automated security assessment for open source projects. Credence's risk tier weights are derived from Scorecard's methodology.</div>
+            </li>
+            <li>
+                <div class="link-title"><a href="https://www.sigstore.dev/" target="_blank" rel="noopener">Sigstore</a></div>
+                <div class="link-meta">Linux Foundation</div>
+                <div class="link-desc">Keyless code signing infrastructure. Informed Credence's approach to cryptographic attestation and transparency logs.</div>
+            </li>
+            <li>
+                <div class="link-title"><a href="https://modelcontextprotocol.io/specification" target="_blank" rel="noopener">Model Context Protocol Specification</a></div>
+                <div class="link-meta">Anthropic</div>
+                <div class="link-desc">The protocol specification that defines MCP server behavior, tool definitions, and the transport layer Credence audits.</div>
+            </li>
+        </ul>
+    </section>
+</div>
+
+<footer>
+    <div class="container">
+        <p>&copy; 2026 Phil Stafford &middot; MIT License &middot; <a href="https://github.com/pestafford/credence-registry">GitHub</a></p>
+    </div>
+</footer>
+
+<script>
+    function toggleTheme() {
+        var html = document.documentElement;
+        var current = html.getAttribute('data-theme');
+        var next = current === 'dark' ? 'light' : 'dark';
+        html.setAttribute('data-theme', next);
+        localStorage.setItem('credence-theme', next);
+    }
+
+    var saved = localStorage.getItem('credence-theme');
+    if (saved) {
+        document.documentElement.setAttribute('data-theme', saved);
+    } else if (window.matchMedia('(prefers-color-scheme: light)').matches) {
+        document.documentElement.setAttribute('data-theme', 'light');
+    }
+</script>
+
+</body>
+</html>
