@@ -32,7 +32,7 @@ def build_attestation(summary: dict) -> dict:
         "scoring_version": summary.get("scoring_version", "1.0.0"),
         "trust_score": summary.get("trust_score"),
         "trust_dimensions": summary.get("trust_dimensions", {}),
-        "thinktank_verdict": summary.get("thinktank_verdict", "PENDING"),
+        "thinktank_verdict": summary.get("thinktank_verdict", "PENDING").replace("_PRELIMINARY", ""),
         "author_identity": {
             "repo_owner": summary.get("repo_url", "").rstrip("/").split("/")[-2] if "/" in summary.get("repo_url", "") else "",
             "identity_match": "REPO_OWNER_DIFFERS_FROM_CLAIMED_AUTHOR" not in summary.get("provenance_flags", []),

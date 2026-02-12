@@ -3,6 +3,18 @@ name: Credence Pipeline — Scan MCP Server
 on:
   issues:
     types: [opened, labeled]
+  workflow_dispatch:
+    inputs:
+      scan_id:
+        description: 'Scan ID (commit SHA prefix from scan-results/)'
+        required: true
+        type: string
+      action:
+        description: 'Action to take'
+        required: true
+        type: choice
+        options:
+          - publish
 
 jobs:
   # ── JOB 1: ACKNOWLEDGE ─────────────────────────
@@ -598,6 +610,45 @@ jobs:
             fi
           fi
 
+      - name: Annotate disclosure hold
+        if: steps.deliberation.outputs.publish == 'false'
+        run: |
+          SUMMARY=$(cat /tmp/scan-summary.json)
+          SCORE=$(echo "$SUMMARY" | jq -r '.trust_score')
+          VERDICT=$(echo "$SUMMARY" | jq -r '.thinktank_verdict')
+          SERVER="${{ steps.parse.outputs.server_name }}"
+          REPO="${{ steps.parse.outputs.repo_url }}"
+          DIMS=$(echo "$SUMMARY" | jq -r '.trust_dimensions | "Security: \(.security), Provenance: \(.provenance), Behavioral: \(.behavioral)"')
+          SEMGREP=$(echo "$SUMMARY" | jq -r '.scan_results.semgrep_findings')
+          BANDIT=$(echo "$SUMMARY" | jq -r '.scan_results.bandit_findings')
+          TRIVY=$(echo "$SUMMARY" | jq -r '.scan_results.trivy_vulnerabilities')
+          GITLEAKS=$(echo "$SUMMARY" | jq -r '.scan_results.gitleaks_secrets')
+          MCP_WARN=$(echo "$SUMMARY" | jq -r '.scan_results.mcp_tool_warnings')
+          FLAGS=$(echo "$SUMMARY" | jq -r '.provenance_flags | join(", ")')
+
+          cat >> $GITHUB_STEP_SUMMARY <<MDEOF
+          ## Disclosure Hold — Manual Review Required
+
+          | Field | Value |
+          |-------|-------|
+          | Server | ${SERVER} |
+          | Repository | ${REPO} |
+          | Commit | \`${{ env.TARGET_COMMIT }}\` |
+          | Score | **${SCORE}/100** |
+          | Verdict | **${VERDICT}** |
+          | Dimensions | ${DIMS} |
+          | Semgrep | ${SEMGREP} |
+          | Bandit | ${BANDIT} |
+          | Trivy CVEs | ${TRIVY} |
+          | Gitleaks | ${GITLEAKS} |
+          | MCP warnings | ${MCP_WARN} |
+          | Provenance flags | ${FLAGS:-none} |
+
+          Detailed findings available in the workflow artifacts (90-day retention).
+
+          To publish after disclosure: use the **Publish held scan** workflow dispatch with scan ID \`$(echo "${{ env.TARGET_COMMIT }}" | cut -c1-8)\`.
+          MDEOF
+
       # ── STAGE 4d: SIGN + REPORTS + REGISTRY ──────────
 
       - name: Generate report and badge
@@ -620,7 +671,6 @@ jobs:
       # ── STAGE 5: STORE RESULTS ────────────────────────
 
       - name: Store scan results
-        if: steps.deliberation.outputs.publish == 'true'
         run: |
           SCAN_ID=$(echo "${{ env.TARGET_COMMIT }}" | cut -c1-8)
           RESULTS_DIR="scan-results/${SCAN_ID}"
@@ -660,11 +710,14 @@ jobs:
           retention-days: 90
 
       - name: Commit results to repo
-        if: steps.deliberation.outputs.publish == 'true'
         run: |
           git config user.name "credence-bot"
           git config user.email "credence-bot@users.noreply.github.com"
-          git add scan-results/ registry.json
+          git add scan-results/
+          if [ "${{ steps.deliberation.outputs.publish }}" = "true" ]; then
+            git add registry.json
+          fi
+          git diff --cached --quiet && echo "No changes to commit" && exit 0
           git commit -m "scan: ${{ steps.parse.outputs.server_name }} @ ${{ env.TARGET_COMMIT }}"
           git push
 
@@ -770,3 +823,65 @@ jobs:
               issue_number: context.issue.number,
               labels: labels
             });
+
+  # ── JOB 3: MANUAL PUBLISH ────────────────────────
+  publish:
+    if: github.event_name == 'workflow_dispatch' && github.event.inputs.action == 'publish'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      issues: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install credence
+        run: |
+          pip install cryptography --break-system-packages -q
+          pip install ./mcp-server --break-system-packages -q
+
+      - name: Locate scan summary
+        id: locate
+        run: |
+          SCAN_ID="${{ github.event.inputs.scan_id }}"
+          SUMMARY_PATH="scan-results/${SCAN_ID}/summary.json"
+          if [ ! -f "$SUMMARY_PATH" ]; then
+            echo "Error: No scan results found at ${SUMMARY_PATH}"
+            echo "Available scan IDs:"
+            ls scan-results/ 2>/dev/null || echo "  (none)"
+            exit 1
+          fi
+          echo "summary_path=$SUMMARY_PATH" >> $GITHUB_OUTPUT
+          echo "Found: $SUMMARY_PATH"
+
+      - name: Update registry
+        env:
+          CREDENCE_SIGNING_KEY: ${{ secrets.CREDENCE_SIGNING_KEY }}
+        run: |
+          SUMMARY_PATH="${{ steps.locate.outputs.summary_path }}"
+          if [ -n "$CREDENCE_SIGNING_KEY" ]; then
+            python3 -m credence_mcp.registry_update "$SUMMARY_PATH" registry.json --key-env CREDENCE_SIGNING_KEY
+          else
+            python3 -m credence_mcp.registry_update "$SUMMARY_PATH" registry.json
+          fi
+
+      - name: Commit and push
+        run: |
+          git config user.name "credence-bot"
+          git config user.email "credence-bot@users.noreply.github.com"
+          git add registry.json
+          SERVER_NAME=$(jq -r '.server_name' "${{ steps.locate.outputs.summary_path }}")
+          git commit -m "publish: ${SERVER_NAME} (manual disclosure clearance)"
+          git push
+
+      - name: Summary
+        run: |
+          SUMMARY_PATH="${{ steps.locate.outputs.summary_path }}"
+          SERVER=$(jq -r '.server_name' "$SUMMARY_PATH")
+          SCORE=$(jq -r '.trust_score' "$SUMMARY_PATH")
+          VERDICT=$(jq -r '.thinktank_verdict' "$SUMMARY_PATH")
+          echo "## Published: ${SERVER}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "- Score: ${SCORE}/100" >> $GITHUB_STEP_SUMMARY
+          echo "- Verdict: ${VERDICT}" >> $GITHUB_STEP_SUMMARY
+          echo "- Scan ID: ${{ github.event.inputs.scan_id }}" >> $GITHUB_STEP_SUMMARY

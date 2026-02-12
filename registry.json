@@ -18,7 +18,7 @@
         "attested_at": "2026-02-08T02:58:20Z",
         "pipeline_version": "0.2.0",
         "trust_score": 95,
-        "thinktank_verdict": "APPROVED_PRELIMINARY",
+        "thinktank_verdict": "VERIFIED",
         "author_identity": {
           "repo_owner": "modelcontextprotocol",
           "identity_match": true,
@@ -58,7 +58,7 @@
           "provenance": 100,
           "behavioral": 100
         },
-        "thinktank_verdict": "VERIFIED_PRELIMINARY",
+        "thinktank_verdict": "VERIFIED",
         "author_identity": {
           "repo_owner": "modelcontextprotocol",
           "identity_match": true,

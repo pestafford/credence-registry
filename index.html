@@ -585,7 +585,7 @@
         </div>
         <div class="nav-right">
             <a href="https://github.com/pestafford/credence-registry" class="nav-link">GitHub</a>
-            <a href="#registry" class="nav-link">Registry</a>
+            <a href="registry.html" class="nav-link">Registry</a>
             <a href="#submit" class="nav-link">Submit</a>
             <a href="https://github.com/pestafford/credence-registry/tree/main/mcp-server" class="nav-link">Install</a>
             <a href="https://medium.com/@pe.stafford" class="nav-link">Research</a>
@@ -1007,15 +1007,12 @@ $ credence check modelcontextprotocol/server-github
                     return new Date(b.attestation.attested_at) - new Date(a.attestation.attested_at);
                 });
 
-                // Stats — only count disclosed (non-preliminary) for avg score
+                // Stats
                 var totalScanned = servers.length;
-                var disclosed = servers.filter(function(s) {
-                    return (s.attestation.thinktank_verdict || '').indexOf('PRELIMINARY') === -1;
-                });
-                var avgScore = disclosed.length > 0
-                    ? Math.round(disclosed.reduce(function(sum, s) {
+                var avgScore = totalScanned > 0
+                    ? Math.round(servers.reduce(function(sum, s) {
                         return sum + (s.attestation.trust_score || 0);
-                    }, 0) / disclosed.length)
+                    }, 0) / totalScanned)
                     : '—';
                 var latestDate = servers[0].attestation.attested_at;
 
@@ -1041,38 +1038,22 @@ $ credence check modelcontextprotocol/server-github
                     var date = timeAgo(a.attested_at);
                     var commitShort = (a.commit_sha || '').substring(0, 8);
                     var attestUrl = entry.attestation_url || '#';
-                    var isPreliminary = (a.thinktank_verdict || '').indexOf('PRELIMINARY') !== -1;
+                    var badgeClass = scoreBadgeClass(score);
+                    var vLabel = verdictLabel(a.thinktank_verdict);
+                    var vColor = verdictColor(a.thinktank_verdict);
 
-                    if (isPreliminary) {
-                        rowsHtml += '<tr>' +
-                            '<td><a href="' + link + '" target="_blank" rel="noopener" class="server-name-link">' + name + '</a></td>' +
-                            '<td colspan="2"><span class="verdict-cell" style="color:var(--text-muted)">DISCLOSURE PENDING</span></td>' +
-                            '<td class="scan-date">' + date + '</td>' +
-                            '</tr>';
+                    rowsHtml += '<tr>' +
+                        '<td><a href="' + link + '" target="_blank" rel="noopener" class="server-name-link">' + name + '</a></td>' +
+                        '<td><span class="score-badge ' + badgeClass + '">' + score + '</span></td>' +
+                        '<td><span class="verdict-cell" style="color:' + vColor + '">' + vLabel + '</span></td>' +
+                        '<td><a href="' + attestUrl + '" target="_blank" rel="noopener" class="scan-date" style="color:var(--text-muted); text-decoration:none;">' + date + '</a></td>' +
+                        '</tr>';
 
-                        mobileHtml += '<div class="server-card-mobile" style="padding:10px 0; border-bottom:1px solid var(--border-subtle);">' +
-                            '<div style="display:flex; justify-content:space-between; align-items:center;">' +
-                            '<a href="' + link + '" target="_blank" rel="noopener" class="server-name-link">' + name + '</a>' +
-                            '<span class="verdict-cell" style="color:var(--text-muted)">DISCLOSURE PENDING</span>' +
-                            '</div></div>';
-                    } else {
-                        var badgeClass = scoreBadgeClass(score);
-                        var vLabel = verdictLabel(a.thinktank_verdict);
-                        var vColor = verdictColor(a.thinktank_verdict);
-
-                        rowsHtml += '<tr>' +
-                            '<td><a href="' + link + '" target="_blank" rel="noopener" class="server-name-link">' + name + '</a></td>' +
-                            '<td><span class="score-badge ' + badgeClass + '">' + score + '</span></td>' +
-                            '<td><span class="verdict-cell" style="color:' + vColor + '">' + vLabel + '</span></td>' +
-                            '<td><a href="' + attestUrl + '" target="_blank" rel="noopener" class="scan-date" style="color:var(--text-muted); text-decoration:none;">' + date + '</a></td>' +
-                            '</tr>';
-
-                        mobileHtml += '<div class="server-card-mobile" style="padding:10px 0; border-bottom:1px solid var(--border-subtle);">' +
-                            '<div style="display:flex; justify-content:space-between; align-items:center;">' +
-                            '<a href="' + link + '" target="_blank" rel="noopener" class="server-name-link">' + name + '</a>' +
-                            '<span class="score-badge ' + badgeClass + '">' + score + '</span>' +
-                            '</div></div>';
-                    }
+                    mobileHtml += '<div class="server-card-mobile" style="padding:10px 0; border-bottom:1px solid var(--border-subtle);">' +
+                        '<div style="display:flex; justify-content:space-between; align-items:center;">' +
+                        '<a href="' + link + '" target="_blank" rel="noopener" class="server-name-link">' + name + '</a>' +
+                        '<span class="score-badge ' + badgeClass + '">' + score + '</span>' +
+                        '</div></div>';
                 });
 
                 tbody.innerHTML = rowsHtml;
