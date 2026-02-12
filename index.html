@@ -438,6 +438,58 @@
             color: var(--text-muted);
             margin-top: 12px;
         }
+        .submit-confirmation {
+            margin-top: 20px;
+            padding: 20px 24px;
+            background: rgba(184, 82, 42, 0.08);
+            border: 1px solid rgba(184, 82, 42, 0.25);
+            border-radius: 8px;
+            display: none;
+        }
+        .submit-confirmation.visible { display: block; }
+        .submit-confirmation h4 {
+            font-family: 'IBM Plex Sans', sans-serif;
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--orange-light);
+            margin: 0 0 8px;
+        }
+        .submit-confirmation p {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin: 0 0 4px;
+            line-height: 1.5;
+        }
+        .submit-confirmation a { color: var(--orange); }
+        .process-steps {
+            margin-top: 24px;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+        }
+        .process-step {
+            text-align: center;
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            line-height: 1.4;
+        }
+        .process-step .step-num {
+            display: inline-block;
+            width: 22px; height: 22px;
+            line-height: 22px;
+            border-radius: 50%;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            color: var(--text-secondary);
+            font-size: 0.7rem;
+            font-weight: 600;
+            margin-bottom: 6px;
+        }
+        .process-step .step-label { display: block; }
+        @media (max-width: 600px) {
+            .process-steps { grid-template-columns: repeat(2, 1fr); }
+        }
 
         /* DASHBOARD */
         .dashboard-section {
@@ -889,10 +941,21 @@ $ credence check modelcontextprotocol/server-github
                 <label for="context">Additional context <span class="optional">(optional)</span></label>
                 <textarea id="context" rows="3" placeholder="Anything we should know — specific concerns, transport type, known issues..."></textarea>
             </div>
-            <button class="btn btn-primary submit-btn" onclick="submitServer()">
+            <button class="btn btn-primary submit-btn" id="submit-btn" onclick="submitServer()">
                 Submit for analysis →
             </button>
             <p class="form-note">Opens a pre-filled GitHub Issue. You'll need a GitHub account.</p>
+            <div class="submit-confirmation" id="submit-confirmation">
+                <h4>Issue created — you're all set</h4>
+                <p>A maintainer will review your submission and start the scan. Results get posted directly to your GitHub issue — watch it for updates.</p>
+                <p style="margin-top: 8px;"><a href="https://github.com/pestafford/credence-registry/issues" target="_blank">View all submissions →</a></p>
+            </div>
+            <div class="process-steps">
+                <div class="process-step"><span class="step-num">1</span><span class="step-label">You submit</span></div>
+                <div class="process-step"><span class="step-num">2</span><span class="step-label">We review</span></div>
+                <div class="process-step"><span class="step-num">3</span><span class="step-label">Pipeline scans</span></div>
+                <div class="process-step"><span class="step-num">4</span><span class="step-label">Results posted</span></div>
+            </div>
         </div>
     </div>
 </section>
@@ -1125,9 +1188,16 @@ $ credence check modelcontextprotocol/server-github
         if (context) body += `\n### Additional context\n${context}\n`;
         body += `\n---\n_Submitted via Credence Registry landing page_`;
 
-        const issueUrl = `https://github.com/pestafford/credence-registry/issues/new?title=${title}&body=${encodeURIComponent(body)}&labels=submission`;
+        const issueUrl = `https://github.com/pestafford/credence-registry/issues/new?title=${title}&body=${encodeURIComponent(body)}`;
 
         window.open(issueUrl, '_blank');
+
+        // Show confirmation and update button
+        var btn = document.getElementById('submit-btn');
+        btn.textContent = 'Submitted';
+        btn.style.opacity = '0.6';
+        btn.style.pointerEvents = 'none';
+        document.getElementById('submit-confirmation').classList.add('visible');
     }
 </script>
 
