@@ -983,11 +983,6 @@ $ credence check modelcontextprotocol/server-github
         return entry.server_name || entry.server_id.split('/').pop();
     }
 
-    function serverRepoLink(entry) {
-        const base = entry.repo_url || ('https://github.com/' + entry.server_id);
-        return base;
-    }
-
     function loadDashboard() {
         fetch('registry.json')
             .then(function(r) { return r.json(); })
@@ -1029,32 +1024,36 @@ $ credence check modelcontextprotocol/server-github
                 var rowsHtml = '';
                 var mobileHtml = '';
 
-                servers.forEach(function(entry) {
+                var recent = servers.slice(0, 3);
+
+                recent.forEach(function(entry) {
                     var a = entry.attestation;
                     var score = a.trust_score;
-                    var dims = a.trust_dimensions || {};
                     var name = serverDisplayName(entry);
-                    var link = serverRepoLink(entry);
                     var date = timeAgo(a.attested_at);
-                    var commitShort = (a.commit_sha || '').substring(0, 8);
-                    var attestUrl = entry.attestation_url || '#';
                     var badgeClass = scoreBadgeClass(score);
                     var vLabel = verdictLabel(a.thinktank_verdict);
                     var vColor = verdictColor(a.thinktank_verdict);
 
-                    rowsHtml += '<tr>' +
-                        '<td><a href="' + link + '" target="_blank" rel="noopener" class="server-name-link">' + name + '</a></td>' +
+                    rowsHtml += '<tr onclick="window.location=\'registry.html\'" style="cursor:pointer;">' +
+                        '<td><span class="server-name-link">' + name + '</span></td>' +
                         '<td><span class="score-badge ' + badgeClass + '">' + score + '</span></td>' +
                         '<td><span class="verdict-cell" style="color:' + vColor + '">' + vLabel + '</span></td>' +
-                        '<td><a href="' + attestUrl + '" target="_blank" rel="noopener" class="scan-date" style="color:var(--text-muted); text-decoration:none;">' + date + '</a></td>' +
+                        '<td class="scan-date">' + date + '</td>' +
                         '</tr>';
 
-                    mobileHtml += '<div class="server-card-mobile" style="padding:10px 0; border-bottom:1px solid var(--border-subtle);">' +
+                    mobileHtml += '<div class="server-card-mobile" style="padding:10px 0; border-bottom:1px solid var(--border-subtle); cursor:pointer;" onclick="window.location=\'registry.html\'">' +
                         '<div style="display:flex; justify-content:space-between; align-items:center;">' +
-                        '<a href="' + link + '" target="_blank" rel="noopener" class="server-name-link">' + name + '</a>' +
+                        '<span class="server-name-link">' + name + '</span>' +
                         '<span class="score-badge ' + badgeClass + '">' + score + '</span>' +
                         '</div></div>';
                 });
+
+                if (servers.length > 3) {
+                    rowsHtml += '<tr onclick="window.location=\'registry.html\'" style="cursor:pointer;">' +
+                        '<td colspan="4" style="text-align:center; color:var(--orange);">View all ' + servers.length + ' servers →</td></tr>';
+                    mobileHtml += '<div style="padding:12px 0; text-align:center;"><a href="registry.html" style="color:var(--orange); text-decoration:none;">View all ' + servers.length + ' servers →</a></div>';
+                }
 
                 tbody.innerHTML = rowsHtml;
                 var tableEl = document.getElementById('dashboard-table');
