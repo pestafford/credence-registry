@@ -4,7 +4,7 @@
   "registry_url": "https://pestafford.github.io/credence-registry/",
   "maintainer": "Phil Stafford <pe.stafford@gmail.com>",
   "signing_public_key": "XdvqC/Q6TX90MpL37wdxfUtqOiS8qiQjK8JNJy+BOcM=",
-  "updated_at": "2026-02-11T23:28:59Z",
+  "updated_at": "2026-02-12T01:19:43Z",
   "servers": [
     {
       "server_id": "modelcontextprotocol/server-filesystem",
@@ -49,23 +49,21 @@
         "commit_sha": "618cf4867bca1fa193553d94fb7f2b2cf47f2a04",
         "source_hash": "43140242e35ba782e4f6f5fd7d1b0496d705969354737f5bb49f36fce4b6052f",
         "source_hash_method": "merkle-tree-sha256",
-        "attested_at": "2026-02-11T23:28:59Z",
+        "attested_at": "2026-02-12T01:19:43Z",
         "pipeline_version": "0.2.0",
         "scoring_version": "1.0.0",
-        "trust_score": 45,
+        "trust_score": 91,
         "trust_dimensions": {
           "security": 70,
-          "provenance": 80,
+          "provenance": 100,
           "behavioral": 100
         },
-        "thinktank_verdict": "CONDITIONAL",
+        "thinktank_verdict": "VERIFIED_PRELIMINARY",
         "author_identity": {
           "repo_owner": "modelcontextprotocol",
-          "identity_match": false,
+          "identity_match": true,
           "is_fork": false,
-          "provenance_flags": [
-            "REPO_OWNER_DIFFERS_FROM_CLAIMED_AUTHOR"
-          ]
+          "provenance_flags": []
         },
         "scan_summary": {
           "semgrep_findings": 23,
@@ -79,8 +77,8 @@
         "lockfile_hash": "723b5d17a2ca19632c871f71d3263d349a1340c9609de3737fc1612783fb5402",
         "signature": {
           "algorithm": "ed25519",
-          "value": "HiVR5F4VcQWV1juSnvLP7U0BSl1hPmXcedBEnZeKK25Dg9BxwoXdp8Ty87/votVWQLkj3pTePuCXcYAXh8mmCg==",
-          "canonical_hash": "9df49a7ed3f018e4c41d0b522114e928f4355ae45af66a80b0d07cca3f5118c8"
+          "value": "vujbfsbRfN29NC+hgxTjsRE/ucP4f/RiWd+w1iAcpxCc2J/1xmab+IZfVaAD4dzpO9aPJr4CbEdOceemT9n8BQ==",
+          "canonical_hash": "b9cceae3ed8a5422231a270efbd707c5cf912553c29f2f56ad5659ac2ba546eb"
         }
       },
       "attestation_url": "https://github.com/pestafford/credence-registry/tree/main/scan-results/618cf486"
