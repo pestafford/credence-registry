@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Adversarial Trust Layer — Credence</title>
+    <meta name="description" content="Position paper: Why the MCP ecosystem needs cryptographic attestation and multi-agent verification. Phil Stafford, February 2026.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --orange: #B8522A;
+            --orange-light: #C96235;
+            --orange-dim: #8E3F1F;
+            --gray-100: #F5F5F5;
+            --gray-200: #E0E0E0;
+            --gray-300: #B0B0B0;
+            --gray-400: #808080;
+            --gray-500: #606060;
+            --gray-600: #505050;
+            --gray-700: #383838;
+            --gray-800: #252525;
+            --gray-900: #1A1A1A;
+            --black: #111111;
+        }
+
+        [data-theme="dark"] {
+            --bg-primary: var(--black);
+            --bg-secondary: var(--gray-900);
+            --bg-card: var(--gray-800);
+            --bg-card-hover: var(--gray-700);
+            --text-primary: var(--gray-100);
+            --text-secondary: var(--gray-300);
+            --text-muted: var(--gray-400);
+            --border-color: var(--gray-700);
+            --border-subtle: var(--gray-800);
+            --code-bg: var(--gray-900);
+            --glow: rgba(184, 82, 42, 0.15);
+        }
+
+        [data-theme="light"] {
+            --bg-primary: #F7F6F4;
+            --bg-secondary: #FFFFFF;
+            --bg-card: #FFFFFF;
+            --bg-card-hover: #F0EEEB;
+            --text-primary: var(--gray-900);
+            --text-secondary: var(--gray-600);
+            --text-muted: var(--gray-500);
+            --border-color: #D8D4CE;
+            --border-subtle: #EBE8E4;
+            --code-bg: #EDEAE6;
+            --glow: rgba(184, 82, 42, 0.08);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'IBM Plex Sans', -apple-system, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            transition: background 0.3s ease, color 0.3s ease;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        /* NAV */
+        nav {
+            padding: 20px 0;
+            border-bottom: 1px solid var(--border-subtle);
+        }
+        nav .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .nav-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .nav-logo {
+            width: 36px;
+            height: 36px;
+        }
+        .nav-title {
+            font-family: 'IBM Plex Mono', monospace;
+            font-weight: 600;
+            font-size: 1.1rem;
+            letter-spacing: 0.02em;
+        }
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        .nav-link {
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+        .nav-link:hover { color: var(--orange); }
+        .nav-link.active { color: var(--orange); }
+
+        .theme-toggle {
+            background: none;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 6px 10px;
+            cursor: pointer;
+            color: var(--text-secondary);
+            font-size: 1rem;
+            transition: border-color 0.2s, color 0.2s;
+        }
+        .theme-toggle:hover {
+            border-color: var(--orange);
+            color: var(--orange);
+        }
+
+        /* ARTICLE */
+        .article-header {
+            padding: 48px 0 24px;
+            border-bottom: 1px solid var(--border-subtle);
+            margin-bottom: 40px;
+        }
+        .article-header h1 {
+            font-family: 'Space Mono', monospace;
+            font-size: 1.7rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            margin-bottom: 16px;
+            line-height: 1.3;
+        }
+        .article-meta {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 16px;
+        }
+        .article-meta strong {
+            color: var(--text-secondary);
+        }
+        .pdf-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 0.8rem;
+            font-weight: 500;
+            padding: 8px 16px;
+            border-radius: 6px;
+            text-decoration: none;
+            background: transparent;
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+            transition: all 0.2s;
+        }
+        .pdf-btn:hover {
+            border-color: var(--orange);
+            color: var(--orange);
+        }
+
+        .tldr {
+            border-left: 2px solid var(--orange);
+            padding: 16px 20px;
+            margin-bottom: 40px;
+            background: var(--bg-card);
+        }
+        .tldr p {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            line-height: 1.7;
+        }
+        .tldr strong {
+            color: var(--text-primary);
+        }
+
+        article h2 {
+            font-family: 'Space Mono', monospace;
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin: 48px 0 16px;
+            padding-top: 24px;
+            border-top: 1px solid var(--border-subtle);
+        }
+        article h3 {
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 1rem;
+            font-weight: 600;
+            margin: 32px 0 12px;
+        }
+        article p {
+            color: var(--text-secondary);
+            margin-bottom: 16px;
+            line-height: 1.75;
+        }
+        article strong {
+            color: var(--text-primary);
+        }
+        article em {
+            font-style: italic;
+        }
+        article a {
+            color: var(--orange);
+            text-decoration: none;
+        }
+        article a:hover {
+            text-decoration: underline;
+        }
+        article ul, article ol {
+            margin: 0 0 16px 24px;
+            color: var(--text-secondary);
+        }
+        article li {
+            margin-bottom: 8px;
+            line-height: 1.7;
+        }
+        .separator {
+            text-align: center;
+            color: var(--text-muted);
+            margin: 32px 0;
+            font-size: 1.2rem;
+            letter-spacing: 0.3em;
+        }
+
+        /* REFERENCES */
+        .references {
+            margin-top: 48px;
+            padding-top: 24px;
+            border-top: 1px solid var(--border-subtle);
+        }
+        .references h3 {
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--orange);
+            margin-bottom: 16px;
+        }
+        .references ol {
+            margin-left: 24px;
+        }
+        .references li {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-bottom: 6px;
+            line-height: 1.6;
+        }
+        .references li a {
+            color: var(--text-secondary);
+        }
+
+        /* FOOTER */
+        footer {
+            padding: 32px 0;
+            border-top: 1px solid var(--border-subtle);
+            text-align: center;
+            margin-top: 40px;
+        }
+        footer p {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+        footer a {
+            color: var(--text-secondary);
+            text-decoration: none;
+        }
+        footer a:hover { color: var(--orange); }
+
+        /* RESPONSIVE */
+        @media (max-width: 640px) {
+            .article-header h1 { font-size: 1.3rem; }
+            .nav-right { gap: 8px; }
+            .nav-link { font-size: 0.7rem; }
+            .nav-title { display: none; }
+        }
+    </style>
+</head>
+<body>
+
+<nav>
+    <div class="container">
+        <div class="nav-left">
+            <a href="../index.html"><img src="../credencelogo.png" alt="Credence" class="nav-logo"></a>
+            <a href="../index.html" style="text-decoration:none; color:inherit;"><span class="nav-title">Credence</span></a>
+        </div>
+        <div class="nav-right">
+            <a href="https://github.com/pestafford/credence-registry" class="nav-link">GitHub</a>
+            <a href="../registry.html" class="nav-link">Registry</a>
+            <a href="../index.html#submit" class="nav-link">Submit</a>
+            <a href="https://github.com/pestafford/credence-registry/tree/main/mcp-server" class="nav-link">Install</a>
+            <a href="../research.html" class="nav-link active">Research</a>
+            <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">&#9684;</button>
+        </div>
+    </div>
+</nav>
+
+<div class="container">
+    <div class="article-header">
+        <h1>The Adversarial Trust Layer: Why the MCP Ecosystem Needs Cryptographic Attestation and Multi-Agent Verification</h1>
+        <div class="article-meta">
+            <strong>Position Paper</strong> &mdash; February 2026<br>
+            Phil Stafford, AI Security Researcher
+        </div>
+        <a href="adversarial-trust-layer.pdf" class="pdf-btn">
+            <span>&#8595;</span> Download PDF
+        </a>
+    </div>
+
+    <div class="tldr">
+        <p><strong>TL;DR:</strong> The Model Context Protocol (MCP) is becoming the universal interface between AI agents and external tools &mdash; but it has no mechanism for verifying tool identity, provenance, or behavioral claims. Real supply chain attacks, critical CVEs, and cross-tenant data breaches have already been documented. This paper argues that the ecosystem needs two complementary layers: a <strong>public cryptographic trust registry</strong> (Credence) for static verification of MCP tool identity and attestation, and <strong>multi-agent adversarial debate</strong> (ThinkTank) for adversarial analysis that stress-tests scanner findings before a verdict is issued. Neither layer alone is sufficient. Together, they form a defense-in-depth architecture for the agentic AI era.</p>
+    </div>
+
+    <article>
+
+    <div class="separator">&middot; &middot; &middot;</div>
+
+    <h2>The Problem in One Sentence</h2>
+    <p>The Model Context Protocol is becoming the nervous system of enterprise AI, and it has no immune system.</p>
+
+    <div class="separator">&middot; &middot; &middot;</div>
+
+    <h2>1. MCP Won &mdash; Now It Has to Survive</h2>
+
+    <p>On February 5, 2026, security researchers at Straiker STAR Labs disclosed a supply chain attack that distilled every open problem in MCP security into a single campaign. A threat actor group known as SmartLoader &mdash; previously documented distributing info-stealers through deceptive installers &mdash; cloned a legitimate Oura Ring MCP server, built a network of at least five fake GitHub accounts with fabricated fork and contributor histories, and submitted the trojanized server to legitimate MCP registries including MCP Market. The attack was patient and methodical: three months building fake credibility before deploying the payload. The trojanized server delivered the StealC infostealer, harvesting browser passwords, SSH keys, API credentials, cryptocurrency wallets, and the health data of anyone who connected their Oura Ring through the compromised integration.</p>
+
+    <p>The details are instructive. The original Oura MCP server was built by an OpenAI engineer to let AI assistants query sleep and readiness data &mdash; exactly the kind of health-optimization tool that productivity-focused developers adopt without a second thought. SmartLoader's clone was functionally identical. Its source code matched the legitimate version. Its contributor list showed active community involvement. The only visible anomaly was what was <em>missing</em>: the original author wasn't listed as a contributor. A cryptographic provenance chain would have caught this instantly. Instead, the trojanized server sat in a public registry alongside legitimate tools, indistinguishable to any developer or agent evaluating it.</p>
+
+    <p>This wasn't the first warning. When Anthropic released the Model Context Protocol in November 2024, the pitch was simple: a universal standard for connecting LLMs to external tools. Think of it as USB-C for AI applications. The industry agreed. Microsoft integrated MCP across Copilot Studio and Azure AI Foundry. GitHub joined the MCP Steering Committee. Thousands of community-built MCP servers appeared within months, connecting AI agents to databases, file systems, APIs, cloud infrastructure, and each other.</p>
+
+    <p>The adoption curve worked. The security story didn't.</p>
+
+    <p>By mid-2025, the attack surface was wide open. Backslash Security reported hundreds of MCP servers misconfigured and exposed to the public internet, including the "NeighborJack" vulnerability where servers bound to 0.0.0.0 were accessible to any adjacent network device. Palo Alto Networks' Unit 42 team demonstrated three critical attack vectors through MCP's sampling feature alone: resource theft, conversation hijacking, and covert tool invocation &mdash; all achievable through a single malicious MCP server that looked identical to a legitimate one. JFrog disclosed CVE-2025-6514, a CVSS 9.6 command-injection vulnerability in mcp-remote &mdash; affecting over 437,000 downloads and every major MCP client including Claude Desktop, Cursor, and VS Code. The Practical DevSecOps team's MCPTox benchmark revealed that tool poisoning attacks &mdash; where malicious logic is embedded in a tool while preserving its legitimate interface &mdash; are alarmingly common across the ecosystem.</p>
+
+    <p>These aren't theoretical risks. AuthZed compiled the first consolidated timeline of MCP security breaches, documenting real incidents: a GitHub MCP integration that exfiltrated private repository contents, salary information, and internal project details through a public pull request. An Asana MCP bug that exposed one organization's data to another organization's users. Anthropic's own MCP Inspector tool was found to allow unauthenticated remote code execution (CVE-2025-49596, CVSS 9.4). And now SmartLoader has demonstrated that traditional supply chain attack playbooks &mdash; fake accounts, manufactured social proof, registry poisoning &mdash; transfer directly to the MCP ecosystem with no modifications required.</p>
+
+    <p>The pattern is consistent across every analysis: <strong>MCP tools have no verifiable identity, no cryptographic proof of provenance, no attestation of behavioral claims, and no trust registry for cross-organizational discovery.</strong> The protocol that's becoming the standard interface between AI agents and the world has no mechanism for an agent &mdash; or the human deploying it &mdash; to verify that a tool is what it says it is. As Straiker's own researchers concluded: the MCP ecosystem lacks the security infrastructure that has developed around traditional package managers &mdash; there is no equivalent to npm audit, Dependabot, or Snyk for MCP servers.</p>
+
+    <h2>2. The Agent Identity Crisis</h2>
+
+    <p>The MCP security gap exists within a broader crisis. AI agents are proliferating faster than the infrastructure to govern them.</p>
+
+    <p>Gartner projects that by the end of 2026, 40% of enterprise applications will be integrated with task-specific AI agents. AWS reports that more than half of enterprises now classify agentic AI as a strategic priority. According to Orca Security's analysis, non-human identities already outnumber human identities 50:1 in the average enterprise environment. CyberArk's 2025 Identity Security Landscape report measured the ratio at 82:1 &mdash; a figure that was projected as a future concern just months earlier but is already the documented reality.</p>
+
+    <p>The consequences of this ungoverned growth are already visible. A SailPoint survey of 353 enterprise security professionals found that 80% of organizations reported their AI agents taking unintended actions or behaving unexpectedly. In one incident described by researcher Akshay Mittal at MLOps World 2025, a single compromised agent in a 50-agent machine learning operations system triggered a complete cascade failure within six minutes &mdash; the rogue agent impersonated a model deployment service and pushed corrupted models downstream before monitoring agents could distinguish malicious traffic from legitimate operations.</p>
+
+    <p>The SmartLoader campaign against the Oura Ring MCP server demonstrates how these identity failures compound: a supply chain attack exploiting fabricated trust signals in one registry can deliver credential-stealing malware into the development environments of every organization that adopts the compromised tool. The npm ecosystem learned this lesson with the Shai-Hulud worm campaign targeting AI development tooling; the MCP ecosystem is learning it now.</p>
+
+    <p>The identity and access management frameworks that enterprises rely on &mdash; OAuth 2.0, OpenID Connect, SAML &mdash; were designed for a world of deterministic applications and single authenticated principals. As ISACA's analysis notes, agentic AI violates those assumptions in fundamental ways: agents have dynamic identity lifecycles (spawning and retiring in seconds), require capability attestation (not just identity verification), and operate across diverse protocols including MCP, A2A, and ACP simultaneously.</p>
+
+    <p>The industry recognizes the gap. The IETF has a draft standard for an Agent Name Service (ANS). GoDaddy built a proof-of-concept ANS Registry with a Registration Authority and transparency logs. HID Global's PKI Market Study found that AI agent certificates represent a stronger enterprise trend than even post-quantum cryptography &mdash; 15% of organizations have already begun deploying certificates for agents. Indicio, an NVIDIA Inception partner, is building ProvenAI with Verifiable Credentials for agent-to-agent authentication. Prove launched Verified Agent for the agentic commerce market, with Mastercard publicly stating that "payments must be native to the agentic experience."</p>
+
+    <p>NIST has issued a Request for Information on AI agent security assessment methods, due March 2026. OWASP published its Top 10 for Agentic Applications 2026, listing memory poisoning, tool misuse, and privilege compromise as primary risks. The OpenID Foundation is pushing AI-specific IAM standards.</p>
+
+    <p><strong>Everyone agrees the problem is real. No one has shipped the MCP-specific trust layer yet.</strong></p>
+
+    <h2>3. The Case for a Public Cryptographic Trust Registry</h2>
+
+    <p>The existing supply chain security stack &mdash; Sigstore for cryptographic signing, SLSA for build provenance, in-toto for pipeline attestation &mdash; was designed for traditional software artifacts: container images, packages, binaries. The Coalition for Secure AI (CoSAI), whose members include Google, Microsoft, NVIDIA, and Cisco, has extended this thinking to AI model signing, defining three verification aspects: integrity (the model hasn't been modified), provenance (traceable development lifecycle), and properties (verifiable claims about performance and compliance). Google's own AI supply chain guidance calls tamper-proof provenance "indispensable." Red Hat's Trusted Artifact Signer 1.3 now extends cryptographic signing to ML models and inference frameworks.</p>
+
+    <p>But none of this reaches the MCP tool layer. A signed model deployed behind an unsigned, unattested MCP server is a locked door in an open field.</p>
+
+    <p>What the ecosystem needs is a <strong>public</strong> cryptographic trust registry for MCP &mdash; not a gated commercial product, but shared infrastructure that raises the security floor for every participant, the same way Let's Encrypt made TLS certificates accessible to the entire web and Sigstore made software signing practical for every open-source maintainer. The security of the MCP ecosystem cannot depend on whether individual organizations can afford to buy trust verification. It has to be foundational.</p>
+
+    <p>This is the design philosophy behind <strong><a href="https://pestafford.github.io/credence-registry/">Credence</a></strong>, an open, public trust registry for MCP tools built on three capabilities:</p>
+
+    <p><strong>Tool Identity Attestation.</strong> Every MCP server registered with Credence receives a cryptographic identity that binds its tool definitions, capabilities, and behavioral claims to a verifiable provenance chain. When an AI agent discovers an MCP tool through Credence, it can verify that the tool was published by a known entity, that its current definition matches what was attested, and that it hasn't been modified since attestation &mdash; directly addressing the "rug pull" risk documented by Backslash Security. Credence's MCP tool analyzer detects precursor patterns for rug pulls &mdash; dynamic description loading, version-gated tool registration, time-based conditionals &mdash; and hashes every tool definition at attestation time so that changes between scans are detectable.</p>
+
+    <p><strong>Behavioral Trust Scoring.</strong> Beyond static identity, Credence computes a three-dimensional trust score &mdash; security, provenance, and behavioral &mdash; based on static analysis of the server's tool definitions, dependency tree, and source code patterns. The behavioral dimension specifically evaluates MCP tool definitions for suspicious patterns: dynamic description loading, version-gated tool registration, prompt injection signatures, and schema manipulation. These scores are cryptographically signed and published alongside the attestation, giving agents and developers quantitative trust data instead of social signals. This addresses the fundamental problem identified in the arXiv MCP landscape survey: users currently delegate tool selection entirely to AI applications without cryptographic verification or contextual awareness.</p>
+
+    <p><strong>Open Trust Registry for Discovery.</strong> Credence functions as a publicly accessible, trust-aware discovery layer for MCP tools, analogous to what ANS proposes for general agent discovery but specific to the MCP protocol's tool ecosystem. Any developer, organization, or agent can query the registry to evaluate the trust posture of an MCP server before connecting to it. Organizations can implement automated policies around Credence verdicts &mdash; the CLI provides structured exit codes (0=verified, 1=unattested, 2=flagged, 3=rejected) for CI pipeline integration, and the MCP server interface lets agents query trust posture programmatically before connecting. This is the risk mitigation pattern that CoSAI recommends but that no MCP-specific infrastructure has delivered.</p>
+
+    <p>The public nature of this registry is a deliberate architectural decision. MCP's security is a commons problem. A compromised MCP server doesn't just affect the organization that deployed it &mdash; it affects every agent that connects to it, every user whose data flows through it, and every downstream system that trusts its outputs. Private, per-customer trust verification creates islands of safety surrounded by an ocean of unverified tools. A public registry creates herd immunity.</p>
+
+    <h2>4. The Limits of Static Trust (and Why Adversarial Analysis Matters)</h2>
+
+    <p>Cryptographic attestation is necessary. It is not sufficient.</p>
+
+    <p>Consider a scenario: an MCP server is published by a known vendor, cryptographically signed, and registered with valid attestations. Its tool definitions pass all static verification checks. But its descriptions contain subtle prompt injection patterns that, when processed by an LLM, cause the agent to exfiltrate context window contents to an external endpoint. The attestation is technically accurate &mdash; the tool does what it claims &mdash; but the <em>way</em> it does it embeds a security risk that static analysis alone cannot reliably detect.</p>
+
+    <p>This is where the research on multi-agent debate becomes directly relevant to security.</p>
+
+    <p>The foundational work by Du et al., published at ICML 2024, demonstrated that multiple LLM instances debating their individual responses over multiple rounds significantly reduces hallucination and improves factual accuracy compared to any single model's output. Subsequent research has refined this finding considerably. Zhou and Chen's Adaptive Heterogeneous Multi-Agent Debate framework, published in November 2025, showed that assigning diverse, specialized roles to debate agents &mdash; rather than using homogeneous agents with majority voting &mdash; achieves 4&ndash;6% higher accuracy and over 30% fewer factual errors. Hegazy (2024) and Zhang et al. (2025) demonstrated that deploying agents based on different foundation models yields 91% accuracy versus 82% with homogeneous agents on mathematical reasoning tasks, with emergent teacher-student dynamics between models.</p>
+
+    <p>Zhang et al.'s systematic evaluation of five MAD frameworks across nine benchmarks, presented at ICLR 2025, added important nuance: multi-agent debate's advantage is strongest on harder tasks and in safety-critical domains where the cost of a wrong answer is highest. Moderate, calibrated disagreement outperforms both maximal adversarial opposition and cooperative agreement-seeking. Hu et al.'s adaptive stability detection framework, accepted at NeurIPS 2025, formally proved that debate amplifies correctness over static ensembles under mild assumptions, providing mathematical grounding for what practitioners observe empirically. Wu et al. (2025) further confirmed through controlled experiments that intrinsic reasoning strength and group diversity are the dominant drivers of debate success.</p>
+
+    <p>These findings have direct application to security analysis. <strong>ThinkTank</strong> is a multi-agent debate system that applies structured adversarial reasoning to security questions. Five agents &mdash; each with a distinct analytical role and perspective bias &mdash; debate the findings from Credence's static analysis pipeline across up to five rounds, with early termination when positions stabilize.</p>
+
+    <p>Two skeptic agents (an Adversarial Attacker primed with real-world MCP attack patterns and a Supply Chain Analyst focused on provenance anomalies) construct the strongest case for risk. Two believer agents (a Devil's Advocate and a Pattern Matcher) construct the strongest case that the findings are benign. A neutral Compliance Reviewer evaluates both sides, identifies gaps in reasoning, and synthesizes a confidence-scored verdict with dissenting opinions preserved. The role heterogeneity is deliberate: Zhou and Chen's A-HMAD research demonstrates that assigning diverse, specialized roles to debate agents &mdash; rather than using homogeneous agents &mdash; achieves 4&ndash;6% higher accuracy and over 30% fewer factual errors. The architecture is designed so that cross-model heterogeneity can be layered on as additional foundation models become viable for security analysis.</p>
+
+    <p>This isn't academic novelty seeking a problem. The offensive side of this equation is already here. Security Boulevard documented in December 2025 that nation-state actors and sophisticated cybercriminals now orchestrate five to eight different LLMs simultaneously in adaptive breach campaigns &mdash; different models handling social engineering, malware creation, OSINT gathering, and credential operations. Defenders using a single model instance for security analysis face an asymmetric disadvantage against coordinated multi-model attack chains.</p>
+
+    <p>The multi-agent approach is validated by security-specific research as well. A ScienceDirect study (March 2025) demonstrated that a cross-LLM architecture achieves 98% accuracy in security assessment tasks by leveraging complementary analytical perspectives. The ZeroDay-LLM framework (MDPI, October 2025) showed that ensemble defense mechanisms achieve 97.8% detection accuracy with 23% fewer false positives than single-instance approaches. Role diversity &mdash; which ThinkTank implements today &mdash; captures a significant portion of this advantage; cross-model diversity, which the architecture supports as an upgrade path, would capture the rest.</p>
+
+    <h2>5. The Adversarial Trust Layer: Static + Analytical Verification</h2>
+
+    <p>The combined value proposition of these two approaches is straightforward:</p>
+
+    <p><strong>A public trust registry tells you WHO built an MCP tool and cryptographically verifies WHAT it claims to do. Multi-agent adversarial debate stress-tests the scanner findings and tells you whether to TRUST it.</strong></p>
+
+    <p>Cryptographic attestation provides the static trust layer &mdash; proof of identity, provenance, and trust scoring. Structured adversarial debate provides the analytical layer &mdash; multi-agent reasoning that stress-tests scanner findings, identifies inconsistencies between signals, and surfaces risks that static rules alone cannot catch.</p>
+
+    <p>No existing solution combines these capabilities:</p>
+
+    <ul>
+        <li>ANS (IETF draft) provides agent discovery, but not MCP-specific tool attestation.</li>
+        <li>Sigstore and SLSA provide build provenance, but not adversarial analysis of security findings.</li>
+        <li>MCPTox provides tool poisoning benchmarks, but not continuous adversarial analysis.</li>
+        <li>Palo Alto publishes MCP vulnerability research, but doesn't operate a trust registry.</li>
+        <li>GoDaddy built an ANS proof-of-concept, but without integrated adversarial analysis.</li>
+    </ul>
+
+    <p>The combination creates a trust pipeline that addresses the full threat model: static verification catches known-bad actors and tampered artifacts; adversarial analysis catches sophisticated attacks that pass static checks. This defense-in-depth approach mirrors what the broader security industry has learned over decades &mdash; no single layer is sufficient, and the interaction between layers catches what individual layers miss.</p>
+
+    <p>When a public attestation registry feeds into adversarial analysis, the system can answer questions that neither approach answers alone: "This MCP server is cryptographically signed by a known vendor, but do the scanner findings hold up under adversarial scrutiny? Do the tool descriptions contain patterns consistent with prompt injection? Does the declared capability scope match the actual API surface?" These are the questions that the SmartLoader supply chain attack, the GitHub MCP exfiltration, and the Asana cross-tenant breach would have forced someone to ask &mdash; if anyone had the tooling to ask them.</p>
+
+    <h2>6. Where This Stands</h2>
+
+    <p>The regulatory and standards environment is accelerating. NIST's RFI on AI agent security is due March 2026. OWASP's Top 10 for Agentic Applications is published. The OpenID Foundation is pushing AI-specific IAM standards. The EU's proposed GDPR amendments address AI agent data processing. CoSAI is standardizing model attestation. SLSA is expanding its track coverage. The convergence is clear: cryptographic trust infrastructure for AI is moving from recommendation to requirement.</p>
+
+    <p>The MCP ecosystem is standardizing but the security architecture is still being defined. Microsoft and GitHub's presence on the MCP Steering Committee signals long-term commitment to the protocol, but the trust layer remains an open problem. The window to establish public trust infrastructure &mdash; before the ecosystem either ossifies without it or fragments around proprietary alternatives &mdash; is measured in months, not years.</p>
+
+    <p>The threat environment is not waiting. Documented incidents &mdash; from the SmartLoader supply chain attack on the Oura Ring MCP server to the GitHub MCP exfiltration and the CVSS 9.6 mcp-remote vulnerability &mdash; demonstrate that MCP-specific exploits, agent-to-agent compromise, and multi-model attack chains are operational realities, not future concerns. The $1.7 trillion agentic commerce market that payment networks are targeting cannot scale on the current trust infrastructure. The 80% of organizations reporting unexpected agent behavior are seeing the consequences of deploying autonomous systems without adequate verification.</p>
+
+    <p>The question isn't whether this infrastructure is needed. It's whether it arrives as public goods &mdash; accessible to every developer and organization participating in the MCP ecosystem &mdash; or as fragmented, proprietary solutions that protect paying customers while leaving the broader ecosystem exposed. The history of internet security, from the TLS certificate ecosystem to the open-source supply chain, consistently demonstrates that shared, public trust infrastructure outperforms private alternatives at protecting the commons.</p>
+
+    <p>The MCP ecosystem deserves the same treatment.</p>
+
+    <div class="references">
+        <h3>References</h3>
+        <ol>
+            <li>AuthZed, <a href="https://authzed.com/blog/timeline-mcp-breaches">"A Timeline of Model Context Protocol Security Breaches,"</a> 2025</li>
+            <li>Backslash Security, <a href="https://www.backslash.security/blog/mcp-server-security-neighborjack-and-critical-misconfigurations">"MCP Server Security: NeighborJack and Critical Misconfigurations,"</a> June 2025</li>
+            <li>Palo Alto Networks Unit 42, <a href="https://unit42.paloaltonetworks.com/mcp-prompt-injection-attack-vectors/">"Prompt Injection Attack Vectors Through MCP Sampling,"</a> December 2025</li>
+            <li>Palo Alto Networks, <a href="https://www.paloaltonetworks.com/resources/guides/simplified-guide-to-model-context-protocol-vulnerabilities">"Simplified Guide to MCP Vulnerabilities,"</a> October 2025</li>
+            <li>Red Hat, <a href="https://www.redhat.com/en/blog/understanding-mcp-security-risks-and-controls">"Understanding MCP Security Risks and Controls,"</a> July 2025</li>
+            <li>Practical DevSecOps, <a href="https://www.practical-devsecops.com/mcp-security-vulnerabilities/">"MCP Security Vulnerabilities,"</a> January 2026</li>
+            <li>Pillar Security, <a href="https://www.pillar.security/blog/the-security-risks-of-model-context-protocol-mcp">"The Security Risks of MCP,"</a> 2025</li>
+            <li>MCP Specification, <a href="https://modelcontextprotocol.io/specification/draft/basic/security">"Security Best Practices (Draft),"</a> modelcontextprotocol.io, 2025</li>
+            <li>Hou et al., <a href="https://arxiv.org/abs/2503.23278">"MCP: Landscape, Security Threats, and Future Research Directions,"</a> arXiv:2503.23278, October 2025</li>
+            <li>CoSAI, <a href="https://www.coalitionforsecureai.org/resources/building-trust-in-ai-supply-chains-model-signing">"Building Trust in AI Supply Chains: Model Signing,"</a> September 2025</li>
+            <li>Google Cloud, <a href="https://cloud.google.com/blog/products/identity-security/google-guidance-on-ai-supply-chain-security">"Same Same but Also Different: Google Guidance on AI Supply Chain Security,"</a> October 2025</li>
+            <li>Trend Micro, <a href="https://www.trendmicro.com/vinfo/us/security/news/cybercrime-and-digital-threats/exploiting-trust-in-open-source-ai-the-hidden-supply-chain-risk-no-one-is-watching">"Exploiting Trust in Open-Source AI: The Hidden Supply Chain Risk No One Is Watching,"</a> August 2025</li>
+            <li>SLSA Framework, <a href="https://slsa.dev/">"Supply-chain Levels for Software Artifacts,"</a> slsa.dev, 2025</li>
+            <li>Red Hat, <a href="https://docs.redhat.com/en/documentation/red_hat_trusted_artifact_signer/1.3">"Trusted Artifact Signer 1.3,"</a> November 2025</li>
+            <li>InfoQ, <a href="https://www.infoq.com/news/2025/08/supply-chain-provenance-tools/">"Supply Chain Security: Provenance Tools Becoming Standard in Developer Platforms,"</a> August 2025</li>
+            <li>IDC, "Confidential Computing &amp; Cryptographic Attestation," IDC #US53866125, November 2025</li>
+            <li>HID Global, <a href="https://www.hidglobal.com/resources/trust-standards-evolve-ai-agents-next-chapter-pki">"Trust Standards Evolve: AI Agents, Next Chapter for PKI,"</a> November 2025</li>
+            <li>ISACA, <a href="https://www.isaca.org/resources/news-and-trends/newsletters/atisaca/2025/volume-51/the-looming-authorization-crisis">"The Looming Authorization Crisis: Why Traditional IAM Fails Agentic AI,"</a> December 2025</li>
+            <li>Strata, <a href="https://www.strata.io/blog/agentic-ai-security/">"Agentic AI Security: 8 Strategies in 2026,"</a> January 2026</li>
+            <li>WebProNews, <a href="https://www.webpronews.com/ai-agents-trust-reckoning-one-hack-fells-50/">"AI Agents' Trust Reckoning: One Hack Fells 50,"</a> January 2026</li>
+            <li>GoDaddy, <a href="https://www.godaddy.com/resources/news/building-trust-at-internet-scale-agent-name-service-registry">"Building Trust at Internet Scale: Agent Name Service Registry,"</a> October 2025</li>
+            <li>Indicio, <a href="https://indicio.tech/blog/why-verifiable-credentials-will-power-real-world-ai-in-2026/">"Why Verifiable Credentials Will Power Real-World AI in 2026,"</a> January 2026</li>
+            <li>Solutions Review, <a href="https://solutionsreview.com/identity-management/identity-security-predictions-from-industry-experts-for-2026-and-beyond/">"Identity Security Predictions for 2026,"</a> January 2026</li>
+            <li>Prove/Financial IT, <a href="https://financialit.net/news/payments/prove-launches-verified-agent-agentic-commerce">"Verified Agent for Agentic Commerce,"</a> October 2025</li>
+            <li>Du et al., <a href="https://arxiv.org/abs/2305.14325">"Improving Factuality and Reasoning through Multiagent Debate,"</a> ICML 2024</li>
+            <li>Zhou &amp; Chen, <a href="https://link.springer.com/article/10.1007/s13042-025-02542-0">"Adaptive Heterogeneous Multi-Agent Debate (A-HMAD),"</a> Journal of King Saud University, November 2025</li>
+            <li>Hegazy, <a href="https://doi.org/10.61890/ijcsma.2024.v2i11.118">"Diversity of Thought Elicits Stronger Reasoning Capabilities in Multi-Agent Debate Frameworks,"</a> IJCSMA, November 2024</li>
+            <li>Zhang et al., <a href="https://arxiv.org/abs/2502.08788">"Stop Overvaluing Multi-Agent Debate &mdash; We Must Rethink Evaluation and Embrace Model Heterogeneity,"</a> arXiv:2502.08788, February 2025; also presented as ICLR 2025 Blogpost</li>
+            <li>Hu et al., <a href="https://arxiv.org/abs/2510.12697">"Multi-Agent Debate for LLM Judges with Adaptive Stability Detection,"</a> NeurIPS 2025</li>
+            <li>Wu et al., <a href="https://arxiv.org/abs/2511.07784">"Can LLM Agents Really Debate? A Controlled Study of Multi-Agent Debate in Logical Reasoning,"</a> November 2025</li>
+            <li>Almufareh et al., <a href="https://www.sciencedirect.com/science/article/pii/S2666307425000294">"A Novel System for Strengthening Security in LLMs Against Hallucination and Injection Attacks,"</a> ScienceDirect, March 2025</li>
+            <li>Security Boulevard / Seceon, <a href="https://securityboulevard.com/2025/12/fighting-ai-with-ai-the-rise-of-multi-llm-orchestrated-cyber-attacks/">"Fighting AI with AI: The Rise of Multi-LLM Orchestrated Cyber Attacks,"</a> December 2025</li>
+            <li>Alsuwaiket, <a href="https://doi.org/10.3390/info16110939">"ZeroDay-LLM: A Large Language Model Framework for Zero-Day Threat Detection in Cybersecurity,"</a> MDPI Information 16(11), October 2025</li>
+            <li>Hong &amp; Oh, <a href="https://doi.org/10.1038/s41598-025-05182-y">"Optimization for Threat Classification of Various Data Types-Based on ML Model and LLM,"</a> Nature Scientific Reports 15:22768, July 2025</li>
+            <li>WJARR, <a href="https://doi.org/10.30574/wjarr.2025.27.1.2532">"Review of Generative AI for Multimodal Cybersecurity Threat Simulation,"</a> World Journal of Advanced Research and Reviews 27(01), July 2025</li>
+            <li>Straiker STAR Labs, <a href="https://straiker.ai/research/mcp-attack-smartloader-oura-ring/">"SmartLoader Clones Oura Ring MCP to Deploy Supply Chain Attack,"</a> February 5, 2026</li>
+            <li>CyberArk, <a href="https://www.cyberark.com/resources/ebooks/identity-security-landscape-2025">"2025 Identity Security Landscape,"</a> April 2025</li>
+            <li>JFrog, <a href="https://research.jfrog.com/vulnerabilities/mcp-remote-command-injection/">"CVE-2025-6514: Command Injection in mcp-remote,"</a> July 2025</li>
+            <li>Tenable/Oligo Security, <a href="https://www.tenable.com/cve/CVE-2025-49596">"CVE-2025-49596: MCP Inspector Unauthenticated RCE,"</a> 2025</li>
+        </ol>
+    </div>
+
+    </article>
+</div>
+
+<footer>
+    <div class="container">
+        <p>&copy; 2026 Phil Stafford &middot; MIT License &middot; <a href="https://github.com/pestafford/credence-registry">GitHub</a></p>
+    </div>
+</footer>
+
+<script>
+    function toggleTheme() {
+        var html = document.documentElement;
+        var current = html.getAttribute('data-theme');
+        var next = current === 'dark' ? 'light' : 'dark';
+        html.setAttribute('data-theme', next);
+        localStorage.setItem('credence-theme', next);
+    }
+
+    var saved = localStorage.getItem('credence-theme');
+    if (saved) {
+        document.documentElement.setAttribute('data-theme', saved);
+    } else if (window.matchMedia('(prefers-color-scheme: light)').matches) {
+        document.documentElement.setAttribute('data-theme', 'light');
+    }
+</script>
+
+</body>
+</html>
