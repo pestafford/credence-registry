@@ -113,10 +113,24 @@ jobs:
             const serverName = nameMatch ? nameMatch[1].trim() : 'unknown';
             const serverPath = pathMatch ? pathMatch[1].trim().replace(/^\/+|\/+$/g, '') : '';
 
-            // Extract owner/repo from GitHub URL
+            // Detect host type and extract owner/repo
             const ghMatch = repoUrl.match(/github\.com\/([^\/]+)\/([^\/]+)/);
-            const repoOwner = ghMatch ? ghMatch[1] : '';
-            const repoName = ghMatch ? ghMatch[2] : '';
+            const glMatch = repoUrl.match(/gitlab\.com\/([^\/]+)\/([^\/]+)/);
+            const bbMatch = repoUrl.match(/bitbucket\.org\/([^\/]+)\/([^\/]+)/);
+
+            let repoOwner = '', repoName = '', hostType = 'unknown';
+            if (ghMatch) {
+              repoOwner = ghMatch[1]; repoName = ghMatch[2]; hostType = 'github';
+            } else if (glMatch) {
+              repoOwner = glMatch[1]; repoName = glMatch[2]; hostType = 'gitlab';
+            } else if (bbMatch) {
+              repoOwner = bbMatch[1]; repoName = bbMatch[2]; hostType = 'bitbucket';
+            } else if (repoUrl.match(/^https?:\/\/.+\/.+\/.+/)) {
+              // Generic git URL — extract last two path segments as owner/repo
+              const parts = repoUrl.replace(/\.git$/, '').split('/');
+              repoName = parts.pop(); repoOwner = parts.pop();
+              hostType = 'other-git';
+            }
 
             core.setOutput('repo_url', repoUrl);
             core.setOutput('commit_sha', commitSha);
@@ -124,6 +138,8 @@ jobs:
             core.setOutput('server_path', serverPath);
             core.setOutput('repo_owner', repoOwner);
             core.setOutput('repo_name', repoName);
+            core.setOutput('host_type', hostType);
+            core.info(`Host type: ${hostType} | Owner: ${repoOwner} | Repo: ${repoName}`);
 
       - name: Verify submitter identity
         id: verify
@@ -133,51 +149,57 @@ jobs:
             const submitter = context.payload.issue.user.login;
             const targetOwner = '${{ steps.parse.outputs.repo_owner }}';
             const targetRepo = '${{ steps.parse.outputs.repo_name }}';
+            const hostType = '${{ steps.parse.outputs.host_type }}';
             let verified = false;
             let verifyReason = '';
 
-            // Check 1: Is submitter the repo owner?
-            if (submitter.toLowerCase() === targetOwner.toLowerCase()) {
-              verified = true;
-              verifyReason = 'Submitter is repo owner';
-            }
-
-            // Check 2: Is submitter a collaborator?
-            if (!verified) {
-              try {
-                const { status } = await github.rest.repos.checkCollaborator({
-                  owner: targetOwner,
-                  repo: targetRepo,
-                  username: submitter
-                });
-                if (status === 204) {
-                  verified = true;
-                  verifyReason = 'Submitter is repo collaborator';
-                }
-              } catch (e) {
-                // 404 = not a collaborator, 403 = private repo or no access
+            if (hostType !== 'github') {
+              // Can't verify submitter against non-GitHub repos via GitHub API
+              verifyReason = `Non-GitHub host (${hostType}) — submitter verification not available`;
+            } else {
+              // Check 1: Is submitter the repo owner?
+              if (submitter.toLowerCase() === targetOwner.toLowerCase()) {
+                verified = true;
+                verifyReason = 'Submitter is repo owner';
               }
-            }
 
-            // Check 3: Is submitter a contributor (has commits)?
-            if (!verified) {
-              try {
-                const { data: contributors } = await github.rest.repos.listContributors({
-                  owner: targetOwner,
-                  repo: targetRepo,
-                  per_page: 100
-                });
-                if (contributors.some(c => c.login.toLowerCase() === submitter.toLowerCase())) {
-                  verified = true;
-                  verifyReason = 'Submitter is listed contributor';
+              // Check 2: Is submitter a collaborator?
+              if (!verified) {
+                try {
+                  const { status } = await github.rest.repos.checkCollaborator({
+                    owner: targetOwner,
+                    repo: targetRepo,
+                    username: submitter
+                  });
+                  if (status === 204) {
+                    verified = true;
+                    verifyReason = 'Submitter is repo collaborator';
+                  }
+                } catch (e) {
+                  // 404 = not a collaborator, 403 = private repo or no access
                 }
-              } catch (e) {
-                // API error — treat as unverified
               }
-            }
 
-            if (!verified) {
-              verifyReason = 'Third-party submission — submitter is not owner, collaborator, or contributor';
+              // Check 3: Is submitter a contributor (has commits)?
+              if (!verified) {
+                try {
+                  const { data: contributors } = await github.rest.repos.listContributors({
+                    owner: targetOwner,
+                    repo: targetRepo,
+                    per_page: 100
+                  });
+                  if (contributors.some(c => c.login.toLowerCase() === submitter.toLowerCase())) {
+                    verified = true;
+                    verifyReason = 'Submitter is listed contributor';
+                  }
+                } catch (e) {
+                  // API error — treat as unverified
+                }
+              }
+
+              if (!verified) {
+                verifyReason = 'Third-party submission — submitter is not owner, collaborator, or contributor';
+              }
             }
 
             core.setOutput('verified', verified.toString());
@@ -195,8 +217,17 @@ jobs:
             });
 
       - name: Clone target server
+        id: clone
+        continue-on-error: true
         run: |
-          git clone ${{ steps.parse.outputs.repo_url }} /tmp/target-server
+          if ! git clone ${{ steps.parse.outputs.repo_url }} /tmp/target-server 2>/tmp/clone-error.txt; then
+            echo "clone_failed=true" >> $GITHUB_OUTPUT
+            echo "Clone failed:"
+            cat /tmp/clone-error.txt
+            exit 0
+          fi
+          echo "clone_failed=false" >> $GITHUB_OUTPUT
+
           cd /tmp/target-server
           if [ -n "${{ steps.parse.outputs.commit_sha }}" ]; then
             git checkout ${{ steps.parse.outputs.commit_sha }}
@@ -210,13 +241,37 @@ jobs:
             if [ ! -d "$SCAN_DIR" ]; then
               echo "Error: server path '$SERVER_PATH' does not exist in this repo"
               ls -la /tmp/target-server/
-              exit 1
+              echo "clone_failed=true" >> $GITHUB_OUTPUT
+              exit 0
             fi
           else
             SCAN_DIR="/tmp/target-server"
           fi
           echo "SCAN_DIR=$SCAN_DIR" >> $GITHUB_ENV
           echo "Scan directory: $SCAN_DIR"
+
+      - name: Report clone failure
+        if: steps.clone.outputs.clone_failed == 'true'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            await github.rest.issues.createComment({
+              owner: context.repo.owner, repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body: `**Scan failed — unable to clone repository**\n\n` +
+                `Repository: \`${{ steps.parse.outputs.repo_url }}\`\n\n` +
+                `Possible reasons:\n` +
+                `- The repository is private or requires authentication\n` +
+                `- The URL is not a valid git repository\n` +
+                `- The repository has been deleted or moved\n\n` +
+                `Credence can only scan publicly accessible git repositories. ` +
+                `If this is a public repo that should be accessible, please verify the URL and resubmit.`
+            });
+            await github.rest.issues.addLabels({
+              owner: context.repo.owner, repo: context.repo.repo,
+              issue_number: context.issue.number, labels: ['scan-failed']
+            });
+            core.setFailed('Clone failed — cannot proceed with scan');
 
       # ── STAGE 1: COLLECT ──────────────────────────────
 
@@ -293,7 +348,22 @@ jobs:
             const fs = require('fs');
             const owner = '${{ steps.parse.outputs.repo_owner }}';
             const repo = '${{ steps.parse.outputs.repo_name }}';
+            const hostType = '${{ steps.parse.outputs.host_type }}';
             const flags = [];
+
+            // Non-GitHub hosts: can't verify provenance via GitHub API
+            if (hostType !== 'github') {
+              flags.push('NON_GITHUB_HOST');
+              if ('${{ steps.lockfile.outputs.lockfile_found }}' === 'false') {
+                flags.push('NO_LOCKFILE');
+              }
+              core.setOutput('flags', JSON.stringify(flags));
+              core.setOutput('is_fork', 'false');
+              core.setOutput('lockfile_hash', '${{ steps.lockfile.outputs.lockfile_hash }}');
+              core.setOutput('lockfile_name', '${{ steps.lockfile.outputs.lockfile_name }}');
+              core.info(`Non-GitHub host (${hostType}) — skipping GitHub provenance checks`);
+              return;
+            }
 
             try {
               const { data: repoData } = await github.rest.repos.get({ owner, repo });

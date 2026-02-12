@@ -49,11 +49,16 @@ CATEGORY_CAP = {
 # ── Provenance dimension ─────────────────────────────────────────────
 
 # Flat deductions per flag (calibrated against OURA attack, SLSA-aligned)
+# NON_GITHUB_HOST: GitLab, Bitbucket, self-hosted — can't verify fork/account/contributor
+#   status via GitHub API. Meaningful gap but not inherently suspicious.
+# REPO_API_ERROR: GitHub API call failed — provenance unverified, not a free pass.
 PROVENANCE_DEDUCTION = {
     "COORDINATED_FORK_NETWORK": 30,
     "ORIGINAL_AUTHOR_EXCLUDED": 25,
     "REPO_OWNER_DIFFERS_FROM_CLAIMED_AUTHOR": 20,
+    "NON_GITHUB_HOST": 20,
     "ACCOUNT_YOUNG_LT_30_DAYS": 20,
+    "REPO_API_ERROR": 15,
     "LOCKFILE_HASH_MISMATCH": 15,
     "IS_FORK": 10,
     "ACCOUNT_YOUNG_LT_90_DAYS": 10,
