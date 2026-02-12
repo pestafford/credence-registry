@@ -129,7 +129,7 @@ MCP Server Audit
   ✔ Attested:    2/3
   ○ Unattested:  1/3
 
-  Submit unattested servers: https://pestafford.github.io/credence-registry/#submit
+  Submit unattested servers: https://credence.securingthesingularity.com/#submit
 ```
 
 The resolver handles npx packages (npm registry lookup), Python modules (PyPI lookup), uvx, docker images, node scripts, and direct binary paths. It finds the repo URL automatically when possible.
@@ -322,7 +322,7 @@ case $CHECK_RESULT in
         ;;
     1)
         echo "Credence: NOT ATTESTED — server has not been analyzed"
-        echo "Submit for analysis: https://pestafford.github.io/credence-registry/#submit"
+        echo "Submit for analysis: https://credence.securingthesingularity.com/#submit"
         read -p "Install anyway? (y/N) " confirm
         [ "$confirm" = "y" ] || exit 1
         git clone "$REPO_URL" /tmp/mcp-install
@@ -411,8 +411,8 @@ The MCP server and CLI both read from the same `registry.json` hosted on GitHub.
 
 ## Links
 
-- **Registry & landing page**: [pestafford.github.io/credence-registry](https://pestafford.github.io/credence-registry/)
-- **Submit a server**: [Submit form](https://pestafford.github.io/credence-registry/#submit)
+- **Registry & landing page**: [credence.securingthesingularity.com](https://credence.securingthesingularity.com)
+- **Submit a server**: [Submit form](https://credence.securingthesingularity.com/#submit)
 - **Research**: [medium.com/@pe.stafford](https://medium.com/@pe.stafford)
 - **Singularity Systems**: [securingthesingularity.com](https://securingthesingularity.com)
 

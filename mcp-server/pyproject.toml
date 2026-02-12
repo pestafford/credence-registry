@@ -6,7 +6,7 @@ readme = {text = "Credence MCP — Install-time trust verification for MCP serve
 license = { text = "MIT" }
 requires-python = ">=3.10"
 authors = [
-    { name = "Phil Stafford", email = "pe.stafford@gmail.com" }
+    { name = "Phil Stafford", email = "phil@securingthesingularity.com" }
 ]
 keywords = ["mcp", "security", "attestation", "supply-chain", "trust"]
 classifiers = [
@@ -27,7 +27,7 @@ dependencies = [
 credence = "credence_mcp.cli:main"
 
 [project.urls]
-Homepage = "https://pestafford.github.io/credence-registry/"
+Homepage = "https://credence.securingthesingularity.com"
 Repository = "https://github.com/pestafford/credence-registry"
 Documentation = "https://securingthesingularity.com"
 

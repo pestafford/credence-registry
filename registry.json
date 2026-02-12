@@ -1,8 +1,8 @@
 {
   "schema_version": "0.2.0",
   "registry_name": "Credence MCP Server Registry",
-  "registry_url": "https://pestafford.github.io/credence-registry/",
-  "maintainer": "Phil Stafford <pe.stafford@gmail.com>",
+  "registry_url": "https://credence.securingthesingularity.com",
+  "maintainer": "Phil Stafford <phil@securingthesingularity.com>",
   "signing_public_key": "XdvqC/Q6TX90MpL37wdxfUtqOiS8qiQjK8JNJy+BOcM=",
   "updated_at": "2026-02-12T14:55:51Z",
   "servers": [

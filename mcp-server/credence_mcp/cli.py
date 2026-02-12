@@ -163,7 +163,7 @@ def cmd_check(args) -> int:
         print(f"\n{C.YELLOW}⚠  NOT ATTESTED{C.RESET}")
         print(f"   No Credence attestation found for: {C.BOLD}{args.server}{C.RESET}")
         print(f"   This doesn't mean it's malicious — it hasn't been analyzed yet.")
-        print(f"\n   {C.DIM}Submit for analysis: https://pestafford.github.io/credence-registry/#submit{C.RESET}")
+        print(f"\n   {C.DIM}Submit for analysis: https://credence.securingthesingularity.com/#submit{C.RESET}")
         return 1
 
     att = server.get("attestation", {})
@@ -450,7 +450,7 @@ def cmd_audit(args) -> int:
         print(f"\n  {C.GREEN}{C.BOLD}All servers attested. Looking good.{C.RESET}")
         return 0
     else:
-        print(f"\n  {C.YELLOW}Submit unattested servers: https://pestafford.github.io/credence-registry/#submit{C.RESET}")
+        print(f"\n  {C.YELLOW}Submit unattested servers: https://credence.securingthesingularity.com/#submit{C.RESET}")
         return 4 if (flagged or unattested) else 0
 
 
@@ -482,7 +482,7 @@ def cmd_guard(args) -> int:
             return _run_guarded_command(args)
         else:
             print(f"  {C.BOLD}Blocked.{C.RESET} Use --allow-unattested to override.")
-            print(f"  Submit for analysis: https://pestafford.github.io/credence-registry/#submit")
+            print(f"  Submit for analysis: https://credence.securingthesingularity.com/#submit")
             return 1
 
     att = server.get("attestation", {})
@@ -658,7 +658,7 @@ def main():
     parser = argparse.ArgumentParser(
         prog="credence",
         description="Credence — Install-time trust verification for MCP servers",
-        epilog="Docs: https://pestafford.github.io/credence-registry/"
+        epilog="Docs: https://credence.securingthesingularity.com"
     )
     sub = parser.add_subparsers(dest="command", required=True)
 

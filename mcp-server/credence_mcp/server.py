@@ -239,7 +239,7 @@ async def credence_check_server(params: CheckServerInput) -> str:
                        "Evaluate carefully: check the repo owner's history, "
                        "account age, contributor list, and whether it's a fork.",
             "recommendation": "PROCEED_WITH_CAUTION",
-            "submit_url": "https://pestafford.github.io/credence-registry/#submit"
+            "submit_url": "https://credence.securingthesingularity.com/#submit"
         })
 
     # Build trust report
@@ -644,7 +644,7 @@ def _build_audit_message(attested, flagged, unattested, total):
                 f"{attested}/{total} attested and clean, {unattested} not yet analyzed.")
     if unattested > 0:
         return (f"{attested}/{total} servers attested. {unattested} haven't been analyzed yet. "
-                "Consider submitting them for analysis at https://pestafford.github.io/credence-registry/#submit")
+                "Consider submitting them for analysis at https://credence.securingthesingularity.com/#submit")
     return f"All {total} configured servers are attested and clean."
 
 

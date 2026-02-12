@@ -368,7 +368,7 @@
 
     <p>What the ecosystem needs is a <strong>public</strong> cryptographic trust registry for MCP &mdash; not a gated commercial product, but shared infrastructure that raises the security floor for every participant, the same way Let's Encrypt made TLS certificates accessible to the entire web and Sigstore made software signing practical for every open-source maintainer. The security of the MCP ecosystem cannot depend on whether individual organizations can afford to buy trust verification. It has to be foundational.</p>
 
-    <p>This is the design philosophy behind <strong><a href="https://pestafford.github.io/credence-registry/">Credence</a></strong>, an open, public trust registry for MCP tools built on three capabilities:</p>
+    <p>This is the design philosophy behind <strong><a href="https://credence.securingthesingularity.com">Credence</a></strong>, an open, public trust registry for MCP tools built on three capabilities:</p>
 
     <p><strong>Tool Identity Attestation.</strong> Every MCP server registered with Credence receives a cryptographic identity that binds its tool definitions, capabilities, and behavioral claims to a verifiable provenance chain. When an AI agent discovers an MCP tool through Credence, it can verify that the tool was published by a known entity, that its current definition matches what was attested, and that it hasn't been modified since attestation &mdash; directly addressing the "rug pull" risk documented by Backslash Security. Credence's MCP tool analyzer detects precursor patterns for rug pulls &mdash; dynamic description loading, version-gated tool registration, time-based conditionals &mdash; and hashes every tool definition at attestation time so that changes between scans are detectable.</p>
 

@@ -217,7 +217,7 @@ def generate_report(summary: dict, evidence: dict = None) -> str:
 {desc_html}
 
 <div class="footer">
-    Credence Pipeline v{_esc(version)} · <a href="https://pestafford.github.io/credence-registry/">pestafford.github.io/credence-registry</a> · Singularity Systems
+    Credence Pipeline v{_esc(version)} · <a href="https://credence.securingthesingularity.com">credence.securingthesingularity.com</a> · Singularity Systems
 </div>
 
 </body>
