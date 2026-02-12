@@ -413,7 +413,7 @@ jobs:
           pip install semgrep bandit cryptography --break-system-packages -q
           pip install ./mcp-server --break-system-packages -q
           if [ -n "$DELIBERATION_PAT" ]; then
-            pip install git+https://${DELIBERATION_PAT}@github.com/pestafford/deliberation-mcp.git --break-system-packages -q
+            pip install --no-cache-dir git+https://${DELIBERATION_PAT}@github.com/pestafford/deliberation-mcp.git --break-system-packages -q
           else
             echo "DELIBERATION_PAT not set — deliberation-mcp will not be installed"
           fi
@@ -575,13 +575,15 @@ jobs:
           elif ! command -v deliberation-mcp &>/dev/null; then
             echo "deliberation-mcp not installed — skipping deliberation, keeping preliminary score"
           else
+            # Clear any stale deliberation sessions from previous runs
+            rm -rf .deliberations/ /tmp/deliberation-transcript/
+
             python3 -m credence_mcp.deliberation_adapter run /tmp/ /tmp/scan-summary.json \
               --repo /tmp/target-server \
               --timeout 300 \
               --server-cmd "deliberation-mcp"
 
             # Copy deliberation artifacts to /tmp for reliable artifact upload
-            rm -rf /tmp/deliberation-transcript/
             cp -r .deliberations/ /tmp/deliberation-transcript/ 2>/dev/null || true
 
             # Re-extract verdict after deliberation may have updated it
