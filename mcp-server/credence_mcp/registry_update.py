@@ -21,8 +21,6 @@ from credence_mcp.signing import sign_attestation_from_pem
 
 def build_attestation(summary: dict) -> dict:
     """Build a registry attestation object from a scored scan-summary."""
-    scan_results = summary.get("scan_results", {})
-
     return {
         "commit_sha": summary.get("commit_sha", ""),
         "source_hash": summary.get("source_hash", ""),
@@ -38,14 +36,6 @@ def build_attestation(summary: dict) -> dict:
             "identity_match": "REPO_OWNER_DIFFERS_FROM_CLAIMED_AUTHOR" not in summary.get("provenance_flags", []),
             "is_fork": summary.get("is_fork", False),
             "provenance_flags": summary.get("provenance_flags", []),
-        },
-        "scan_summary": {
-            "semgrep_findings": scan_results.get("semgrep_findings", 0),
-            "bandit_findings": scan_results.get("bandit_findings", 0),
-            "trivy_vulnerabilities": scan_results.get("trivy_vulnerabilities", 0),
-            "gitleaks_secrets": scan_results.get("gitleaks_secrets", 0),
-            "mcp_tool_warnings": scan_results.get("mcp_tool_warnings", 0),
-            "mcp_tool_critical": scan_results.get("mcp_tool_critical", 0),
         },
         "lockfile_name": summary.get("lockfile_name", "none"),
         "lockfile_hash": summary.get("lockfile_hash", "none"),

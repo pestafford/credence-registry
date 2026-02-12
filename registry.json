@@ -25,14 +25,6 @@
           "is_fork": false,
           "provenance_flags": []
         },
-        "scan_summary": {
-          "semgrep_findings": 0,
-          "bandit_findings": 0,
-          "trivy_vulnerabilities": 0,
-          "gitleaks_secrets": 0,
-          "mcp_tool_warnings": 0,
-          "note": "Seed attestation \u2014 score based on provenance and known maintainer. Full pipeline scan pending."
-        },
         "signature": {
           "algorithm": "ed25519",
           "value": "xwsp7KchnKfriPct+swdGysSrjUAjqm/A9TEoKibwoJ3Ca/7LguKC9XhXdfLBhutK2+KhXmUjxQr18yAs1D6Ag==",
@@ -64,14 +56,6 @@
           "identity_match": true,
           "is_fork": false,
           "provenance_flags": []
-        },
-        "scan_summary": {
-          "semgrep_findings": 23,
-          "bandit_findings": 0,
-          "trivy_vulnerabilities": 0,
-          "gitleaks_secrets": 0,
-          "mcp_tool_warnings": 0,
-          "mcp_tool_critical": 0
         },
         "lockfile_name": "package-lock.json",
         "lockfile_hash": "723b5d17a2ca19632c871f71d3263d349a1340c9609de3737fc1612783fb5402",

@@ -542,10 +542,6 @@
         return div.innerHTML;
     }
 
-    function countClass(val) {
-        return val === 0 ? 'zero' : 'nonzero';
-    }
-
     function toggleCard(el) {
         el.closest('.server-card').classList.toggle('open');
     }
@@ -578,7 +574,6 @@
             var a = entry.attestation;
             var score = a.trust_score || 0;
             var dims = a.trust_dimensions || {};
-            var scan = a.scan_summary || {};
             var author = a.author_identity || {};
             var name = entry.server_name || entry.server_id.split('/').pop();
             var repoUrl = entry.repo_url || ('https://github.com/' + entry.server_id);
@@ -634,15 +629,12 @@
             // Detail grids
             html += '<div class="detail-grid">';
 
-            // Scan findings
+            // Attestation details
             html += '<div class="detail-section">';
-            html += '<h4>Scan Findings</h4>';
-            html += '<div class="detail-row"><span class="detail-key">Semgrep</span><span class="detail-val ' + countClass(scan.semgrep_findings || 0) + '">' + (scan.semgrep_findings || 0) + '</span></div>';
-            html += '<div class="detail-row"><span class="detail-key">Bandit</span><span class="detail-val ' + countClass(scan.bandit_findings || 0) + '">' + (scan.bandit_findings || 0) + '</span></div>';
-            html += '<div class="detail-row"><span class="detail-key">Trivy CVEs</span><span class="detail-val ' + countClass(scan.trivy_vulnerabilities || 0) + '">' + (scan.trivy_vulnerabilities || 0) + '</span></div>';
-            html += '<div class="detail-row"><span class="detail-key">Gitleaks</span><span class="detail-val ' + countClass(scan.gitleaks_secrets || 0) + '">' + (scan.gitleaks_secrets || 0) + '</span></div>';
-            html += '<div class="detail-row"><span class="detail-key">MCP warnings</span><span class="detail-val ' + countClass(scan.mcp_tool_warnings || 0) + '">' + (scan.mcp_tool_warnings || 0) + '</span></div>';
-            html += '<div class="detail-row"><span class="detail-key">MCP critical</span><span class="detail-val ' + countClass(scan.mcp_tool_critical || 0) + '">' + (scan.mcp_tool_critical || 0) + '</span></div>';
+            html += '<h4>Attestation</h4>';
+            html += '<div class="detail-row"><span class="detail-key">Pipeline</span><span class="detail-val">v' + escapeHtml(a.pipeline_version || '?') + '</span></div>';
+            html += '<div class="detail-row"><span class="detail-key">Scoring</span><span class="detail-val">v' + escapeHtml(a.scoring_version || '?') + '</span></div>';
+            html += '<div class="detail-row"><span class="detail-key">Signed</span><span class="detail-val ' + (isSigned ? 'zero' : 'nonzero') + '">' + (isSigned ? 'yes' : 'no') + '</span></div>';
             html += '</div>';
 
             // Provenance
