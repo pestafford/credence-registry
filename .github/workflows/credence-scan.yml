@@ -317,16 +317,20 @@ jobs:
               }
 
               // Check if repo owner differs from claimed author in package metadata
-              try {
-                const identity = JSON.parse(fs.readFileSync('/tmp/identity.json', 'utf8'));
-                const claimedAuthor = (identity.package_author || identity.pyproject_author || '').toLowerCase();
-                const repoOwner = owner.toLowerCase();
+              // Only meaningful for forks — for non-forks, the owner created the repo
+              // and may simply use a different org name than their package author field
+              if (repoData.fork) {
+                try {
+                  const identity = JSON.parse(fs.readFileSync('/tmp/identity.json', 'utf8'));
+                  const claimedAuthor = (identity.package_author || identity.pyproject_author || '').toLowerCase();
+                  const repoOwner = owner.toLowerCase();
 
-                if (claimedAuthor && claimedAuthor !== 'unknown' && !claimedAuthor.includes(repoOwner)) {
-                  flags.push('REPO_OWNER_DIFFERS_FROM_CLAIMED_AUTHOR');
+                  if (claimedAuthor && claimedAuthor !== 'unknown' && !claimedAuthor.includes(repoOwner)) {
+                    flags.push('REPO_OWNER_DIFFERS_FROM_CLAIMED_AUTHOR');
+                  }
+                } catch (e) {
+                  // identity.json not available — skip this check
                 }
-              } catch (e) {
-                // identity.json not available — skip this check
               }
 
               // Lockfile flag from previous step
