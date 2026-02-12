@@ -43,6 +43,9 @@ Desktop.ini
 *.badge.svg
 /tmp/
 
+# ── Deliberation sessions (contain detailed findings) ─
+.deliberations/
+
 # ── Local dev/test artifacts ────────────────────
 test-*/
 /evidence.json
