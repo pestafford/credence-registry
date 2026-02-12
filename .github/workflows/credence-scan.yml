@@ -676,9 +676,9 @@ jobs:
           RESULTS_DIR="scan-results/${SCAN_ID}"
           mkdir -p "$RESULTS_DIR"
 
-          # Public: summary (aggregate scores/counts only) + badge.
-          # Detailed findings are NEVER committed.
-          cp /tmp/scan-summary.json "$RESULTS_DIR/summary.json"
+          # Public: redacted summary (scores/verdict/provenance only) + badge.
+          # Finding counts and scoring breakdowns stay in ephemeral artifacts.
+          jq 'del(.scan_results, .scoring_breakdowns)' /tmp/scan-summary.json > "$RESULTS_DIR/summary.json"
           cp /tmp/badge.svg "$RESULTS_DIR/badge.svg" 2>/dev/null || true
 
           echo "SCAN_ID=$SCAN_ID" >> $GITHUB_ENV

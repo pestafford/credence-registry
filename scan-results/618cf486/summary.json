@@ -9,14 +9,6 @@
   "provenance_flags": [],
   "lockfile_name": "package-lock.json",
   "lockfile_hash": "723b5d17a2ca19632c871f71d3263d349a1340c9609de3737fc1612783fb5402",
-  "scan_results": {
-    "semgrep_findings": 23,
-    "bandit_findings": 0,
-    "trivy_vulnerabilities": 0,
-    "gitleaks_secrets": 0,
-    "mcp_tool_warnings": 0,
-    "mcp_tool_critical": 0
-  },
   "scan_timestamp": "2026-02-12T13:27:01Z",
   "pipeline_version": "0.2.0",
   "thinktank_verdict": "VERIFIED_PRELIMINARY",
@@ -26,40 +18,5 @@
     "provenance": 100,
     "behavioral": 100
   },
-  "scoring_version": "1.0.0",
-  "scoring_breakdowns": {
-    "security": {
-      "raw_deductions": {
-        "secrets": 0.0,
-        "sast": 87.5,
-        "cve": 0.0
-      },
-      "capped_deductions": {
-        "secrets": 0.0,
-        "sast": 30,
-        "cve": 0.0
-      },
-      "total_deduction": 30.0
-    },
-    "provenance": {
-      "hard_reject": false,
-      "flags_present": [],
-      "deductions": {},
-      "total_deduction": 0
-    },
-    "behavioral": {
-      "mcp_findings_count": 0,
-      "finding_impacts": [],
-      "total_deduction": 0.0
-    },
-    "aggregate": {
-      "raw_aggregate": 91.0,
-      "override_applied": null,
-      "dimension_weights": {
-        "provenance": 10,
-        "behavioral": 7.5,
-        "security": 7.5
-      }
-    }
-  }
+  "scoring_version": "1.0.0"
 }

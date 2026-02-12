@@ -12,14 +12,6 @@
   ],
   "lockfile_name": "package-lock.json",
   "lockfile_hash": "b59a0c1a2923ccc7a57dd0db0d3a65c523674af6f89bdad85e271986ca68ffc3",
-  "scan_results": {
-    "semgrep_findings": 21,
-    "bandit_findings": 0,
-    "trivy_vulnerabilities": 0,
-    "gitleaks_secrets": 0,
-    "mcp_tool_warnings": 0,
-    "mcp_tool_critical": 0
-  },
   "scan_timestamp": "2026-02-10T15:04:46Z",
   "pipeline_version": "0.2.0",
   "thinktank_verdict": "REJECTED_PRELIMINARY",
@@ -29,44 +21,5 @@
     "provenance": 0,
     "behavioral": 100
   },
-  "scoring_version": "1.0.0",
-  "scoring_breakdowns": {
-    "security": {
-      "raw_deductions": {
-        "secrets": 0.0,
-        "sast": 77.5,
-        "cve": 0.0
-      },
-      "capped_deductions": {
-        "secrets": 0.0,
-        "sast": 30,
-        "cve": 0.0
-      },
-      "total_deduction": 30.0
-    },
-    "provenance": {
-      "hard_reject": true,
-      "override_reason": [
-        "COORDINATED_FORK_NETWORK detected"
-      ],
-      "flags_present": [
-        "REPO_OWNER_DIFFERS_FROM_CLAIMED_AUTHOR",
-        "COORDINATED_FORK_NETWORK"
-      ]
-    },
-    "behavioral": {
-      "mcp_findings_count": 0,
-      "finding_impacts": [],
-      "total_deduction": 0.0
-    },
-    "aggregate": {
-      "raw_aggregate": 51.0,
-      "override_applied": "provenance_hard_reject",
-      "dimension_weights": {
-        "provenance": 10,
-        "behavioral": 7.5,
-        "security": 7.5
-      }
-    }
-  }
+  "scoring_version": "1.0.0"
 }
