@@ -276,6 +276,7 @@ jobs:
       # ── STAGE 1: COLLECT ──────────────────────────────
 
       - name: Generate source hash (Merkle tree SHA-256)
+        if: steps.clone.outputs.clone_failed != 'true'
         run: |
           cd $SCAN_DIR
           # Deterministic hash: sort files, hash each, hash the hashes
@@ -284,6 +285,7 @@ jobs:
           echo "Source hash: $(cat /tmp/source_hash.txt)"
 
       - name: Extract author identity
+        if: steps.clone.outputs.clone_failed != 'true'
         id: identity
         run: |
           cd $SCAN_DIR
@@ -312,6 +314,7 @@ jobs:
           cat /tmp/identity.json
 
       - name: Detect lockfiles
+        if: steps.clone.outputs.clone_failed != 'true'
         id: lockfile
         run: |
           LOCKFILE_FOUND=""
@@ -341,6 +344,7 @@ jobs:
           fi
 
       - name: Check fork status and provenance
+        if: steps.clone.outputs.clone_failed != 'true'
         id: provenance
         uses: actions/github-script@v7
         with:
@@ -480,6 +484,7 @@ jobs:
             }
 
       - name: Generate SBOM
+        if: steps.clone.outputs.clone_failed != 'true'
         uses: anchore/sbom-action@v0
         with:
           path: ${{ env.SCAN_DIR }}
@@ -489,6 +494,7 @@ jobs:
       # ── STAGE 2: SCAN ─────────────────────────────────
 
       - name: Install scan tools
+        if: steps.clone.outputs.clone_failed != 'true'
         env:
           DELIBERATION_PAT: ${{ secrets.DELIBERATION_PAT }}
         run: |
@@ -503,23 +509,27 @@ jobs:
           curl -sfL https://raw.githubusercontent.com/gitleaks/gitleaks/main/scripts/install.sh | sh -s -- -b /usr/local/bin
 
       - name: Run Semgrep SAST
+        if: steps.clone.outputs.clone_failed != 'true'
         continue-on-error: true
         run: |
           cd $SCAN_DIR
           semgrep scan --config auto --json --output /tmp/semgrep-results.json . 2>/dev/null || echo '{"results":[]}' > /tmp/semgrep-results.json
 
       - name: Run Bandit (Python)
+        if: steps.clone.outputs.clone_failed != 'true'
         continue-on-error: true
         run: |
           cd $SCAN_DIR
           bandit -r . -f json -o /tmp/bandit-results.json 2>/dev/null || echo '{"results":[]}' > /tmp/bandit-results.json
 
       - name: Run Trivy (CVE scan)
+        if: steps.clone.outputs.clone_failed != 'true'
         continue-on-error: true
         run: |
           trivy fs --format json --output /tmp/trivy-results.json $SCAN_DIR 2>/dev/null || echo '{"Results":[]}' > /tmp/trivy-results.json
 
       - name: Run GitLeaks (secrets)
+        if: steps.clone.outputs.clone_failed != 'true'
         continue-on-error: true
         run: |
           cd $SCAN_DIR
@@ -528,6 +538,7 @@ jobs:
       # ── STAGE 3: MCP TOOL ANALYSIS ────────────────────
 
       - name: Analyze MCP tool definitions
+        if: steps.clone.outputs.clone_failed != 'true'
         id: mcp_analysis
         run: |
           cd $SCAN_DIR
@@ -561,6 +572,7 @@ jobs:
       # ── STAGE 4: COMPILE RESULTS ──────────────────────
 
       - name: Compile scan summary
+        if: steps.clone.outputs.clone_failed != 'true'
         id: summary
         run: |
           SEMGREP_COUNT=$(jq '.results | length' /tmp/semgrep-results.json 2>/dev/null || echo 0)
@@ -615,6 +627,7 @@ jobs:
       # ── STAGE 4a: NORMALIZE ──────────────────────────
 
       - name: Normalize scanner outputs
+        if: steps.clone.outputs.clone_failed != 'true'
         run: |
           # Collect all scanner results into /tmp/ for the normalizer.
           # The normalizer looks for known filenames in a directory.
@@ -623,6 +636,7 @@ jobs:
       # ── STAGE 4b: TRUST SCORE ────────────────────────
 
       - name: Compute trust score
+        if: steps.clone.outputs.clone_failed != 'true'
         id: score
         run: |
           python3 -m credence_mcp.trust_score /tmp/scan-summary.json /tmp/evidence.json
@@ -644,6 +658,7 @@ jobs:
       # ── STAGE 4c: DELIBERATION ────────────────────────
 
       - name: Run adversarial deliberation
+        if: steps.clone.outputs.clone_failed != 'true'
         id: deliberation
         continue-on-error: true
         env:
@@ -681,7 +696,7 @@ jobs:
           fi
 
       - name: Annotate disclosure hold
-        if: steps.deliberation.outputs.publish == 'false'
+        if: steps.clone.outputs.clone_failed != 'true' && steps.deliberation.outputs.publish == 'false'
         run: |
           SUMMARY=$(cat /tmp/scan-summary.json)
           SCORE=$(echo "$SUMMARY" | jq -r '.trust_score')
@@ -722,12 +737,13 @@ jobs:
       # ── STAGE 4d: SIGN + REPORTS + REGISTRY ──────────
 
       - name: Generate report and badge
+        if: steps.clone.outputs.clone_failed != 'true'
         run: |
           python3 -m credence_mcp.report_generator /tmp/scan-summary.json /tmp/evidence.json /tmp/report.html
           python3 -m credence_mcp.badge_generator --from-summary /tmp/scan-summary.json /tmp/badge.svg
 
       - name: Update registry and sign attestation
-        if: steps.deliberation.outputs.publish == 'true'
+        if: steps.clone.outputs.clone_failed != 'true' && steps.deliberation.outputs.publish == 'true'
         env:
           CREDENCE_SIGNING_KEY: ${{ secrets.CREDENCE_SIGNING_KEY }}
         run: |
@@ -741,6 +757,7 @@ jobs:
       # ── STAGE 5: STORE RESULTS ────────────────────────
 
       - name: Store scan results
+        if: steps.clone.outputs.clone_failed != 'true'
         run: |
           SCAN_ID=$(echo "${{ env.TARGET_COMMIT }}" | cut -c1-8)
           RESULTS_DIR="scan-results/${SCAN_ID}"
@@ -755,6 +772,7 @@ jobs:
           echo "RESULTS_DIR=$RESULTS_DIR" >> $GITHUB_ENV
 
       - name: Upload detailed findings (ephemeral — for remediation / audit only)
+        if: steps.clone.outputs.clone_failed != 'true'
         uses: actions/upload-artifact@v4
         with:
           name: scan-findings-${{ env.TARGET_COMMIT }}
@@ -780,6 +798,7 @@ jobs:
           retention-days: 90
 
       - name: Commit results to repo
+        if: steps.clone.outputs.clone_failed != 'true'
         run: |
           git config user.name "credence-bot"
           git config user.email "credence-bot@users.noreply.github.com"
@@ -794,6 +813,7 @@ jobs:
       # ── POST RESULTS TO ISSUE ─────────────────────────
 
       - name: Post results to issue
+        if: steps.clone.outputs.clone_failed != 'true'
         uses: actions/github-script@v7
         with:
           script: |
