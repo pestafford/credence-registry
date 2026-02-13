@@ -1,71 +1,77 @@
 {
-  "server_name": "MCP Memory Server",
-  "canonical_name": "@modelcontextprotocol/server-memory",
-  "server_path": "src/memory",
+  "server_name": "Filesystem MCP Server",
+  "canonical_name": "@modelcontextprotocol/server-filesystem",
+  "server_path": "src/filesystem",
   "maintainer_verified": false,
   "verify_reason": "Third-party submission — submitter is not owner, collaborator, or contributor",
   "repo_url": "https://github.com/modelcontextprotocol/servers",
   "commit_sha": "618cf4867bca1fa193553d94fb7f2b2cf47f2a04",
-  "source_hash": "ef6fb96e7b91fcf4381ece65aeea311b274d373dbcdf2b664487c71f81d1545b",
+  "source_hash": "43140242e35ba782e4f6f5fd7d1b0496d705969354737f5bb49f36fce4b6052f",
   "source_hash_method": "merkle-tree-sha256",
   "is_fork": false,
   "provenance_flags": [],
   "lockfile_name": "package-lock.json",
   "lockfile_hash": "723b5d17a2ca19632c871f71d3263d349a1340c9609de3737fc1612783fb5402",
-  "scan_timestamp": "2026-02-13T17:18:16Z",
+  "scan_timestamp": "2026-02-13T18:17:39Z",
   "pipeline_version": "0.2.0",
-  "thinktank_verdict": "APPROVED",
-  "trust_score": 98,
+  "thinktank_verdict": "CONDITIONAL",
+  "trust_score": 85,
   "trust_dimensions": {
-    "security": 92,
+    "security": 70,
     "provenance": 100,
     "behavioral": 100
   },
   "scoring_version": "1.0.0",
   "thinktank_debate": {
-    "confidence": 92,
-    "risk_summary": "This MCP Memory Server is a clean reference implementation from the verified modelcontextprotocol organization (Anthropic-backed, Linux Foundation-affiliated) with zero exploitable vulnerabilities. The single Dockerfile finding (missing USER directive) is a container best-practice recommendation that is not applicable to stdio-transport servers with zero network exposure. Provenance metadata collection failures in the assessment pipeline do not invalidate the independently verifiable institutional backing and clean code-level security posture.",
+    "confidence": 78,
+    "risk_summary": "This Anthropic-backed reference implementation filesystem server shows no malicious intent but has provenance metadata anomalies (0-day account age, 0 contributors) that indicate data collection failures requiring verification. The 16 path traversal findings are likely false positives in validation code, but the concentration in path-validation.ts warrants manual code review to confirm proper sanitization. Approved for educational/reference use with human review recommended before production deployment.",
     "agent_count": 5,
     "rounds": 2,
     "highlights": [
       {
         "agent_role": "Adversarial Attacker",
-        "position": "approve",
-        "key_argument": "Zero exploitable attack surface - stdio transport with no network exposure eliminates container escape scenarios, and Tier 1 tool capabilities (in-memory key-value operations) provide no weaponization vectors",
+        "position": "conditional",
+        "key_argument": "Path traversal findings in validation layer (path-validation.ts:30,54) require code audit to prove validation correctness, not just assert its existence. LLM prompt injection via file contents represents unaddressed attack surface where files become durable storage for adversarial instructions.",
         "evidence_cited": [
-          "semgrep-dockerfile.security.missing-user-entrypoint.missing-user-entrypoint-Dockerfile:24"
+          "semgrep-javascript.lang.security.audit.path-traversal.path-join-resolve-traversal.path-join-resolve-traversal-index.ts-45",
+          "semgrep-javascript.lang.security.audit.path-traversal.path-join-resolve-traversal.path-join-resolve-traversal-path-validation.ts-30",
+          "semgrep-javascript.lang.security.audit.path-traversal.path-join-resolve-traversal.path-join-resolve-traversal-path-validation.ts-54"
         ]
       },
       {
         "agent_role": "Supply Chain Analyst",
         "position": "conditional",
-        "key_argument": "Provenance data integrity failure (0 contributors, 0 account age) represents a critical assessment pipeline flaw requiring manual verification of institutional identity before high-confidence trust determination",
+        "key_argument": "Provenance metadata showing account_age: 0 days and contributor_count: 0 represents critical data integrity failure blocking automated trust assessment. Institutional backing claims require independent verification through GitHub API, npm registry ownership, and commit signature validation.",
         "evidence_cited": [
-          "semgrep-dockerfile.security.missing-user-entrypoint.missing-user-entrypoint-Dockerfile:24"
+          "semgrep-javascript.lang.security.audit.path-traversal.path-join-resolve-traversal.path-join-resolve-traversal-lib.ts-79",
+          "semgrep-javascript.lang.security.audit.path-traversal.path-join-resolve-traversal.path-join-resolve-traversal-roots-utils.ts-16"
         ]
       },
       {
         "agent_role": "Compliance Reviewer",
         "position": "approve",
-        "key_argument": "Institutional provenance is independently verifiable through multiple channels (GitHub org profile, MCP specification site, Anthropic documentation) despite metadata collection artifacts, and the Dockerfile finding is explicitly classified as informational per severity calibration rubric",
+        "key_argument": "All 17 findings correctly classified per OWASP/CWE standards: 1 advisory HIGH (CIS Docker Level 1 recommendation), 16 informational MEDIUM (scanner false positives on validation code). Zero blocking findings. Institutional provenance from modelcontextprotocol organization with appropriate reference implementation disclaimers.",
         "evidence_cited": [
-          "semgrep-dockerfile.security.missing-user-entrypoint.missing-user-entrypoint-Dockerfile:24"
+          "semgrep-dockerfile.security.missing-user-entrypoint.missing-user-entrypoint-Dockerfile-25",
+          "semgrep-javascript.lang.security.audit.path-traversal.path-join-resolve-traversal.path-join-resolve-traversal-path-validation.ts-30"
         ]
       },
       {
         "agent_role": "Devil's Advocate",
         "position": "approve",
-        "key_argument": "The 98/100 score is algorithmically sound when provenance is verified - zero critical findings, institutional backing verifiable through multiple independent sources, and single SAST finding contextually informational for reference implementation",
+        "key_argument": "Semgrep findings concentrated in path-validation.ts, path-utils.ts, and roots-utils.ts are diagnostic of false positives - these modules exist specifically to sanitize paths. Real path traversal vulnerabilities bypass validation; these findings ARE the validation layer. Stdio-only transport constrains attack surface to local user permissions.",
         "evidence_cited": [
-          "semgrep-dockerfile.security.missing-user-entrypoint.missing-user-entrypoint-Dockerfile:24"
+          "semgrep-javascript.lang.security.audit.path-traversal.path-join-resolve-traversal.path-join-resolve-traversal-path-utils.ts-115",
+          "semgrep-javascript.lang.security.audit.path-traversal.path-join-resolve-traversal.path-join-resolve-traversal-roots-utils.ts-18"
         ]
       },
       {
         "agent_role": "Pattern Matcher",
         "position": "approve",
-        "key_argument": "Zero indicators of known supply chain attack patterns (SmartLoader, dependency confusion, typosquatting, coordinated forks) - metadata failure is a data collection artifact, not evidence of malicious activity, with commit hash and institutional provenance independently verifiable",
+        "key_argument": "Zero indicators of malicious intent or known supply chain attack patterns (no SmartLoader signatures, no dependency confusion, no tool description injection). Path traversal findings do not match exploitation patterns - they show correct use of path.join/resolve APIs in validation modules, not unsanitized user input flowing to filesystem operations.",
         "evidence_cited": [
-          "semgrep-dockerfile.security.missing-user-entrypoint.missing-user-entrypoint-Dockerfile:24"
+          "semgrep-javascript.lang.security.audit.path-traversal.path-join-resolve-traversal.path-join-resolve-traversal-index.ts-461",
+          "semgrep-javascript.lang.security.audit.path-traversal.path-join-resolve-traversal.path-join-resolve-traversal-lib.ts-387"
         ]
       }
     ],
@@ -73,24 +79,31 @@
       {
         "agent_role": "Supply Chain Analyst",
         "position": "conditional",
-        "argument": "Assessment pipeline failure to collect contributor and account age data represents a critical methodology flaw that should flag the preliminary score as unverified pending manual validation, though concedes the Dockerfile finding is correctly classified as informational and code-level analysis is sound"
+        "argument": "Provenance metadata corruption (0-day account age, 0 contributors) blocks automated trust assessment regardless of code quality. Demands independent verification through GitHub API queries, npm package ownership validation, and commit signature verification before approval. Argues metadata anomalies indicate either data collection failure or potential repository spoofing."
+      },
+      {
+        "agent_role": "Adversarial Attacker",
+        "position": "conditional",
+        "argument": "Validation existence does not equal validation correctness. Path traversal findings in path-validation.ts require code-level audit to confirm proper handling of edge cases (URL encoding, null bytes, double-dot sequences). LLM prompt injection via file contents represents unaddressed compound attack surface where filesystem access enables persistent adversarial instructions."
       }
     ],
-    "completed_at": "2026-02-13T17:19:51.544650+00:00"
+    "completed_at": "2026-02-13T18:19:30.171953+00:00"
   },
   "thinktank_score_adjustment": {
-    "original_score": 98,
-    "adjusted_score": 98,
-    "adjustment_reason": "No adjustment - the single Dockerfile finding is correctly classified as informational-severity for a stdio-based reference implementation per domain knowledge (CIS Level 1 recommendation, 58% industry prevalence, zero network attack surface). Provenance metadata collection failures are assessment pipeline issues that do not invalidate the independently verifiable institutional backing (modelcontextprotocol organization is publicly verifiable on GitHub with 50+ contributors, Anthropic affiliation, and Linux Foundation backing). Code-level security analysis shows zero exploitable vulnerabilities and zero malicious patterns."
+    "original_score": 91,
+    "adjusted_score": 85,
+    "adjustment_reason": "Reduced 6 points: -3 for provenance metadata anomalies requiring independent verification (account_age: 0, contributor_count: 0 indicate data collection failure), -3 for path validation implementation requiring manual code review (concentration of findings in path-validation.ts warrants audit despite likely false positive classification). Maintains CONDITIONAL approval status with human review recommended."
   },
   "thinktank_flags": {
-    "needs_human_review": false,
+    "needs_human_review": true,
     "novel_attack_pattern": false,
     "recommended_actions": [
-      "Fix provenance metadata collection pipeline to correctly retrieve contributor count and organization account age from GitHub API",
-      "Add data quality validation step to assessment pipeline that flags preliminary scores as 'UNVERIFIED' when provenance metadata collection fails",
-      "Reclassify semgrep-dockerfile.security.missing-user-entrypoint.missing-user-entrypoint-Dockerfile:24 from HIGH to INFORMATIONAL severity in context of stdio-transport reference implementations",
-      "Document that modelcontextprotocol organization provenance was manually verified through GitHub public interface, MCP specification site, and Anthropic official documentation"
+      "Verify modelcontextprotocol organization provenance through direct GitHub API query to confirm account creation date and Anthropic affiliation",
+      "Validate npm package @modelcontextprotocol/server-filesystem ownership matches GitHub repository through npm registry API",
+      "Manual code review of path-validation.ts implementation to confirm proper handling of path traversal edge cases (URL encoding, null bytes, Windows paths, symbolic links)",
+      "Review path validation test coverage in __tests__/ to ensure traversal bypass attempts are tested",
+      "Document intended deployment context (reference/educational vs production) and security assumptions in deployment guidance",
+      "Consider adding USER directive to Dockerfile for defense-in-depth even in reference implementations"
     ]
   }
 }

@@ -4,18 +4,18 @@
   "registry_url": "https://credence.securingthesingularity.com",
   "maintainer": "Phil Stafford <phil@securingthesingularity.com>",
   "signing_public_key": "XdvqC/Q6TX90MpL37wdxfUtqOiS8qiQjK8JNJy+BOcM=",
-  "updated_at": "2026-02-13T17:19:51Z",
+  "updated_at": "2026-02-13T18:19:30Z",
   "servers": [
     {
       "server_id": "modelcontextprotocol/servers/filesystem",
       "server_name": "Filesystem MCP Server",
-      "canonical_name": "",
+      "canonical_name": "@modelcontextprotocol/server-filesystem",
       "repo_url": "https://github.com/modelcontextprotocol/servers",
       "repo_owner": "modelcontextprotocol",
-      "trust_score": 95,
-      "thinktank_verdict": "VERIFIED",
+      "trust_score": 85,
+      "thinktank_verdict": "CONDITIONAL",
       "scoring_version": "1.0.0",
-      "attested_at": "2026-02-08T02:58:20Z",
+      "attested_at": "2026-02-13T18:19:30Z",
       "attestation_file": "servers/modelcontextprotocol/servers/filesystem.json"
     },
     {

@@ -1,40 +1,47 @@
 {
-  "schema_version": "0.2.0",
+  "schema_version": "0.3.0",
   "registry_name": "Credence MCP Server Registry",
   "registry_url": "https://credence.securingthesingularity.com",
   "maintainer": "Phil Stafford <phil@securingthesingularity.com>",
   "signing_public_key": "XdvqC/Q6TX90MpL37wdxfUtqOiS8qiQjK8JNJy+BOcM=",
-  "updated_at": "2026-02-13T17:19:51Z",
+  "updated_at": "2026-02-13T18:19:30Z",
   "servers": [
     {
       "server_id": "modelcontextprotocol/servers/filesystem",
       "server_name": "Filesystem MCP Server",
-      "canonical_name": "",
+      "canonical_name": "@modelcontextprotocol/server-filesystem",
       "repo_url": "https://github.com/modelcontextprotocol/servers",
       "attestation": {
-        "commit_sha": "seed-attestation-pending-live-scan",
-        "source_hash": "seed-attestation-pending-live-scan",
+        "commit_sha": "618cf4867bca1fa193553d94fb7f2b2cf47f2a04",
+        "source_hash": "43140242e35ba782e4f6f5fd7d1b0496d705969354737f5bb49f36fce4b6052f",
         "source_hash_method": "merkle-tree-sha256",
-        "attested_at": "2026-02-08T02:58:20Z",
+        "attested_at": "2026-02-13T18:19:30Z",
         "pipeline_version": "0.2.0",
         "scoring_version": "1.0.0",
-        "trust_score": 95,
-        "thinktank_verdict": "VERIFIED",
+        "trust_score": 85,
+        "trust_dimensions": {
+          "security": 70,
+          "provenance": 100,
+          "behavioral": 100
+        },
+        "thinktank_verdict": "CONDITIONAL",
         "author_identity": {
           "repo_owner": "modelcontextprotocol",
           "identity_match": true,
           "is_fork": false,
           "provenance_flags": [],
           "maintainer_verified": false,
-          "verify_reason": "Seed entry — predates verification"
+          "verify_reason": "Third-party submission \u2014 submitter is not owner, collaborator, or contributor"
         },
+        "lockfile_name": "package-lock.json",
+        "lockfile_hash": "723b5d17a2ca19632c871f71d3263d349a1340c9609de3737fc1612783fb5402",
         "signature": {
           "algorithm": "ed25519",
-          "value": "xwsp7KchnKfriPct+swdGysSrjUAjqm/A9TEoKibwoJ3Ca/7LguKC9XhXdfLBhutK2+KhXmUjxQr18yAs1D6Ag==",
-          "canonical_hash": "3444f9eb8f36ca985bf4ad6925984dfa9ee09a603e001e44eda2a49ed9694986"
+          "value": "QDXSsydnsIn7YG4tuX8Q3KiI+bVaHQBMniiVSCOx5nwF8yBaecY5E4UdeWN/EaE8V9MBDlQJRzL6+Zh1zv/ZBA==",
+          "canonical_hash": "0244c05c8a70c8a3f7f7c654081a1f962c5212cc150d81d1ab71398f8c30caef"
         }
       },
-      "attestation_url": "https://github.com/pestafford/credence-registry/tree/main/scan-results/seed-filesystem"
+      "attestation_url": "https://github.com/pestafford/credence-registry/tree/main/scan-results/618cf486"
     },
     {
       "server_id": "modelcontextprotocol/servers/memory",
@@ -61,7 +68,7 @@
           "is_fork": false,
           "provenance_flags": [],
           "maintainer_verified": false,
-          "verify_reason": "Third-party submission — submitter is not owner, collaborator, or contributor"
+          "verify_reason": "Third-party submission \u2014 submitter is not owner, collaborator, or contributor"
         },
         "lockfile_name": "package-lock.json",
         "lockfile_hash": "723b5d17a2ca19632c871f71d3263d349a1340c9609de3737fc1612783fb5402",
