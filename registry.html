@@ -621,7 +621,7 @@
             if (owner) {
                 html += '<div class="server-owner">' + escapeHtml(owner);
                 if (maintainerVerified) {
-                    html += '<span class="verified-maintainer">maintainer</span>';
+                    html += '<span class="verified-maintainer">submitter</span>';
                 }
                 html += '</div>';
             }
@@ -677,8 +677,8 @@
             html += '<div class="detail-section">';
             html += '<h4>Provenance</h4>';
             html += '<div class="detail-row"><span class="detail-key">Owner</span><span class="detail-val">' + escapeHtml(author.repo_owner || '—') + '</span></div>';
-            var mvLabel = author.maintainer_verified ? 'yes' : 'third-party';
-            html += '<div class="detail-row"><span class="detail-key">Maintainer</span><span class="detail-val ' + (author.maintainer_verified ? 'zero' : 'nonzero') + '">' + mvLabel + '</span></div>';
+            var mvLabel = author.maintainer_verified ? 'verified' : 'third-party';
+            html += '<div class="detail-row"><span class="detail-key">Submitter</span><span class="detail-val ' + (author.maintainer_verified ? 'zero' : 'nonzero') + '">' + mvLabel + '</span></div>';
             html += '<div class="detail-row"><span class="detail-key">Identity match</span><span class="detail-val ' + (author.identity_match ? 'zero' : 'nonzero') + '">' + (author.identity_match ? 'yes' : 'no') + '</span></div>';
             html += '<div class="detail-row"><span class="detail-key">Fork</span><span class="detail-val ' + (author.is_fork ? 'nonzero' : 'zero') + '">' + (author.is_fork ? 'yes' : 'no') + '</span></div>';
 
