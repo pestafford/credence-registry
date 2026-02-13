@@ -312,13 +312,13 @@ jobs:
           # pyproject.toml name (canonical package name)
           if [ -f "pyproject.toml" ]; then
             PY_NAME=$(python3 -c "
-import tomllib
-try:
-    with open('pyproject.toml', 'rb') as f:
-        data = tomllib.load(f)
-    print(data.get('project', {}).get('name', ''))
-except Exception:
-    print('')
+          import tomllib
+          try:
+              with open('pyproject.toml', 'rb') as f:
+                  data = tomllib.load(f)
+              print(data.get('project', {}).get('name', ''))
+          except Exception:
+              print('')
           " 2>/dev/null || echo "")
             IDENTITY_JSON=$(echo "$IDENTITY_JSON" | jq --arg n "$PY_NAME" '. + {pyproject_name: $n}')
           fi
