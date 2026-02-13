@@ -18,6 +18,7 @@
         "source_hash_method": "merkle-tree-sha256",
         "attested_at": "2026-02-08T02:58:20Z",
         "pipeline_version": "0.2.0",
+        "scoring_version": "1.0.0",
         "trust_score": 95,
         "thinktank_verdict": "VERIFIED",
         "author_identity": {
