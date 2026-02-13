@@ -213,6 +213,20 @@
             font-family: 'IBM Plex Mono', monospace;
             font-size: 0.7rem;
             color: var(--text-muted);
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+        .server-id-label:hover {
+            color: var(--orange);
+        }
+        .server-id-label .copy-hint {
+            font-size: 0.6rem;
+            opacity: 0;
+            transition: opacity 0.2s;
+            margin-left: 4px;
+        }
+        .server-id-label:hover .copy-hint {
+            opacity: 1;
         }
         .score-badge {
             display: inline-block;
@@ -584,6 +598,21 @@
     // Cache for loaded server details (keyed by server_id)
     var _detailCache = {};
 
+    // Cache index entries for fallback when attestation file is missing
+    var _indexEntryCache = {};
+
+    function copyServerId(el, event) {
+        event.stopPropagation();
+        var id = el.getAttribute('data-sid');
+        navigator.clipboard.writeText(id).then(function() {
+            var hint = el.querySelector('.copy-hint');
+            if (hint) {
+                hint.textContent = 'copied';
+                setTimeout(function() { hint.textContent = 'copy'; }, 1500);
+            }
+        });
+    }
+
     function toggleCard(el) {
         var card = el.closest('.server-card');
         var wasOpen = card.classList.contains('open');
@@ -597,13 +626,22 @@
             if (serverId && attestFile && !_detailCache[serverId]) {
                 bodyEl.innerHTML = '<div style="padding:20px 0; color:var(--text-muted); font-size:0.8rem;">Loading details...</div>';
                 fetch('registry/' + attestFile)
-                    .then(function(r) { return r.json(); })
+                    .then(function(r) {
+                        if (!r.ok) throw new Error('HTTP ' + r.status);
+                        return r.json();
+                    })
                     .then(function(detail) {
                         _detailCache[serverId] = detail;
                         bodyEl.innerHTML = renderCardBody(detail);
                     })
                     .catch(function() {
-                        bodyEl.innerHTML = '<div style="padding:20px 0; color:var(--text-muted); font-size:0.8rem;">Could not load details.</div>';
+                        // Fall back to index entry data
+                        var indexEntry = _indexEntryCache[serverId];
+                        if (indexEntry) {
+                            bodyEl.innerHTML = renderCardBodyFromIndex(indexEntry);
+                        } else {
+                            bodyEl.innerHTML = '<div style="padding:20px 0; color:var(--text-muted); font-size:0.8rem;">Could not load details.</div>';
+                        }
                     });
             } else if (_detailCache[serverId]) {
                 bodyEl.innerHTML = renderCardBody(_detailCache[serverId]);
@@ -691,6 +729,43 @@
         return html;
     }
 
+    function renderCardBodyFromIndex(entry) {
+        var score = entry.trust_score || 0;
+        var verdict = entry.thinktank_verdict || 'PENDING';
+        var dateStr = entry.attested_at ? new Date(entry.attested_at).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }) : '';
+        var html = '';
+
+        html += '<div class="detail-grid">';
+        html += '<div class="detail-section">';
+        html += '<h4>Attestation</h4>';
+        html += '<div class="detail-row"><span class="detail-key">Score</span><span class="detail-val">' + score + '/100</span></div>';
+        html += '<div class="detail-row"><span class="detail-key">Verdict</span><span class="detail-val">' + escapeHtml(verdict) + '</span></div>';
+        html += '<div class="detail-row"><span class="detail-key">Scoring</span><span class="detail-val">v' + escapeHtml(entry.scoring_version || '?') + '</span></div>';
+        if (entry.threat_type) {
+            html += '<div class="detail-row"><span class="detail-key">Threat type</span><span class="detail-val nonzero">' + escapeHtml(entry.threat_type) + '</span></div>';
+        }
+        html += '</div>';
+
+        html += '<div class="detail-section">';
+        html += '<h4>Provenance</h4>';
+        html += '<div class="detail-row"><span class="detail-key">Owner</span><span class="detail-val">' + escapeHtml(entry.repo_owner || '\u2014') + '</span></div>';
+        html += '<div class="detail-row"><span class="detail-key">Repository</span><span class="detail-val"><a href="' + escapeHtml(entry.repo_url || '#') + '" target="_blank" rel="noopener" style="color:var(--text-secondary);text-decoration:none;">' + escapeHtml(entry.repo_url || '\u2014') + '</a></span></div>';
+        html += '</div>';
+        html += '</div>';
+
+        // Footer
+        html += '<div class="card-footer">';
+        html += '<div class="card-footer-left">';
+        if (dateStr) {
+            html += '<span class="footer-item">' + dateStr + '</span>';
+        }
+        html += '</div>';
+        html += '<span style="font-family:\'IBM Plex Mono\',monospace; font-size:0.7rem; color:var(--text-muted);">Expand to full detail from attestation file unavailable</span>';
+        html += '</div>';
+
+        return html;
+    }
+
     function renderServers(servers) {
         var listEl = document.getElementById('server-list');
 
@@ -718,6 +793,7 @@
         var html = '';
 
         servers.forEach(function(entry) {
+            _indexEntryCache[entry.server_id] = entry;
             var score = entry.trust_score || 0;
             var owner = entry.repo_owner || '';
             var rawName = entry.canonical_name || entry.server_name || entry.server_id.split('/').pop();
@@ -741,7 +817,7 @@
                 html += '<div class="server-owner">' + escapeHtml(owner) + '</div>';
             }
             html += '<div class="server-name"><a href="' + escapeHtml(repoUrl) + '" target="_blank" rel="noopener" onclick="event.stopPropagation()">' + escapeHtml(displayName) + '</a></div>';
-            html += '<div class="server-id-label">' + escapeHtml(entry.server_id) + '</div>';
+            html += '<div class="server-id-label" data-sid="' + escapeHtml(entry.server_id) + '" onclick="copyServerId(this, event)">' + escapeHtml(entry.server_id) + '<span class="copy-hint">copy</span></div>';
             html += '</div>';
             html += '</div>';
             html += '<div class="card-header-right">';
