@@ -26,9 +26,14 @@ from pydantic import BaseModel, Field, ConfigDict, field_validator
 
 # ── Configuration ────────────────────────────────────────────────
 
-REGISTRY_URL = os.getenv(
-    "CREDENCE_REGISTRY_URL",
-    "https://raw.githubusercontent.com/pestafford/credence-registry/main/registry.json"
+INDEX_URL = os.getenv(
+    "CREDENCE_INDEX_URL",
+    "https://raw.githubusercontent.com/pestafford/credence-registry/main/registry/index.json"
+)
+
+REGISTRY_BASE_URL = os.getenv(
+    "CREDENCE_REGISTRY_BASE_URL",
+    "https://raw.githubusercontent.com/pestafford/credence-registry/main/registry/"
 )
 
 CACHE_TTL_SECONDS = int(os.getenv("CREDENCE_CACHE_TTL", "300"))  # 5 minutes
@@ -43,30 +48,46 @@ mcp = FastMCP("credence_mcp")
 
 # ── Registry Cache ───────────────────────────────────────────────
 
-_registry_cache = None
-_cache_timestamp = None
+_index_cache = None
+_index_cache_timestamp = None
+_detail_cache = {}
 _public_key_cache = None
 
 
-async def _fetch_registry() -> dict:
-    """Fetch registry.json from GitHub, with caching."""
-    global _registry_cache, _cache_timestamp
+async def _fetch_index() -> dict:
+    """Fetch registry index.json from GitHub, with caching."""
+    global _index_cache, _index_cache_timestamp
 
     now = datetime.now(timezone.utc)
     if (
-        _registry_cache is not None
-        and _cache_timestamp is not None
-        and (now - _cache_timestamp).total_seconds() < CACHE_TTL_SECONDS
+        _index_cache is not None
+        and _index_cache_timestamp is not None
+        and (now - _index_cache_timestamp).total_seconds() < CACHE_TTL_SECONDS
     ):
-        return _registry_cache
+        return _index_cache
 
     async with httpx.AsyncClient(timeout=15.0) as client:
-        resp = await client.get(REGISTRY_URL)
+        resp = await client.get(INDEX_URL)
         resp.raise_for_status()
-        _registry_cache = resp.json()
-        _cache_timestamp = now
+        _index_cache = resp.json()
+        _index_cache_timestamp = now
 
-    return _registry_cache
+    return _index_cache
+
+
+async def _fetch_server_detail(attestation_file: str) -> dict:
+    """Fetch a single per-server attestation file, with caching."""
+    if attestation_file in _detail_cache:
+        return _detail_cache[attestation_file]
+
+    url = REGISTRY_BASE_URL + attestation_file
+    async with httpx.AsyncClient(timeout=15.0) as client:
+        resp = await client.get(url)
+        resp.raise_for_status()
+        detail = resp.json()
+        _detail_cache[attestation_file] = detail
+
+    return detail
 
 
 async def _fetch_public_key():
@@ -105,9 +126,9 @@ async def _verify_server_signature(attestation: dict) -> dict:
         return {"verified": None, "message": f"verification error: {str(e)}"}
 
 
-def _find_server(registry: dict, query: str) -> Optional[dict]:
-    """Find a server by ID, repo URL, or name (case-insensitive partial match)."""
-    servers = registry.get("servers", [])
+def _find_server_in_index(index: dict, query: str) -> Optional[dict]:
+    """Find a server in the index by ID, repo URL, or name (case-insensitive partial match)."""
+    servers = index.get("servers", [])
     query_lower = query.lower().strip().rstrip("/")
 
     for server in servers:
@@ -218,7 +239,7 @@ async def credence_check_server(params: CheckServerInput) -> str:
         Trust status report including score, provenance, and recommendations
     """
     try:
-        registry = await _fetch_registry()
+        index = await _fetch_index()
     except Exception as e:
         return json.dumps({
             "status": "error",
@@ -227,9 +248,9 @@ async def credence_check_server(params: CheckServerInput) -> str:
                        "Proceed with caution and verify the server manually."
         })
 
-    server = _find_server(registry, params.server)
+    match = _find_server_in_index(index, params.server)
 
-    if server is None:
+    if match is None:
         return json.dumps({
             "status": "not_attested",
             "server_query": params.server,
@@ -242,8 +263,17 @@ async def credence_check_server(params: CheckServerInput) -> str:
             "submit_url": "https://credence.securingthesingularity.com/#submit"
         })
 
-    # Build trust report
-    attestation = server.get("attestation", {})
+    # Fetch full detail
+    try:
+        detail = await _fetch_server_detail(match["attestation_file"])
+    except Exception as e:
+        return json.dumps({
+            "status": "error",
+            "message": f"Found server in index but could not fetch detail: {str(e)}"
+        })
+
+    # Build trust report from detail
+    attestation = detail.get("attestation", {})
     provenance = attestation.get("author_identity", {})
     flags = provenance.get("provenance_flags", [])
     trust_score = attestation.get("trust_score")
@@ -266,9 +296,9 @@ async def credence_check_server(params: CheckServerInput) -> str:
 
     return json.dumps({
         "status": "attested",
-        "server_id": server.get("server_id"),
-        "server_name": server.get("server_name"),
-        "repo_url": server.get("repo_url"),
+        "server_id": detail.get("server_id"),
+        "server_name": detail.get("server_name"),
+        "repo_url": detail.get("repo_url"),
         "risk": risk,
         "recommendation": recommendation,
         "trust_score": trust_score,
@@ -283,7 +313,7 @@ async def credence_check_server(params: CheckServerInput) -> str:
             "flags": flags
         },
         "scan_summary": scan,
-        "attestation_url": server.get("attestation_url"),
+        "attestation_url": detail.get("attestation_url"),
         "message": _build_human_message(risk, recommendation, verdict, flags, trust_score)
     })
 
@@ -335,22 +365,32 @@ async def credence_verify_hash(params: VerifyHashInput) -> str:
         Verification result: match, mismatch, or no attestation found
     """
     try:
-        registry = await _fetch_registry()
+        index = await _fetch_index()
     except Exception as e:
         return json.dumps({
             "status": "error",
             "message": f"Could not reach Credence Registry: {str(e)}"
         })
 
-    server = _find_server(registry, params.server)
+    match = _find_server_in_index(index, params.server)
 
-    if server is None:
+    if match is None:
         return json.dumps({
             "status": "not_attested",
             "message": "No attestation found for this server. Cannot verify hash."
         })
 
-    attested_hash = server.get("attestation", {}).get("source_hash", "")
+    # Fetch detail for full attestation
+    try:
+        detail = await _fetch_server_detail(match["attestation_file"])
+    except Exception as e:
+        return json.dumps({
+            "status": "error",
+            "message": f"Could not fetch server detail: {str(e)}"
+        })
+
+    attestation = detail.get("attestation", {})
+    attested_hash = attestation.get("source_hash", "")
 
     if not attested_hash:
         return json.dumps({
@@ -359,7 +399,7 @@ async def credence_verify_hash(params: VerifyHashInput) -> str:
         })
 
     # Verify attestation signature before trusting the hash
-    sig_result = await _verify_server_signature(server.get("attestation", {}))
+    sig_result = await _verify_server_signature(attestation)
     if sig_result.get("verified") is False:
         return json.dumps({
             "status": "signature_invalid",
@@ -374,18 +414,18 @@ async def credence_verify_hash(params: VerifyHashInput) -> str:
     attested_clean = attested_hash.replace("sha256:", "").strip().lower()
     local_clean = params.source_hash.strip().lower()
 
-    match = attested_clean == local_clean
+    match_result = attested_clean == local_clean
 
     return json.dumps({
-        "status": "verified" if match else "mismatch",
-        "match": match,
+        "status": "verified" if match_result else "mismatch",
+        "match": match_result,
         "local_hash": local_clean,
         "attested_hash": attested_clean,
-        "attested_commit": server.get("attestation", {}).get("commit_sha"),
+        "attested_commit": attestation.get("commit_sha"),
         "message": (
             "Source hash matches the Credence attestation. "
             "This code is identical to what was analyzed. Safe to proceed."
-        ) if match else (
+        ) if match_result else (
             "SOURCE HASH MISMATCH. The code you have does NOT match what Credence analyzed. "
             "The code may have been modified after attestation — possibly tampered with. "
             "Do NOT install this server. Re-clone from the attested commit or request a new attestation."
@@ -490,20 +530,20 @@ async def credence_list_servers(params: ListServersInput) -> str:
         List of attested servers with summary information
     """
     try:
-        registry = await _fetch_registry()
+        index = await _fetch_index()
     except Exception as e:
         return json.dumps({
             "status": "error",
             "message": f"Could not reach Credence Registry: {str(e)}"
         })
 
-    servers = registry.get("servers", [])
+    servers = index.get("servers", [])
 
     # Filter by trust score if specified
     if params.min_trust_score is not None:
         servers = [
             s for s in servers
-            if s.get("attestation", {}).get("trust_score", 0) >= params.min_trust_score
+            if (s.get("trust_score") or 0) >= params.min_trust_score
         ]
 
     total = len(servers)
@@ -511,14 +551,12 @@ async def credence_list_servers(params: ListServersInput) -> str:
 
     results = []
     for s in page:
-        att = s.get("attestation", {})
         results.append({
             "server_id": s.get("server_id"),
             "server_name": s.get("server_name"),
-            "trust_score": att.get("trust_score"),
-            "verdict": att.get("thinktank_verdict"),
-            "attested_at": att.get("attested_at"),
-            "flags": att.get("author_identity", {}).get("provenance_flags", [])
+            "trust_score": s.get("trust_score"),
+            "verdict": s.get("thinktank_verdict"),
+            "attested_at": s.get("attested_at"),
         })
 
     return json.dumps({
@@ -527,7 +565,7 @@ async def credence_list_servers(params: ListServersInput) -> str:
         "count": len(results),
         "offset": params.offset,
         "servers": results,
-        "registry_updated": registry.get("updated_at")
+        "registry_updated": index.get("updated_at")
     })
 
 
@@ -572,7 +610,7 @@ async def credence_audit_config(params: dict = {}) -> str:
         })
 
     try:
-        registry = await _fetch_registry()
+        index = await _fetch_index()
     except Exception as e:
         return json.dumps({
             "status": "error",
@@ -582,12 +620,12 @@ async def credence_audit_config(params: dict = {}) -> str:
     results = []
     for server in servers:
         query = server.repo_url or server.package_name or server.name
-        match = _find_server(registry, query) if query else None
+        match = _find_server_in_index(index, query) if query else None
 
         if match is None and server.package_name:
-            match = _find_server(registry, server.package_name)
+            match = _find_server_in_index(index, server.package_name)
         if match is None:
-            match = _find_server(registry, server.name)
+            match = _find_server_in_index(index, server.name)
 
         entry = {
             "name": server.name,
@@ -598,18 +636,15 @@ async def credence_audit_config(params: dict = {}) -> str:
         }
 
         if match:
-            att = match.get("attestation", {})
-            flags = att.get("author_identity", {}).get("provenance_flags", [])
-            score = att.get("trust_score")
-            verdict = att.get("thinktank_verdict")
+            score = match.get("trust_score")
+            verdict = match.get("thinktank_verdict")
             entry["status"] = "attested"
             entry["trust_score"] = score
             entry["verdict"] = verdict
-            entry["flags"] = flags
 
             if verdict == "REJECTED" or (score is not None and score < 30):
                 entry["recommendation"] = "REMOVE"
-            elif flags or (score is not None and score < 70):
+            elif (score is not None and score < 70):
                 entry["recommendation"] = "REVIEW"
             else:
                 entry["recommendation"] = "OK"

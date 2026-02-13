@@ -1,12 +1,16 @@
 #!/usr/bin/env python3
 """
-Credence Registry Updater — Build attestation, sign, and update registry.json.
+Credence Registry Updater — Build attestation, sign, and update registry.
 
-Takes a scored scan-summary.json, builds a registry attestation entry,
-signs it with the Credence Ed25519 key, and upserts it into registry.json.
+Writes per-server attestation files under registry/servers/ and maintains
+a lightweight registry/index.json. Also generates a backward-compatible
+registry.json at the project root.
 
 Usage:
-    python registry_update.py /tmp/scan-summary.json registry.json --key /path/to/key.pem
+    python registry_update.py /tmp/scan-summary.json registry/ --key-env CREDENCE_SIGNING_KEY
+    python registry_update.py /tmp/scan-summary.json registry/ --key /path/to/key.pem
+
+    # Backward compat: if second arg is a .json file, treat parent as project root
     python registry_update.py /tmp/scan-summary.json registry.json --key-env CREDENCE_SIGNING_KEY
 """
 
@@ -64,6 +68,11 @@ def derive_server_id(summary: dict) -> str:
     return summary.get("server_name", "unknown")
 
 
+def _server_id_to_path(server_id: str, registry_dir: Path) -> Path:
+    """Map server_id to its per-server file path."""
+    return registry_dir / "servers" / f"{server_id}.json"
+
+
 def _find_existing_entry(servers: list, server_id: str, repo_url: str,
                          server_path: str) -> int:
     """Find the index of an existing entry for this server, or -1.
@@ -95,7 +104,7 @@ def _find_existing_entry(servers: list, server_id: str, repo_url: str,
             sid_suffix = sid.rstrip("/").split("/")[-1] if "/" in sid else ""
             if sid_suffix == path_suffix:
                 return i
-        # Single entry for this repo with no path suffix → migration
+        # Single entry for this repo with no path suffix -> migration
         if len(repo_matches) == 1:
             existing_id = repo_matches[0][1].get("server_id", "")
             if existing_id.count("/") < 2:
@@ -108,17 +117,36 @@ def _find_existing_entry(servers: list, server_id: str, repo_url: str,
     return -1
 
 
-def upsert_registry(registry: dict, server_id: str, server_name: str,
+def _build_index_entry(server_id: str, server_name: str, canonical_name: str,
+                       repo_url: str, attestation: dict) -> dict:
+    """Build a lightweight index entry from a full server entry."""
+    author = attestation.get("author_identity", {})
+    return {
+        "server_id": server_id,
+        "server_name": server_name,
+        "canonical_name": canonical_name,
+        "repo_url": repo_url,
+        "repo_owner": author.get("repo_owner", ""),
+        "trust_score": attestation.get("trust_score"),
+        "thinktank_verdict": attestation.get("thinktank_verdict", "PENDING"),
+        "scoring_version": attestation.get("scoring_version", ""),
+        "attested_at": attestation.get("attested_at", ""),
+        "attestation_file": f"servers/{server_id}.json",
+    }
+
+
+def upsert_registry(index: dict, server_id: str, server_name: str,
                     repo_url: str, attestation: dict, scan_id: str,
                     canonical_name: str = "",
-                    server_path: str = "") -> dict:
-    """Insert or update a server entry in the registry."""
-    servers = registry.get("servers", [])
+                    server_path: str = "",
+                    registry_dir: Path = None) -> dict:
+    """Insert or update a server in the index and write its per-server file."""
+    servers = index.get("servers", [])
 
     attestation_url = f"https://github.com/pestafford/credence-registry/tree/main/scan-results/{scan_id}"
 
-    # Build the server entry
-    entry = {
+    # Build the full server entry (written to per-server file)
+    full_entry = {
         "server_id": server_id,
         "server_name": server_name,
         "canonical_name": canonical_name,
@@ -127,28 +155,82 @@ def upsert_registry(registry: dict, server_id: str, server_name: str,
         "attestation_url": attestation_url,
     }
 
+    # Build the index entry (lightweight summary)
+    index_entry = _build_index_entry(server_id, server_name, canonical_name,
+                                     repo_url, attestation)
+
+    # Find existing entry in index
     idx = _find_existing_entry(servers, server_id, repo_url, server_path)
+    old_id = None
     if idx >= 0:
         old_id = servers[idx].get("server_id", "")
-        servers[idx] = entry
+        servers[idx] = index_entry
         if old_id != server_id:
-            print(f"  Migrated server_id: {old_id} → {server_id}")
+            print(f"  Migrated server_id: {old_id} -> {server_id}")
     else:
-        servers.append(entry)
+        servers.append(index_entry)
 
-    registry["servers"] = servers
-    registry["updated_at"] = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+    index["servers"] = servers
+    index["updated_at"] = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
 
-    return registry
+    # Write per-server file
+    if registry_dir:
+        server_file = _server_id_to_path(server_id, registry_dir)
+        server_file.parent.mkdir(parents=True, exist_ok=True)
+        server_file.write_text(json.dumps(full_entry, indent=2))
+        print(f"  Per-server file: {server_file}")
+
+        # If server_id changed, remove the old per-server file
+        if old_id and old_id != server_id:
+            old_file = _server_id_to_path(old_id, registry_dir)
+            if old_file.exists():
+                old_file.unlink()
+                print(f"  Removed old file: {old_file}")
+
+    return index
+
+
+def _build_compat_registry(index: dict, registry_dir: Path) -> dict:
+    """Reconstruct a full registry.json from index + per-server files."""
+    compat = {
+        "schema_version": index.get("schema_version", "0.3.0"),
+        "registry_name": index.get("registry_name", ""),
+        "registry_url": index.get("registry_url", ""),
+        "maintainer": index.get("maintainer", ""),
+        "signing_public_key": index.get("signing_public_key", ""),
+        "updated_at": index.get("updated_at", ""),
+        "servers": [],
+    }
+
+    for entry in index.get("servers", []):
+        server_file = registry_dir / entry.get("attestation_file", "")
+        if server_file.exists():
+            full_entry = json.loads(server_file.read_text())
+            compat["servers"].append(full_entry)
+
+    return compat
 
 
 def main():
     if len(sys.argv) < 3:
-        print(f"Usage: {sys.argv[0]} <scan-summary.json> <registry.json> [--key <path> | --key-env <var>]")
+        print(f"Usage: {sys.argv[0]} <scan-summary.json> <registry-dir|registry.json> [--key <path> | --key-env <var>]")
         sys.exit(1)
 
     summary_path = Path(sys.argv[1])
-    registry_path = Path(sys.argv[2])
+    target_path = Path(sys.argv[2])
+
+    # Detect whether target is a directory (new) or a file (backward compat)
+    if target_path.suffix == ".json" or target_path.is_file():
+        # Old-style: registry.json — derive registry_dir and project_root
+        project_root = target_path.parent
+        registry_dir = project_root / "registry"
+    else:
+        # New-style: registry/ directory
+        registry_dir = target_path
+        project_root = registry_dir.parent
+
+    index_path = registry_dir / "index.json"
+    compat_path = project_root / "registry.json"
 
     # Parse key source
     pem_data = None
@@ -169,7 +251,47 @@ def main():
 
     # Load inputs
     summary = json.loads(summary_path.read_text())
-    registry = json.loads(registry_path.read_text())
+
+    # Load or create index
+    if index_path.exists():
+        index = json.loads(index_path.read_text())
+    elif compat_path.exists():
+        # Bootstrap from existing registry.json
+        old_registry = json.loads(compat_path.read_text())
+        index = {
+            "schema_version": "0.3.0",
+            "registry_name": old_registry.get("registry_name", ""),
+            "registry_url": old_registry.get("registry_url", ""),
+            "maintainer": old_registry.get("maintainer", ""),
+            "signing_public_key": old_registry.get("signing_public_key", ""),
+            "updated_at": old_registry.get("updated_at", ""),
+            "servers": [],
+        }
+        # Migrate existing entries
+        for entry in old_registry.get("servers", []):
+            sid = entry.get("server_id", "")
+            att = entry.get("attestation", {})
+            ie = _build_index_entry(
+                sid, entry.get("server_name", ""),
+                entry.get("canonical_name", ""),
+                entry.get("repo_url", ""), att
+            )
+            index["servers"].append(ie)
+            # Write per-server file
+            server_file = _server_id_to_path(sid, registry_dir)
+            server_file.parent.mkdir(parents=True, exist_ok=True)
+            server_file.write_text(json.dumps(entry, indent=2))
+        print(f"Bootstrapped registry/ from {compat_path} ({len(index['servers'])} servers)")
+    else:
+        index = {
+            "schema_version": "0.3.0",
+            "registry_name": "Credence MCP Server Registry",
+            "registry_url": "https://credence.securingthesingularity.com",
+            "maintainer": "Phil Stafford <phil@securingthesingularity.com>",
+            "signing_public_key": "",
+            "updated_at": "",
+            "servers": [],
+        }
 
     # Build attestation
     attestation = build_attestation(summary)
@@ -190,25 +312,32 @@ def main():
     commit_sha = summary.get("commit_sha", "")
     scan_id = commit_sha[:8] if commit_sha else "unknown"
 
-    # Upsert
-    registry = upsert_registry(registry, server_id, server_name,
-                               repo_url, attestation, scan_id,
-                               canonical_name=canonical_name,
-                               server_path=server_path)
+    # Upsert (writes per-server file + updates index)
+    index = upsert_registry(index, server_id, server_name,
+                            repo_url, attestation, scan_id,
+                            canonical_name=canonical_name,
+                            server_path=server_path,
+                            registry_dir=registry_dir)
 
-    # Write
-    registry_path.write_text(json.dumps(registry, indent=2))
+    # Write index
+    registry_dir.mkdir(parents=True, exist_ok=True)
+    index_path.write_text(json.dumps(index, indent=2))
+
+    # Write backward-compatible registry.json
+    compat = _build_compat_registry(index, registry_dir)
+    compat_path.write_text(json.dumps(compat, indent=2))
 
     # Report
     score = summary.get("trust_score", "?")
     verdict = summary.get("thinktank_verdict", "?")
-    print(f"\nRegistry updated: {registry_path}")
+    print(f"\nRegistry updated: {registry_dir}")
     print(f"  Server:  {server_id}")
     print(f"  Commit:  {commit_sha[:12]}")
     print(f"  Score:   {score}/100")
     print(f"  Verdict: {verdict}")
     print(f"  Signed:  {'yes' if pem_data else 'no'}")
-    print(f"  Servers in registry: {len(registry['servers'])}")
+    print(f"  Servers in registry: {len(index['servers'])}")
+    print(f"  Compat registry.json: {compat_path}")
 
 
 if __name__ == "__main__":

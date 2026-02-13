@@ -1,0 +1,34 @@
+{
+  "schema_version": "0.3.0",
+  "registry_name": "Credence MCP Server Registry",
+  "registry_url": "https://credence.securingthesingularity.com",
+  "maintainer": "Phil Stafford <phil@securingthesingularity.com>",
+  "signing_public_key": "XdvqC/Q6TX90MpL37wdxfUtqOiS8qiQjK8JNJy+BOcM=",
+  "updated_at": "2026-02-13T17:19:51Z",
+  "servers": [
+    {
+      "server_id": "modelcontextprotocol/servers/filesystem",
+      "server_name": "Filesystem MCP Server",
+      "canonical_name": "",
+      "repo_url": "https://github.com/modelcontextprotocol/servers",
+      "repo_owner": "modelcontextprotocol",
+      "trust_score": 95,
+      "thinktank_verdict": "VERIFIED",
+      "scoring_version": "1.0.0",
+      "attested_at": "2026-02-08T02:58:20Z",
+      "attestation_file": "servers/modelcontextprotocol/servers/filesystem.json"
+    },
+    {
+      "server_id": "modelcontextprotocol/servers/memory",
+      "server_name": "MCP Memory Server",
+      "canonical_name": "@modelcontextprotocol/server-memory",
+      "repo_url": "https://github.com/modelcontextprotocol/servers",
+      "repo_owner": "modelcontextprotocol",
+      "trust_score": 98,
+      "thinktank_verdict": "APPROVED",
+      "scoring_version": "1.0.0",
+      "attested_at": "2026-02-13T17:19:51Z",
+      "attestation_file": "servers/modelcontextprotocol/servers/memory.json"
+    }
+  ]
+}

@@ -47,7 +47,8 @@ from credence_mcp.config_resolver import (
     ResolvedServer,
 )
 
-REGISTRY_URL = "https://raw.githubusercontent.com/pestafford/credence-registry/main/registry.json"
+INDEX_URL = "https://raw.githubusercontent.com/pestafford/credence-registry/main/registry/index.json"
+REGISTRY_BASE_URL = "https://raw.githubusercontent.com/pestafford/credence-registry/main/registry/"
 PUBLIC_KEY_URL = "https://raw.githubusercontent.com/pestafford/credence-registry/main/credence_key.pub"
 
 _public_key_cache = None
@@ -69,11 +70,10 @@ def _get_public_key():
     return None
 
 
-def _verify_signature(server: dict) -> tuple[bool | None, str]:
-    """Verify the signature on a server attestation. Returns (valid, message).
+def _verify_signature(attestation: dict) -> tuple[bool | None, str]:
+    """Verify the signature on an attestation. Returns (valid, message).
     Returns (None, message) if no signature or no public key available."""
-    att = server.get("attestation", {})
-    sig = att.get("signature")
+    sig = attestation.get("signature")
     if not sig:
         return None, "unsigned"
 
@@ -83,7 +83,7 @@ def _verify_signature(server: dict) -> tuple[bool | None, str]:
 
     try:
         from credence_mcp.signing import verify_attestation
-        valid, msg = verify_attestation(att, pubkey)
+        valid, msg = verify_attestation(attestation, pubkey)
         return valid, msg
     except Exception as e:
         return None, f"verification error: {e}"
@@ -104,17 +104,24 @@ class C:
         GREEN = YELLOW = RED = BOLD = DIM = RESET = ORANGE = ""
 
 
-# ── Registry ─────────────────────────────────────────────────────
+# ── Registry (two-tier: index + detail) ─────────────────────────
 
-def fetch_registry() -> dict:
-    resp = httpx.get(REGISTRY_URL, timeout=15.0)
+def fetch_index() -> dict:
+    resp = httpx.get(INDEX_URL, timeout=15.0)
     resp.raise_for_status()
     return resp.json()
 
 
-def find_server(registry: dict, query: str) -> dict | None:
+def fetch_server_detail(attestation_file: str) -> dict:
+    url = REGISTRY_BASE_URL + attestation_file
+    resp = httpx.get(url, timeout=15.0)
+    resp.raise_for_status()
+    return resp.json()
+
+
+def find_server_in_index(index: dict, query: str) -> dict | None:
     query_lower = query.lower().strip().rstrip("/")
-    for server in registry.get("servers", []):
+    for server in index.get("servers", []):
         if server.get("server_id", "").lower() == query_lower:
             return server
         repo = server.get("repo_url", "").lower().rstrip("/")
@@ -152,21 +159,28 @@ def cmd_check(args) -> int:
     print(f"{C.DIM}Checking Credence Registry...{C.RESET}")
 
     try:
-        registry = fetch_registry()
+        index = fetch_index()
     except Exception as e:
         print(f"{C.RED}Error:{C.RESET} Could not reach registry: {e}")
         return 1
 
-    server = find_server(registry, args.server)
+    match = find_server_in_index(index, args.server)
 
-    if server is None:
+    if match is None:
         print(f"\n{C.YELLOW}⚠  NOT ATTESTED{C.RESET}")
         print(f"   No Credence attestation found for: {C.BOLD}{args.server}{C.RESET}")
         print(f"   This doesn't mean it's malicious — it hasn't been analyzed yet.")
         print(f"\n   {C.DIM}Submit for analysis: https://credence.securingthesingularity.com/#submit{C.RESET}")
         return 1
 
-    att = server.get("attestation", {})
+    # Fetch full detail
+    try:
+        detail = fetch_server_detail(match["attestation_file"])
+    except Exception as e:
+        print(f"{C.RED}Error:{C.RESET} Found in index but could not fetch detail: {e}")
+        return 1
+
+    att = detail.get("attestation", {})
     provenance = att.get("author_identity", {})
     flags = provenance.get("provenance_flags", [])
     trust_score = att.get("trust_score")
@@ -174,8 +188,8 @@ def cmd_check(args) -> int:
     scan = att.get("scan_summary", {})
 
     # Header
-    print(f"\n{C.BOLD}{server.get('server_name', server.get('server_id'))}{C.RESET}")
-    print(f"   {C.DIM}{server.get('repo_url', '')}{C.RESET}")
+    print(f"\n{C.BOLD}{detail.get('server_name', detail.get('server_id'))}{C.RESET}")
+    print(f"   {C.DIM}{detail.get('repo_url', '')}{C.RESET}")
 
     # Trust score
     if trust_score is not None:
@@ -221,7 +235,7 @@ def cmd_check(args) -> int:
         print(f"   Attested:     {C.DIM}{attested}{C.RESET}")
 
     # Signature verification
-    sig_valid, sig_msg = _verify_signature(server)
+    sig_valid, sig_msg = _verify_signature(att)
     if sig_valid is True:
         print(f"   Signature:    {C.GREEN}verified ✔{C.RESET}")
     elif sig_valid is False:
@@ -262,23 +276,31 @@ def cmd_verify(args) -> int:
 
     print(f"{C.DIM}Checking Credence Registry...{C.RESET}")
     try:
-        registry = fetch_registry()
+        index = fetch_index()
     except Exception as e:
         print(f"{C.RED}Error:{C.RESET} Could not reach registry: {e}")
         return 1
 
-    server = find_server(registry, args.server)
-    if server is None:
+    match = find_server_in_index(index, args.server)
+    if match is None:
         print(f"\n{C.YELLOW}⚠  No attestation found for: {args.server}{C.RESET}")
         return 1
 
-    attested_hash = server.get("attestation", {}).get("source_hash", "")
+    # Fetch detail
+    try:
+        detail = fetch_server_detail(match["attestation_file"])
+    except Exception as e:
+        print(f"{C.RED}Error:{C.RESET} Could not fetch server detail: {e}")
+        return 1
+
+    att = detail.get("attestation", {})
+    attested_hash = att.get("source_hash", "")
     attested_clean = attested_hash.replace("sha256:", "").strip().lower()
 
     print(f"   Attested:   {C.DIM}{attested_clean}{C.RESET}")
 
     # Verify attestation signature before trusting the hash
-    sig_valid, sig_msg = _verify_signature(server)
+    sig_valid, sig_msg = _verify_signature(att)
     if sig_valid is True:
         print(f"   Signature:  {C.GREEN}verified ✔{C.RESET}")
     elif sig_valid is False:
@@ -303,17 +325,17 @@ def cmd_list(args) -> int:
     print(f"{C.DIM}Fetching Credence Registry...{C.RESET}")
 
     try:
-        registry = fetch_registry()
+        index = fetch_index()
     except Exception as e:
         print(f"{C.RED}Error:{C.RESET} Could not reach registry: {e}")
         return 1
 
-    servers = registry.get("servers", [])
+    servers = index.get("servers", [])
 
     if args.min_score is not None:
         servers = [
             s for s in servers
-            if s.get("attestation", {}).get("trust_score", 0) >= args.min_score
+            if (s.get("trust_score") or 0) >= args.min_score
         ]
 
     if not servers:
@@ -323,10 +345,8 @@ def cmd_list(args) -> int:
     print(f"\n{C.BOLD}Attested MCP Servers ({len(servers)}){C.RESET}\n")
 
     for s in servers:
-        att = s.get("attestation", {})
-        score = att.get("trust_score")
-        verdict = att.get("thinktank_verdict", "?")
-        flags = att.get("author_identity", {}).get("provenance_flags", [])
+        score = s.get("trust_score")
+        verdict = s.get("thinktank_verdict", "?")
 
         if score is not None and score >= 70:
             indicator = f"{C.GREEN}●{C.RESET}"
@@ -339,9 +359,8 @@ def cmd_list(args) -> int:
 
         name = s.get("server_name", s.get("server_id", "unknown"))
         score_str = f"{score}/100" if score is not None else "pending"
-        flag_str = f" {C.YELLOW}[{', '.join(flags)}]{C.RESET}" if flags else ""
 
-        print(f"  {indicator} {C.BOLD}{name}{C.RESET}  {C.DIM}{score_str}  {verdict}{C.RESET}{flag_str}")
+        print(f"  {indicator} {C.BOLD}{name}{C.RESET}  {C.DIM}{score_str}  {verdict}{C.RESET}")
         print(f"    {C.DIM}{s.get('repo_url', '')}{C.RESET}")
 
     return 0
@@ -364,7 +383,7 @@ def cmd_audit(args) -> int:
     print(f"{C.DIM}Checking Credence Registry...{C.RESET}")
 
     try:
-        registry = fetch_registry()
+        index = fetch_index()
     except Exception as e:
         print(f"{C.RED}Error:{C.RESET} Could not reach registry: {e}")
         return 1
@@ -399,29 +418,25 @@ def cmd_audit(args) -> int:
         if server.repo_url:
             print(f"  Repo:    {C.DIM}{server.repo_url}{C.RESET}")
 
-        # Check against registry
+        # Check against index
         query = server.repo_url or server.package_name or server.name
-        match = find_server(registry, query) if query else None
+        match = find_server_in_index(index, query) if query else None
 
         if match is None and server.package_name:
             # Try alternative lookups
-            match = find_server(registry, server.package_name)
+            match = find_server_in_index(index, server.package_name)
         if match is None:
-            match = find_server(registry, server.name)
+            match = find_server_in_index(index, server.name)
 
         if match:
-            att = match.get("attestation", {})
-            score = att.get("trust_score")
-            verdict = att.get("thinktank_verdict", "?")
-            flags = att.get("author_identity", {}).get("provenance_flags", [])
+            score = match.get("trust_score")
+            verdict = match.get("thinktank_verdict", "?")
 
             if verdict == "REJECTED" or (score is not None and score < 30):
                 print(f"  {C.RED}{C.BOLD}✘ REJECTED{C.RESET} — score: {score}/100, verdict: {verdict}")
                 flagged += 1
-            elif flags or verdict == "CONDITIONAL" or (score is not None and score < 70):
+            elif verdict == "CONDITIONAL" or (score is not None and score < 70):
                 print(f"  {C.YELLOW}{C.BOLD}⚠ FLAGGED{C.RESET} — score: {score}/100, verdict: {verdict}")
-                if flags:
-                    print(f"  Flags: {C.YELLOW}{', '.join(flags)}{C.RESET}")
                 flagged += 1
             else:
                 print(f"  {C.GREEN}✔ ATTESTED{C.RESET} — score: {score}/100, verdict: {verdict}")
@@ -461,7 +476,7 @@ def cmd_guard(args) -> int:
     print(f"{C.DIM}Credence guard checking: {args.server}{C.RESET}")
 
     try:
-        registry = fetch_registry()
+        index = fetch_index()
     except Exception as e:
         print(f"{C.RED}Error:{C.RESET} Could not reach registry: {e}")
         if not args.allow_unattested:
@@ -471,9 +486,9 @@ def cmd_guard(args) -> int:
             print(f"{C.YELLOW}Warning:{C.RESET} Proceeding without verification (--allow-unattested)")
             return _run_guarded_command(args)
 
-    server = find_server(registry, args.server)
+    match = find_server_in_index(index, args.server)
 
-    if server is None:
+    if match is None:
         print(f"\n{C.YELLOW}⚠ NOT ATTESTED:{C.RESET} {args.server}")
         print(f"  No Credence attestation found for this server.")
 
@@ -485,24 +500,18 @@ def cmd_guard(args) -> int:
             print(f"  Submit for analysis: https://credence.securingthesingularity.com/#submit")
             return 1
 
-    att = server.get("attestation", {})
-    trust_score = att.get("trust_score")
-    verdict = att.get("thinktank_verdict", "UNKNOWN")
-    flags = att.get("author_identity", {}).get("provenance_flags", [])
+    trust_score = match.get("trust_score")
+    verdict = match.get("thinktank_verdict", "UNKNOWN")
 
     if verdict == "REJECTED" or (trust_score is not None and trust_score < 30):
         print(f"\n{C.RED}{C.BOLD}✘ REJECTED:{C.RESET} {args.server}")
         print(f"  Trust score: {trust_score}/100, Verdict: {verdict}")
-        if flags:
-            print(f"  Flags: {', '.join(flags)}")
         print(f"  {C.RED}{C.BOLD}Command blocked.{C.RESET} This server failed Credence review.")
         return 3
 
-    if flags or verdict == "CONDITIONAL" or (trust_score is not None and trust_score < 70):
+    if verdict == "CONDITIONAL" or (trust_score is not None and trust_score < 70):
         print(f"\n{C.YELLOW}{C.BOLD}⚠ FLAGGED:{C.RESET} {args.server}")
         print(f"  Trust score: {trust_score}/100, Verdict: {verdict}")
-        if flags:
-            print(f"  Flags: {', '.join(flags)}")
 
         if args.allow_flagged:
             print(f"  {C.YELLOW}Proceeding anyway (--allow-flagged){C.RESET}")
@@ -558,10 +567,10 @@ def cmd_watch(args) -> int:
 
     # Initial load
     try:
-        registry = fetch_registry()
+        index = fetch_index()
     except Exception as e:
         print(f"{C.YELLOW}Warning:{C.RESET} Could not reach registry on startup: {e}")
-        registry = {"servers": []}
+        index = {"servers": []}
 
     try:
         while True:
@@ -581,9 +590,9 @@ def cmd_watch(args) -> int:
                 new_servers = current_names - known_servers
 
                 if new_servers:
-                    # Refresh registry for new checks
+                    # Refresh index for new checks
                     try:
-                        registry = fetch_registry()
+                        index = fetch_index()
                     except Exception:
                         pass
 
@@ -597,18 +606,16 @@ def cmd_watch(args) -> int:
                         print(f"  {C.DIM}{resolved.command} {' '.join(resolved.args[:3])}{C.RESET}")
 
                         query = resolved.repo_url or resolved.package_name or name
-                        match = find_server(registry, query) if query else None
+                        match = find_server_in_index(index, query) if query else None
 
                         if match:
-                            att = match.get("attestation", {})
-                            score = att.get("trust_score")
-                            verdict = att.get("thinktank_verdict", "?")
-                            flags = att.get("author_identity", {}).get("provenance_flags", [])
+                            score = match.get("trust_score")
+                            verdict = match.get("thinktank_verdict", "?")
 
                             if verdict == "REJECTED" or (score is not None and score < 30):
                                 print(f"  {C.RED}{C.BOLD}✘ REJECTED — score: {score}/100{C.RESET}")
                                 _alert(f"REJECTED MCP server added: {name} (score: {score})")
-                            elif flags or (score is not None and score < 70):
+                            elif (score is not None and score < 70):
                                 print(f"  {C.YELLOW}{C.BOLD}⚠ FLAGGED — score: {score}/100{C.RESET}")
                                 _alert(f"Flagged MCP server added: {name} (score: {score})")
                             else:

@@ -1,0 +1,37 @@
+{
+  "server_id": "modelcontextprotocol/servers/memory",
+  "server_name": "MCP Memory Server",
+  "canonical_name": "@modelcontextprotocol/server-memory",
+  "repo_url": "https://github.com/modelcontextprotocol/servers",
+  "attestation": {
+    "commit_sha": "618cf4867bca1fa193553d94fb7f2b2cf47f2a04",
+    "source_hash": "ef6fb96e7b91fcf4381ece65aeea311b274d373dbcdf2b664487c71f81d1545b",
+    "source_hash_method": "merkle-tree-sha256",
+    "attested_at": "2026-02-13T17:19:51Z",
+    "pipeline_version": "0.2.0",
+    "scoring_version": "1.0.0",
+    "trust_score": 98,
+    "trust_dimensions": {
+      "security": 92,
+      "provenance": 100,
+      "behavioral": 100
+    },
+    "thinktank_verdict": "APPROVED",
+    "author_identity": {
+      "repo_owner": "modelcontextprotocol",
+      "identity_match": true,
+      "is_fork": false,
+      "provenance_flags": [],
+      "maintainer_verified": false,
+      "verify_reason": "Third-party submission \u2014 submitter is not owner, collaborator, or contributor"
+    },
+    "lockfile_name": "package-lock.json",
+    "lockfile_hash": "723b5d17a2ca19632c871f71d3263d349a1340c9609de3737fc1612783fb5402",
+    "signature": {
+      "algorithm": "ed25519",
+      "value": "bGvrSLP+dbGs0lj91lINQdc+in5//NMJUHCFV4Vn/Eh+sK+8ZsDZU+a9WLvA2v5U0F4B7Bzj+OczK660F6/9Cw==",
+      "canonical_hash": "c9be541312295bc9b44bb99519bb602321acdc1fc7aa1efe13eda1f429fbed6b"
+    }
+  },
+  "attestation_url": "https://github.com/pestafford/credence-registry/tree/main/scan-results/618cf486"
+}

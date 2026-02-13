@@ -561,8 +561,111 @@
         return div.innerHTML;
     }
 
+    // Cache for loaded server details (keyed by server_id)
+    var _detailCache = {};
+
     function toggleCard(el) {
-        el.closest('.server-card').classList.toggle('open');
+        var card = el.closest('.server-card');
+        var wasOpen = card.classList.contains('open');
+        card.classList.toggle('open');
+
+        // Lazy-load detail on first expand
+        if (!wasOpen) {
+            var serverId = card.getAttribute('data-server-id');
+            var attestFile = card.getAttribute('data-attestation-file');
+            var bodyEl = card.querySelector('.card-body');
+            if (serverId && attestFile && !_detailCache[serverId]) {
+                bodyEl.innerHTML = '<div style="padding:20px 0; color:var(--text-muted); font-size:0.8rem;">Loading details...</div>';
+                fetch('registry/' + attestFile)
+                    .then(function(r) { return r.json(); })
+                    .then(function(detail) {
+                        _detailCache[serverId] = detail;
+                        bodyEl.innerHTML = renderCardBody(detail);
+                    })
+                    .catch(function() {
+                        bodyEl.innerHTML = '<div style="padding:20px 0; color:var(--text-muted); font-size:0.8rem;">Could not load details.</div>';
+                    });
+            } else if (_detailCache[serverId]) {
+                bodyEl.innerHTML = renderCardBody(_detailCache[serverId]);
+            }
+        }
+    }
+
+    function renderCardBody(entry) {
+        var a = entry.attestation;
+        var dims = a.trust_dimensions || {};
+        var author = a.author_identity || {};
+        var attestUrl = entry.attestation_url || '#';
+        var commitShort = (a.commit_sha || '').substring(0, 12);
+        var isSigned = a.signature && a.signature.value;
+        var dateStr = a.attested_at ? new Date(a.attested_at).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }) : '';
+        var html = '';
+
+        // Dimension bars
+        if (dims.security !== undefined || dims.provenance !== undefined || dims.behavioral !== undefined) {
+            html += '<div class="dimensions">';
+            html += '<h4>Trust Dimensions</h4>';
+            var dimList = [
+                { label: 'Security', value: dims.security, weight: '30%' },
+                { label: 'Provenance', value: dims.provenance, weight: '40%' },
+                { label: 'Behavioral', value: dims.behavioral, weight: '30%' }
+            ];
+            dimList.forEach(function(d) {
+                if (d.value === undefined) return;
+                var barClass = dimBarClass(d.value);
+                html += '<div class="dim-row">';
+                html += '<span class="dim-label">' + d.label + ' <span style="color:var(--text-muted); font-size:0.65rem;">(' + d.weight + ')</span></span>';
+                html += '<div class="dim-bar-bg"><div class="dim-bar-fill ' + barClass + '" style="width:' + d.value + '%"></div></div>';
+                html += '<span class="dim-score">' + d.value + '</span>';
+                html += '</div>';
+            });
+            html += '</div>';
+        }
+
+        // Detail grids
+        html += '<div class="detail-grid">';
+        html += '<div class="detail-section">';
+        html += '<h4>Attestation</h4>';
+        html += '<div class="detail-row"><span class="detail-key">Pipeline</span><span class="detail-val">v' + escapeHtml(a.pipeline_version || '?') + '</span></div>';
+        html += '<div class="detail-row"><span class="detail-key">Scoring</span><span class="detail-val">v' + escapeHtml(a.scoring_version || '?') + '</span></div>';
+        html += '<div class="detail-row"><span class="detail-key">Signed</span><span class="detail-val ' + (isSigned ? 'zero' : 'nonzero') + '">' + (isSigned ? 'yes' : 'no') + '</span></div>';
+        html += '</div>';
+
+        html += '<div class="detail-section">';
+        html += '<h4>Provenance</h4>';
+        html += '<div class="detail-row"><span class="detail-key">Owner</span><span class="detail-val">' + escapeHtml(author.repo_owner || '\u2014') + '</span></div>';
+        var mvLabel = author.maintainer_verified ? 'verified' : 'third-party';
+        html += '<div class="detail-row"><span class="detail-key">Submitter</span><span class="detail-val ' + (author.maintainer_verified ? 'zero' : 'nonzero') + '">' + mvLabel + '</span></div>';
+        html += '<div class="detail-row"><span class="detail-key">Identity match</span><span class="detail-val ' + (author.identity_match ? 'zero' : 'nonzero') + '">' + (author.identity_match ? 'yes' : 'no') + '</span></div>';
+        html += '<div class="detail-row"><span class="detail-key">Fork</span><span class="detail-val ' + (author.is_fork ? 'nonzero' : 'zero') + '">' + (author.is_fork ? 'yes' : 'no') + '</span></div>';
+        var flags = author.provenance_flags || [];
+        html += '<div class="detail-row"><span class="detail-key">Flags</span><span class="detail-val ' + (flags.length > 0 ? 'nonzero' : 'zero') + '">' + (flags.length > 0 ? escapeHtml(flags.join(', ')) : 'none') + '</span></div>';
+        var lockfileName = a.lockfile_name || 'none';
+        html += '<div class="detail-row"><span class="detail-key">Lockfile</span><span class="detail-val">' + escapeHtml(lockfileName) + '</span></div>';
+        html += '</div>';
+        html += '</div>';
+
+        // Footer
+        html += '<div class="card-footer">';
+        html += '<div class="card-footer-left">';
+        if (commitShort) {
+            html += '<span class="footer-item"><a href="' + escapeHtml(attestUrl) + '" target="_blank" rel="noopener">' + commitShort + '</a></span>';
+        }
+        if (dateStr) {
+            html += '<span class="footer-item">' + dateStr + '</span>';
+        }
+        if (a.scoring_version) {
+            html += '<span class="footer-item">v' + escapeHtml(a.scoring_version) + '</span>';
+        }
+        html += '</div>';
+        if (isSigned) {
+            html += '<span class="signed-badge">ed25519 signed</span>';
+        } else {
+            html += '<span class="unsigned-badge">unsigned</span>';
+        }
+        html += '</div>';
+
+        return html;
     }
 
     function renderServers(servers) {
@@ -575,9 +678,9 @@
 
         // Stats bar
         var avgScore = Math.round(servers.reduce(function(s, e) {
-            return s + (e.attestation.trust_score || 0);
+            return s + (e.trust_score || 0);
         }, 0) / servers.length);
-        var latestDate = servers[0].attestation.attested_at;
+        var latestDate = servers[0].attested_at;
 
         var statsEl = document.getElementById('stats-bar');
         statsEl.innerHTML =
@@ -586,18 +689,13 @@
             '<div class="stat-card"><div class="stat-value">' + timeAgo(latestDate) + '</div><div class="stat-label">Latest scan</div></div>';
         statsEl.style.display = 'flex';
 
-        // Server cards
+        // Server cards (rendered from index — no detail needed for collapsed view)
         var html = '';
 
         servers.forEach(function(entry) {
-            var a = entry.attestation;
-            var score = a.trust_score || 0;
-            var dims = a.trust_dimensions || {};
-            var author = a.author_identity || {};
-            var owner = author.repo_owner || '';
-            var maintainerVerified = author.maintainer_verified || false;
+            var score = entry.trust_score || 0;
+            var owner = entry.repo_owner || '';
             var rawName = entry.canonical_name || entry.server_name || entry.server_id.split('/').pop();
-            // Strip npm scope if it matches owner
             var displayName = rawName;
             if (owner && rawName.indexOf('@') === 0) {
                 var scopeMatch = rawName.match(/^@([^/]+)\/(.*)/);
@@ -606,24 +704,16 @@
                 }
             }
             var repoUrl = entry.repo_url || ('https://github.com/' + entry.server_id);
-            var attestUrl = entry.attestation_url || '#';
-            var commitShort = (a.commit_sha || '').substring(0, 12);
             var badgeClass = scoreBadgeClass(score);
-            var vLabel = verdictLabel(a.thinktank_verdict);
-            var vColor = verdictColor(a.thinktank_verdict);
-            var isSigned = a.signature && a.signature.value;
-            var dateStr = a.attested_at ? new Date(a.attested_at).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }) : '';
+            var vLabel = verdictLabel(entry.thinktank_verdict);
+            var vColor = verdictColor(entry.thinktank_verdict);
 
-            html += '<div class="server-card">';
+            html += '<div class="server-card" data-server-id="' + escapeHtml(entry.server_id) + '" data-attestation-file="' + escapeHtml(entry.attestation_file) + '">';
             html += '<div class="card-header" onclick="toggleCard(this)">';
             html += '<div class="card-header-left">';
             html += '<div>';
             if (owner) {
-                html += '<div class="server-owner">' + escapeHtml(owner);
-                if (maintainerVerified) {
-                    html += '<span class="verified-maintainer">submitter</span>';
-                }
-                html += '</div>';
+                html += '<div class="server-owner">' + escapeHtml(owner) + '</div>';
             }
             html += '<div class="server-name"><a href="' + escapeHtml(repoUrl) + '" target="_blank" rel="noopener" onclick="event.stopPropagation()">' + escapeHtml(displayName) + '</a></div>';
             html += '<div class="server-id-label">' + escapeHtml(entry.server_id) + '</div>';
@@ -636,99 +726,23 @@
             html += '</div>';
             html += '</div>';
 
-            html += '<div class="card-body">';
-
-            // Dimension bars
-            if (dims.security !== undefined || dims.provenance !== undefined || dims.behavioral !== undefined) {
-                html += '<div class="dimensions">';
-                html += '<h4>Trust Dimensions</h4>';
-
-                var dimList = [
-                    { label: 'Security', value: dims.security, weight: '30%' },
-                    { label: 'Provenance', value: dims.provenance, weight: '40%' },
-                    { label: 'Behavioral', value: dims.behavioral, weight: '30%' }
-                ];
-
-                dimList.forEach(function(d) {
-                    if (d.value === undefined) return;
-                    var barClass = dimBarClass(d.value);
-                    html += '<div class="dim-row">';
-                    html += '<span class="dim-label">' + d.label + ' <span style="color:var(--text-muted); font-size:0.65rem;">(' + d.weight + ')</span></span>';
-                    html += '<div class="dim-bar-bg"><div class="dim-bar-fill ' + barClass + '" style="width:' + d.value + '%"></div></div>';
-                    html += '<span class="dim-score">' + d.value + '</span>';
-                    html += '</div>';
-                });
-
-                html += '</div>';
-            }
-
-            // Detail grids
-            html += '<div class="detail-grid">';
-
-            // Attestation details
-            html += '<div class="detail-section">';
-            html += '<h4>Attestation</h4>';
-            html += '<div class="detail-row"><span class="detail-key">Pipeline</span><span class="detail-val">v' + escapeHtml(a.pipeline_version || '?') + '</span></div>';
-            html += '<div class="detail-row"><span class="detail-key">Scoring</span><span class="detail-val">v' + escapeHtml(a.scoring_version || '?') + '</span></div>';
-            html += '<div class="detail-row"><span class="detail-key">Signed</span><span class="detail-val ' + (isSigned ? 'zero' : 'nonzero') + '">' + (isSigned ? 'yes' : 'no') + '</span></div>';
+            html += '<div class="card-body"></div>';
             html += '</div>';
-
-            // Provenance
-            html += '<div class="detail-section">';
-            html += '<h4>Provenance</h4>';
-            html += '<div class="detail-row"><span class="detail-key">Owner</span><span class="detail-val">' + escapeHtml(author.repo_owner || '—') + '</span></div>';
-            var mvLabel = author.maintainer_verified ? 'verified' : 'third-party';
-            html += '<div class="detail-row"><span class="detail-key">Submitter</span><span class="detail-val ' + (author.maintainer_verified ? 'zero' : 'nonzero') + '">' + mvLabel + '</span></div>';
-            html += '<div class="detail-row"><span class="detail-key">Identity match</span><span class="detail-val ' + (author.identity_match ? 'zero' : 'nonzero') + '">' + (author.identity_match ? 'yes' : 'no') + '</span></div>';
-            html += '<div class="detail-row"><span class="detail-key">Fork</span><span class="detail-val ' + (author.is_fork ? 'nonzero' : 'zero') + '">' + (author.is_fork ? 'yes' : 'no') + '</span></div>';
-
-            var flags = author.provenance_flags || [];
-            html += '<div class="detail-row"><span class="detail-key">Flags</span><span class="detail-val ' + (flags.length > 0 ? 'nonzero' : 'zero') + '">' + (flags.length > 0 ? escapeHtml(flags.join(', ')) : 'none') + '</span></div>';
-
-            var lockfileName = a.lockfile_name || 'none';
-            html += '<div class="detail-row"><span class="detail-key">Lockfile</span><span class="detail-val">' + escapeHtml(lockfileName) + '</span></div>';
-            html += '</div>';
-
-            html += '</div>'; // detail-grid
-
-            // Footer: commit, date, signature
-            html += '<div class="card-footer">';
-            html += '<div class="card-footer-left">';
-            if (commitShort) {
-                html += '<span class="footer-item"><a href="' + escapeHtml(attestUrl) + '" target="_blank" rel="noopener">' + commitShort + '</a></span>';
-            }
-            if (dateStr) {
-                html += '<span class="footer-item">' + dateStr + '</span>';
-            }
-            if (a.scoring_version) {
-                html += '<span class="footer-item">v' + escapeHtml(a.scoring_version) + '</span>';
-            }
-            html += '</div>';
-
-            if (isSigned) {
-                html += '<span class="signed-badge">ed25519 signed</span>';
-            } else {
-                html += '<span class="unsigned-badge">unsigned</span>';
-            }
-
-            html += '</div>'; // card-footer
-            html += '</div>'; // card-body
-            html += '</div>'; // server-card
         });
 
         listEl.innerHTML = html;
     }
 
-    // Load
-    fetch('registry.json')
+    // Load index
+    fetch('registry/index.json')
         .then(function(r) { return r.json(); })
         .then(function(data) {
             var servers = (data.servers || []).filter(function(s) {
-                return s.attestation && s.attestation.scoring_version;
+                return s.scoring_version;
             });
 
             servers.sort(function(a, b) {
-                return new Date(b.attestation.attested_at) - new Date(a.attestation.attested_at);
+                return new Date(b.attested_at) - new Date(a.attested_at);
             });
 
             renderServers(servers);

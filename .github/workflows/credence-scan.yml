@@ -786,10 +786,10 @@ jobs:
           CREDENCE_SIGNING_KEY: ${{ secrets.CREDENCE_SIGNING_KEY }}
         run: |
           if [ -n "$CREDENCE_SIGNING_KEY" ]; then
-            python3 -m credence_mcp.registry_update /tmp/scan-summary.json registry.json --key-env CREDENCE_SIGNING_KEY
+            python3 -m credence_mcp.registry_update /tmp/scan-summary.json registry/ --key-env CREDENCE_SIGNING_KEY
           else
             echo "Warning: CREDENCE_SIGNING_KEY not set — attestation will be unsigned"
-            python3 -m credence_mcp.registry_update /tmp/scan-summary.json registry.json
+            python3 -m credence_mcp.registry_update /tmp/scan-summary.json registry/
           fi
 
       # ── STAGE 5: STORE RESULTS ────────────────────────
@@ -842,7 +842,7 @@ jobs:
           git config user.email "credence-bot@users.noreply.github.com"
           git add scan-results/
           if [ "${{ steps.deliberation.outputs.publish }}" = "true" ]; then
-            git add registry.json
+            git add registry/ registry.json
           fi
           git diff --cached --quiet && echo "No changes to commit" && exit 0
           git commit -m "scan: ${{ steps.parse.outputs.server_name }} @ ${{ env.TARGET_COMMIT }}"
@@ -988,16 +988,16 @@ jobs:
         run: |
           SUMMARY_PATH="${{ steps.locate.outputs.summary_path }}"
           if [ -n "$CREDENCE_SIGNING_KEY" ]; then
-            python3 -m credence_mcp.registry_update "$SUMMARY_PATH" registry.json --key-env CREDENCE_SIGNING_KEY
+            python3 -m credence_mcp.registry_update "$SUMMARY_PATH" registry/ --key-env CREDENCE_SIGNING_KEY
           else
-            python3 -m credence_mcp.registry_update "$SUMMARY_PATH" registry.json
+            python3 -m credence_mcp.registry_update "$SUMMARY_PATH" registry/
           fi
 
       - name: Commit and push
         run: |
           git config user.name "credence-bot"
           git config user.email "credence-bot@users.noreply.github.com"
-          git add registry.json
+          git add registry/ registry.json
           SERVER_NAME=$(jq -r '.server_name' "${{ steps.locate.outputs.summary_path }}")
           git commit -m "publish: ${SERVER_NAME} (manual disclosure clearance)"
           git push

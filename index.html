@@ -1246,7 +1246,7 @@ $ credence check modelcontextprotocol/server-github
 
     function serverDisplayName(entry) {
         var raw = entry.canonical_name || entry.server_name || entry.server_id.split('/').pop();
-        var owner = (entry.attestation.author_identity || {}).repo_owner || '';
+        var owner = entry.repo_owner || '';
         var name = raw;
         // Strip npm scope if it matches owner
         if (owner && raw.indexOf('@') === 0) {
@@ -1259,12 +1259,12 @@ $ credence check modelcontextprotocol/server-github
     }
 
     function loadDashboard() {
-        fetch('registry.json')
+        fetch('registry/index.json')
             .then(function(r) { return r.json(); })
             .then(function(data) {
                 // Filter to servers with scoring_version (real scans only)
                 var servers = (data.servers || []).filter(function(s) {
-                    return s.attestation && s.attestation.scoring_version;
+                    return s.scoring_version;
                 });
 
                 if (servers.length === 0) {
@@ -1274,17 +1274,17 @@ $ credence check modelcontextprotocol/server-github
 
                 // Sort by most recently scanned
                 servers.sort(function(a, b) {
-                    return new Date(b.attestation.attested_at) - new Date(a.attestation.attested_at);
+                    return new Date(b.attested_at) - new Date(a.attested_at);
                 });
 
                 // Stats
                 var totalScanned = servers.length;
                 var avgScore = totalScanned > 0
                     ? Math.round(servers.reduce(function(sum, s) {
-                        return sum + (s.attestation.trust_score || 0);
+                        return sum + (s.trust_score || 0);
                     }, 0) / totalScanned)
                     : '—';
-                var latestDate = servers[0].attestation.attested_at;
+                var latestDate = servers[0].attested_at;
 
                 var statsEl = document.getElementById('dashboard-stats');
                 statsEl.innerHTML =
@@ -1302,13 +1302,12 @@ $ credence check modelcontextprotocol/server-github
                 var recent = servers.slice(0, 3);
 
                 recent.forEach(function(entry) {
-                    var a = entry.attestation;
-                    var score = a.trust_score;
+                    var score = entry.trust_score;
                     var name = serverDisplayName(entry);
-                    var date = timeAgo(a.attested_at);
+                    var date = timeAgo(entry.attested_at);
                     var badgeClass = scoreBadgeClass(score);
-                    var vLabel = verdictLabel(a.thinktank_verdict);
-                    var vColor = verdictColor(a.thinktank_verdict);
+                    var vLabel = verdictLabel(entry.thinktank_verdict);
+                    var vColor = verdictColor(entry.thinktank_verdict);
 
                     rowsHtml += '<tr onclick="window.location=\'registry.html\'" style="cursor:pointer;">' +
                         '<td><span class="server-name-link">' + name + '</span></td>' +
