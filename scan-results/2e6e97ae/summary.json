@@ -1,0 +1,28 @@
+{
+  "server_name": "postmarks-mcp",
+  "canonical_name": "postmarks-mcp",
+  "server_path": "postmarks-mcp",
+  "maintainer_verified": false,
+  "verify_reason": "Third-party submission — submitter is not owner, collaborator, or contributor",
+  "repo_url": "https://github.com/nirda13/mcp-goat-postmarks-test",
+  "commit_sha": "2e6e97ae80e17c52e83ffedfdd66a0e5e7ffca8a",
+  "source_hash": "e4dfcbadeaf3509af228e8a6b1eb9364a46c0c9bcaa678c1ec5e66b59c5dfe22",
+  "source_hash_method": "merkle-tree-sha256",
+  "is_fork": false,
+  "provenance_flags": [
+    "NO_LOCKFILE"
+  ],
+  "lockfile_name": "none",
+  "lockfile_hash": "none",
+  "scan_timestamp": "2026-02-13T22:12:26Z",
+  "pipeline_version": "0.2.0",
+  "thinktank_verdict": "REJECTED",
+  "trust_score": 12,
+  "trust_dimensions": {
+    "security": 70,
+    "provenance": 95,
+    "behavioral": 100
+  },
+  "scoring_version": "1.0.0",
+  "deliberation_session": "550e3f3d-822"
+}
