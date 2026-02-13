@@ -378,11 +378,14 @@ def process_response(response: dict, scan_summary: dict) -> dict:
     if not isinstance(trust_score, (int, float)) or not (0 <= trust_score <= 100):
         raise ValueError(f"Invalid trust_score: {trust_score}. Must be 0-100.")
 
-    # ── Update scan-summary (verdict + score only) ──
+    # ── Update scan-summary (verdict + score + session pointer only) ──
     # Deliberation detail (debate, score_adjustment, flags) stays in the
     # deliberation-mcp repo via .deliberations/ push — never in scan-summary.
     scan_summary["thinktank_verdict"] = verdict
     scan_summary["trust_score"] = int(trust_score)
+    session_id = response.get("session_id")
+    if session_id:
+        scan_summary["deliberation_session"] = session_id
 
     return scan_summary
 
