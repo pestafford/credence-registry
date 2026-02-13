@@ -785,7 +785,7 @@
                 <span class="pipe-num">04</span>
                 <div>
                     <h3>You get a signed attestation</h3>
-                    <p>A cryptographically signed trust score pinned to your exact commit. Developers can verify it from the CLI, from their AI agent, or in CI — before they install. New commits invalidate the attestation, so it always reflects the code that's actually running.</p>
+                    <p>A cryptographically signed trust score pinned to your exact commit. Developers can verify it from the CLI, from their AI agent, or in CI — before they install. The attestation covers only the attested commit — new commits require a fresh scan.</p>
                 </div>
             </div>
         </div>
@@ -935,13 +935,13 @@
             </div>
             <div class="threat-item">
                 <h4>Rug pull risk</h4>
-                <p>Dynamic tool descriptions, external config loading, version-gated behavior changes.</p>
-                <div class="coverage">Static analysis + dynamic loading detection</div>
+                <p>Dynamic tool descriptions, version-gated behavior changes, environment-conditional logic.</p>
+                <div class="coverage">MCP Tool Analyzer — dynamic description + version/time/env gate detection</div>
             </div>
             <div class="threat-item">
                 <h4>Dependency integrity</h4>
-                <p>Missing lockfiles and lockfile drift across attestations.</p>
-                <div class="coverage">Lockfile presence verification + hash pinning</div>
+                <p>Missing lockfiles and unpinned dependencies.</p>
+                <div class="coverage">Lockfile presence verification + hash recorded per attestation</div>
             </div>
         </div>
         <p style="margin-top: 24px; font-size: 0.85rem; color: var(--text-muted);">Credence provides install-time trust data. It's complementary to runtime tools — Docker MCP Catalog, ToolHive, Solo.io Agent Mesh — that handle enforcement after installation. Defense in depth.</p>
@@ -973,7 +973,7 @@
                 <span class="pipe-num">⚙</span>
                 <div>
                     <h3>Pre-Install Hook</h3>
-                    <p>Wrap any MCP server installation with a Credence check. Clone, hash, verify against the attestation, install only if the source matches. Works in shell scripts, CI pipelines, or orchestration tools.</p>
+                    <p><code style="color: var(--orange); background: var(--code-bg); padding: 2px 6px; border-radius: 3px; font-size: 0.8rem;">credence guard</code> wraps any install command with a trust check. If the server isn't attested or the score is below your threshold, the install doesn't run. Exit codes work in shell scripts, CI gates, and orchestration tools.</p>
                 </div>
             </div>
         </div>
@@ -1004,48 +1004,96 @@ $ credence check modelcontextprotocol/server-github
 <section class="section">
     <div class="container">
         <div class="section-label">When We Find Something</div>
-        <h2>Tiered disclosure and remediation</h2>
-        <p>Finding vulnerabilities is only useful if they get fixed. Credence follows a tiered response model based on severity and verified submitter identity — we don't publish vulnerability details to people who don't own the code.</p>
+        <h2>Responsible disclosure</h2>
+        <p>Finding vulnerabilities is only useful if they get fixed. Credence gates publication on scan results and flags submissions for manual review when findings are serious.</p>
 
         <div class="pipeline">
             <div class="pipe-card">
                 <span class="pipe-num" style="color: var(--text-secondary);">▣</span>
                 <div>
                     <h3>Submitter verification</h3>
-                    <p>When a server is submitted, the pipeline checks whether the submitter is the repo owner or a listed collaborator via GitHub API. Verified maintainers are identified via GitHub API and notified directly when issues are found. Third-party submitters receive a verdict and provenance summary only — no vulnerability details. This prevents Credence from being used as a recon tool against other people's code.</p>
+                    <p>The pipeline checks whether the submitter is the repo owner, a collaborator, or a contributor via GitHub API. Verified maintainers are labeled as such. Third-party submissions are scanned identically, but marked so reviewers know the context. Detailed scanner output is never published — only scores, verdicts, and provenance flags go into the public registry.</p>
                 </div>
             </div>
             <div class="pipe-card">
                 <span class="pipe-num" style="color: #6B9E4F;">●</span>
                 <div>
-                    <h3>Low — Informational findings</h3>
-                    <p>Minor SAST findings, low-severity CVEs in transitive dependencies, style issues. Reflected in the trust score dimensions. No hold on publication. Maintainer notified via GitHub issue with suggested fixes.</p>
-                </div>
-            </div>
-            <div class="pipe-card">
-                <span class="pipe-num" style="color: var(--orange);">●</span>
-                <div>
-                    <h3>Medium — Actionable vulnerabilities</h3>
-                    <p>Exploitable CVEs in direct dependencies, hardcoded secrets, suspicious MCP tool patterns. Maintainer contacted privately before attestation is published. 30-day remediation window. We'll help — dependency upgrades, secret rotation guidance, tool description rewrites. Attestation published after the window with current status, whether or not the issue is resolved.</p>
+                    <h3>Clean or low-severity findings</h3>
+                    <p>Trust score reflects any minor findings in the dimension breakdowns. Attestation is signed and published to the registry automatically. Results posted to the GitHub issue.</p>
                 </div>
             </div>
             <div class="pipe-card">
                 <span class="pipe-num" style="color: #C0392B;">●</span>
                 <div>
-                    <h3>High — Active threat indicators</h3>
-                    <p>Supply chain poisoning signatures, provenance fraud, malicious payloads, credential theft. Registry operators notified immediately for delisting. If the account is legitimate and compromised, we assist with incident response. If it's a manufactured identity operation, findings are published immediately with no remediation window and reported to the relevant platform (GitHub, npm, MCP Market).</p>
+                    <h3>Flagged or rejected</h3>
+                    <p>When the trust score is FLAGGED or REJECTED, the attestation is held from publication and the issue is labeled <code style="color: var(--orange); background: var(--code-bg); padding: 2px 6px; border-radius: 3px; font-size: 0.8rem;">disclosure-pending</code>. A maintainer reviews the detailed findings (stored as ephemeral artifacts with 90-day retention) and decides next steps — which may include contacting the repo owner privately before publishing.</p>
                 </div>
             </div>
             <div class="pipe-card">
                 <span class="pipe-num" style="color: var(--text-muted);">↻</span>
                 <div>
                     <h3>Re-attestation</h3>
-                    <p>After remediation, maintainers can request a fresh scan at the new commit. The updated attestation replaces the previous one. Full history is preserved — consumers can see that an issue existed and was addressed, which is better signal than no history at all.</p>
+                    <p>After remediation, maintainers can submit a fresh scan at the new commit. The updated attestation replaces the previous one in the registry. Previous scan results remain in their <code style="color: var(--orange); background: var(--code-bg); padding: 2px 6px; border-radius: 3px; font-size: 0.8rem;">scan-results/</code> directory.</p>
                 </div>
             </div>
         </div>
 
         <p style="margin-top: 24px; font-size: 0.85rem; color: var(--text-muted);">Credence is a security tool, not a shaming tool. The goal is fewer vulnerable MCP servers in production, not more drama on security Twitter.</p>
+    </div>
+</section>
+
+<section class="section">
+    <div class="container">
+        <div class="section-label">Roadmap</div>
+        <h2>What's coming</h2>
+        <p>Credence is in active development. The core pipeline — identity verification, multi-scanner analysis, adversarial deliberation, and signed attestations — is live today. Here's what we're building next.</p>
+
+        <div class="pipeline">
+            <div class="pipe-card">
+                <span class="pipe-num" style="color: var(--orange);">▸</span>
+                <div>
+                    <h3>Tiered disclosure with remediation windows</h3>
+                    <p>Automated severity classification (low/medium/high) with configurable remediation windows. Medium findings get a 30-day private disclosure period before attestation is published. High findings trigger immediate review.</p>
+                </div>
+            </div>
+            <div class="pipe-card">
+                <span class="pipe-num" style="color: var(--orange);">▸</span>
+                <div>
+                    <h3>Private maintainer notification</h3>
+                    <p>When actionable vulnerabilities are found, contact the repo owner directly — before anything is published. Include specific remediation guidance: dependency upgrades, secret rotation steps, tool description rewrites.</p>
+                </div>
+            </div>
+            <div class="pipe-card">
+                <span class="pipe-num" style="color: var(--orange);">▸</span>
+                <div>
+                    <h3>Pre-install source verification</h3>
+                    <p>Extend <code style="color: var(--orange); background: var(--code-bg); padding: 2px 6px; border-radius: 3px; font-size: 0.8rem;">credence guard</code> to clone, hash, and verify local source against the attestation before install. Catch tampering between attestation and installation.</p>
+                </div>
+            </div>
+            <div class="pipe-card">
+                <span class="pipe-num" style="color: var(--orange);">▸</span>
+                <div>
+                    <h3>Lockfile drift detection</h3>
+                    <p>Compare lockfile hashes across successive attestations for the same server. Flag when dependencies change between scans — even if the code hasn't.</p>
+                </div>
+            </div>
+            <div class="pipe-card">
+                <span class="pipe-num" style="color: var(--orange);">▸</span>
+                <div>
+                    <h3>Registry and platform integration</h3>
+                    <p>Notify MCP registry operators (MCP Market, Glama, Smithery) when high-severity findings are confirmed. Report manufactured identity operations to the hosting platform.</p>
+                </div>
+            </div>
+            <div class="pipe-card">
+                <span class="pipe-num" style="color: var(--orange);">▸</span>
+                <div>
+                    <h3>Attestation history</h3>
+                    <p>Consumer-facing view of a server's full attestation timeline. See when issues were found, when they were fixed, and how trust scores evolved across versions.</p>
+                </div>
+            </div>
+        </div>
+
+        <p style="margin-top: 24px; font-size: 0.85rem; color: var(--text-muted);">Want to contribute? The <a href="https://github.com/pestafford/credence-registry" style="color: var(--orange); text-decoration: none;">GitHub repo</a> has open issues for all of these. Pull requests welcome.</p>
     </div>
 </section>
 
