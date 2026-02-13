@@ -4,7 +4,7 @@
   "registry_url": "https://credence.securingthesingularity.com",
   "maintainer": "Phil Stafford <phil@securingthesingularity.com>",
   "signing_public_key": "XdvqC/Q6TX90MpL37wdxfUtqOiS8qiQjK8JNJy+BOcM=",
-  "updated_at": "2026-02-13T19:56:48Z",
+  "updated_at": "2026-02-13T20:42:18Z",
   "servers": [
     {
       "server_id": "modelcontextprotocol/servers/filesystem",
@@ -15,16 +15,16 @@
         "commit_sha": "618cf4867bca1fa193553d94fb7f2b2cf47f2a04",
         "source_hash": "43140242e35ba782e4f6f5fd7d1b0496d705969354737f5bb49f36fce4b6052f",
         "source_hash_method": "merkle-tree-sha256",
-        "attested_at": "2026-02-13T19:56:48Z",
+        "attested_at": "2026-02-13T20:42:18Z",
         "pipeline_version": "0.2.0",
         "scoring_version": "1.0.0",
-        "trust_score": 78,
+        "trust_score": 88,
         "trust_dimensions": {
           "security": 70,
           "provenance": 100,
           "behavioral": 100
         },
-        "thinktank_verdict": "CONDITIONAL",
+        "thinktank_verdict": "APPROVED",
         "author_identity": {
           "repo_owner": "modelcontextprotocol",
           "identity_match": true,
@@ -37,8 +37,8 @@
         "lockfile_hash": "723b5d17a2ca19632c871f71d3263d349a1340c9609de3737fc1612783fb5402",
         "signature": {
           "algorithm": "ed25519",
-          "value": "Kpd15eSJ2y4aM6ZOrncXtHunNyfR68/TIglvtbCcRg0pQQ+qNjLoWEsLovgT1K+NyyYUTQ7tbjQO50hMx2BVDQ==",
-          "canonical_hash": "e650385292811c761abbf4d7123ea5d1a867cee4ad08f72a8fbfad142c974266"
+          "value": "uDJm25QedMNuJYjm86/lzppgA8PDcDab/4Osnb8ZNyqC7xYBWXPviFHuIPTuSzkPiHg7mS4ONc+/zZ5xoPc2AA==",
+          "canonical_hash": "36ea9dcff9ecc0e29c956ab8717b40c2440f404ee0e37ba8b6dbe5825e99c17d"
         }
       },
       "attestation_url": "https://github.com/pestafford/credence-registry/tree/main/scan-results/618cf486"

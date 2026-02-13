@@ -12,14 +12,15 @@
   "provenance_flags": [],
   "lockfile_name": "package-lock.json",
   "lockfile_hash": "723b5d17a2ca19632c871f71d3263d349a1340c9609de3737fc1612783fb5402",
-  "scan_timestamp": "2026-02-13T19:54:42Z",
+  "scan_timestamp": "2026-02-13T20:37:18Z",
   "pipeline_version": "0.2.0",
-  "thinktank_verdict": "CONDITIONAL",
-  "trust_score": 78,
+  "thinktank_verdict": "APPROVED",
+  "trust_score": 88,
   "trust_dimensions": {
     "security": 70,
     "provenance": 100,
     "behavioral": 100
   },
-  "scoring_version": "1.0.0"
+  "scoring_version": "1.0.0",
+  "deliberation_session": "d24a507e-a2d"
 }
