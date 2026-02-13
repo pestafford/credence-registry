@@ -111,7 +111,7 @@ jobs:
             const repoUrl = repoMatch[1].replace(/\/$/, '');
             const commitSha = commitMatch ? commitMatch[1] : '';
             const serverName = nameMatch ? nameMatch[1].trim() : 'unknown';
-            const serverPath = pathMatch ? pathMatch[1].trim().replace(/^\/+|\/+$/g, '') : '';
+            const serverPath = pathMatch ? pathMatch[1].trim().replace(/`/g, '').replace(/^\/+|\/+$/g, '') : '';
 
             // Detect host type and extract owner/repo
             const ghMatch = repoUrl.match(/github\.com\/([^\/]+)\/([^\/]+)/);
@@ -484,7 +484,7 @@ jobs:
             }
 
       - name: Generate SBOM
-        if: steps.clone.outputs.clone_failed != 'true'
+        if: steps.clone.outputs.clone_failed != 'true' && env.SCAN_DIR != ''
         uses: anchore/sbom-action@v0
         with:
           path: ${{ env.SCAN_DIR }}
