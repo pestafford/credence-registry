@@ -7,74 +7,6 @@
   "updated_at": "2026-02-13T17:19:51Z",
   "servers": [
     {
-      "server_id": "modelcontextprotocol/server-filesystem",
-      "server_name": "Filesystem MCP Server",
-      "canonical_name": "",
-      "repo_url": "https://github.com/modelcontextprotocol/servers",
-      "description": "MCP server providing file system operations including reading, writing, and searching files. Maintained by Anthropic as part of the reference MCP server collection.",
-      "attestation": {
-        "commit_sha": "seed-attestation-pending-live-scan",
-        "source_hash": "seed-attestation-pending-live-scan",
-        "source_hash_method": "merkle-tree-sha256",
-        "attested_at": "2026-02-08T02:58:20Z",
-        "pipeline_version": "0.2.0",
-        "scoring_version": "1.0.0",
-        "trust_score": 95,
-        "thinktank_verdict": "VERIFIED",
-        "author_identity": {
-          "repo_owner": "modelcontextprotocol",
-          "identity_match": true,
-          "is_fork": false,
-          "provenance_flags": [],
-          "maintainer_verified": false,
-          "verify_reason": "Seed entry \u2014 predates verification"
-        },
-        "signature": {
-          "algorithm": "ed25519",
-          "value": "xwsp7KchnKfriPct+swdGysSrjUAjqm/A9TEoKibwoJ3Ca/7LguKC9XhXdfLBhutK2+KhXmUjxQr18yAs1D6Ag==",
-          "canonical_hash": "3444f9eb8f36ca985bf4ad6925984dfa9ee09a603e001e44eda2a49ed9694986"
-        }
-      },
-      "attestation_url": "https://github.com/pestafford/credence-registry/tree/main/scan-results/seed-filesystem"
-    },
-    {
-      "server_id": "modelcontextprotocol/servers",
-      "server_name": "MCP Memory Server",
-      "canonical_name": "",
-      "repo_url": "https://github.com/modelcontextprotocol/servers",
-      "attestation": {
-        "commit_sha": "618cf4867bca1fa193553d94fb7f2b2cf47f2a04",
-        "source_hash": "ef6fb96e7b91fcf4381ece65aeea311b274d373dbcdf2b664487c71f81d1545b",
-        "source_hash_method": "merkle-tree-sha256",
-        "attested_at": "2026-02-13T15:43:35Z",
-        "pipeline_version": "0.2.0",
-        "scoring_version": "1.0.0",
-        "trust_score": 72,
-        "trust_dimensions": {
-          "security": 92,
-          "provenance": 100,
-          "behavioral": 100
-        },
-        "thinktank_verdict": "CONDITIONAL",
-        "author_identity": {
-          "repo_owner": "modelcontextprotocol",
-          "identity_match": true,
-          "is_fork": false,
-          "provenance_flags": [],
-          "maintainer_verified": false,
-          "verify_reason": "Backfill \u2014 scanned before verification was recorded"
-        },
-        "lockfile_name": "package-lock.json",
-        "lockfile_hash": "723b5d17a2ca19632c871f71d3263d349a1340c9609de3737fc1612783fb5402",
-        "signature": {
-          "algorithm": "ed25519",
-          "value": "8Zu5uv38wnGHECZ8fgqyFS1iArWs6Um9aIVT+e1OdnTTRnBuDXpAXAugD6ATlbVdbX+83x2brlnY+sGDhIlQBg==",
-          "canonical_hash": "fb7103a1569128d6978ea1c0eb27e123f8d816dbbfe3868d223a4820526dad98"
-        }
-      },
-      "attestation_url": "https://github.com/pestafford/credence-registry/tree/main/scan-results/618cf486"
-    },
-    {
       "server_id": "modelcontextprotocol/servers/memory",
       "server_name": "MCP Memory Server",
       "canonical_name": "@modelcontextprotocol/server-memory",
@@ -99,7 +31,7 @@
           "is_fork": false,
           "provenance_flags": [],
           "maintainer_verified": false,
-          "verify_reason": "Third-party submission \u2014 submitter is not owner, collaborator, or contributor"
+          "verify_reason": "Third-party submission — submitter is not owner, collaborator, or contributor"
         },
         "lockfile_name": "package-lock.json",
         "lockfile_hash": "723b5d17a2ca19632c871f71d3263d349a1340c9609de3737fc1612783fb5402",

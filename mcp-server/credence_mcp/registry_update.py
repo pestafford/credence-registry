@@ -64,9 +64,54 @@ def derive_server_id(summary: dict) -> str:
     return summary.get("server_name", "unknown")
 
 
+def _find_existing_entry(servers: list, server_id: str, repo_url: str,
+                         server_path: str) -> int:
+    """Find the index of an existing entry for this server, or -1.
+
+    Match priority:
+      1. Exact server_id match
+      2. Same repo_url with compatible path (handles ID migration)
+    """
+    # 1. Exact server_id
+    for i, s in enumerate(servers):
+        if s.get("server_id") == server_id:
+            return i
+
+    # 2. Fallback: match by repo_url
+    norm_url = repo_url.rstrip("/")
+    path_suffix = server_path.rstrip("/").split("/")[-1] if server_path else ""
+
+    repo_matches = [(i, s) for i, s in enumerate(servers)
+                    if s.get("repo_url", "").rstrip("/") == norm_url]
+
+    if not repo_matches:
+        return -1
+
+    if path_suffix:
+        # Monorepo: match entry whose server_id ends with the same suffix,
+        # or an entry with no suffix (pre-monorepo scan of this server)
+        for i, s in repo_matches:
+            sid = s.get("server_id", "")
+            sid_suffix = sid.rstrip("/").split("/")[-1] if "/" in sid else ""
+            if sid_suffix == path_suffix:
+                return i
+        # Single entry for this repo with no path suffix → migration
+        if len(repo_matches) == 1:
+            existing_id = repo_matches[0][1].get("server_id", "")
+            if existing_id.count("/") < 2:
+                return repo_matches[0][0]
+    else:
+        # No path: match the single entry for this repo
+        if len(repo_matches) == 1:
+            return repo_matches[0][0]
+
+    return -1
+
+
 def upsert_registry(registry: dict, server_id: str, server_name: str,
                     repo_url: str, attestation: dict, scan_id: str,
-                    canonical_name: str = "") -> dict:
+                    canonical_name: str = "",
+                    server_path: str = "") -> dict:
     """Insert or update a server entry in the registry."""
     servers = registry.get("servers", [])
 
@@ -82,15 +127,13 @@ def upsert_registry(registry: dict, server_id: str, server_name: str,
         "attestation_url": attestation_url,
     }
 
-    # Check if server already exists (update vs insert)
-    found = False
-    for i, s in enumerate(servers):
-        if s.get("server_id") == server_id:
-            servers[i] = entry
-            found = True
-            break
-
-    if not found:
+    idx = _find_existing_entry(servers, server_id, repo_url, server_path)
+    if idx >= 0:
+        old_id = servers[idx].get("server_id", "")
+        servers[idx] = entry
+        if old_id != server_id:
+            print(f"  Migrated server_id: {old_id} → {server_id}")
+    else:
         servers.append(entry)
 
     registry["servers"] = servers
@@ -143,13 +186,15 @@ def main():
     server_name = summary.get("server_name", server_id)
     canonical_name = summary.get("canonical_name", "")
     repo_url = summary.get("repo_url", "")
+    server_path = summary.get("server_path", "")
     commit_sha = summary.get("commit_sha", "")
     scan_id = commit_sha[:8] if commit_sha else "unknown"
 
     # Upsert
     registry = upsert_registry(registry, server_id, server_name,
                                repo_url, attestation, scan_id,
-                               canonical_name=canonical_name)
+                               canonical_name=canonical_name,
+                               server_path=server_path)
 
     # Write
     registry_path.write_text(json.dumps(registry, indent=2))
