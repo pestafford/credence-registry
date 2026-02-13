@@ -854,8 +854,69 @@ jobs:
           echo "SCAN_ID=$SCAN_ID" >> $GITHUB_ENV
           echo "RESULTS_DIR=$RESULTS_DIR" >> $GITHUB_ENV
 
-      - name: Upload detailed findings (ephemeral — for remediation / audit only)
+      - name: Update scan stats in index
         if: steps.clone.outputs.clone_failed != 'true'
+        run: |
+          TOTAL_SCANS=$(ls -d scan-results/*/ 2>/dev/null | wc -l)
+          if [ -f registry/index.json ]; then
+            jq --argjson n "$TOTAL_SCANS" '.stats.total_scans = $n' registry/index.json > registry/index.tmp && mv registry/index.tmp registry/index.json
+          fi
+          echo "Total scans: $TOTAL_SCANS"
+
+      # ── FINDINGS UPLOAD (disclosure-aware) ───────────
+      #
+      # Public repo → artifacts are publicly downloadable.
+      # When under disclosure hold, detailed findings are encrypted with
+      # CREDENCE_FINDINGS_KEY so the artifact blob is opaque. The publish
+      # workflow decrypts when disclosure is complete.
+      # When publish=true, findings upload as plaintext (browsable in UI).
+
+      - name: Package findings for upload
+        if: steps.clone.outputs.clone_failed != 'true'
+        id: package_findings
+        env:
+          CREDENCE_FINDINGS_KEY: ${{ secrets.CREDENCE_FINDINGS_KEY }}
+        run: |
+          PUBLISH="${{ steps.deliberation.outputs.publish }}"
+
+          if [ "$PUBLISH" = "true" ]; then
+            echo "mode=plaintext" >> $GITHUB_OUTPUT
+          elif [ -n "$CREDENCE_FINDINGS_KEY" ]; then
+            echo "mode=encrypted" >> $GITHUB_OUTPUT
+
+            # Pack findings into tarball, then encrypt
+            tar czf /tmp/scan-findings.tar.gz \
+              -C /tmp \
+              semgrep-results.json bandit-results.json trivy-results.json \
+              gitleaks-results.json mcp-tool-analysis.json evidence.json \
+              sbom.spdx.json report.html 2>/dev/null || true
+
+            openssl enc -aes-256-cbc -salt -pbkdf2 \
+              -in /tmp/scan-findings.tar.gz \
+              -out /tmp/scan-findings.tar.gz.enc \
+              -pass env:CREDENCE_FINDINGS_KEY
+            rm /tmp/scan-findings.tar.gz
+            echo "Findings encrypted for disclosure hold"
+
+            # Same for deliberation transcript if present
+            if [ -d /tmp/deliberation-transcript ] && \
+               [ "$(ls -A /tmp/deliberation-transcript 2>/dev/null)" ]; then
+              tar czf /tmp/deliberation-transcript.tar.gz \
+                -C /tmp deliberation-transcript/
+              openssl enc -aes-256-cbc -salt -pbkdf2 \
+                -in /tmp/deliberation-transcript.tar.gz \
+                -out /tmp/deliberation-transcript.tar.gz.enc \
+                -pass env:CREDENCE_FINDINGS_KEY
+              rm /tmp/deliberation-transcript.tar.gz
+              echo "Deliberation transcript encrypted"
+            fi
+          else
+            echo "::warning::CREDENCE_FINDINGS_KEY not set — skipping findings upload to avoid disclosure leak."
+            echo "mode=skip" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Upload findings (plaintext — publishable scan)
+        if: steps.package_findings.outputs.mode == 'plaintext'
         uses: actions/upload-artifact@v4
         with:
           name: scan-findings-${{ env.TARGET_COMMIT }}
@@ -868,6 +929,14 @@ jobs:
             /tmp/evidence.json
             /tmp/sbom.spdx.json
             /tmp/report.html
+          retention-days: 90
+
+      - name: Upload findings (encrypted — disclosure hold)
+        if: steps.package_findings.outputs.mode == 'encrypted'
+        uses: actions/upload-artifact@v4
+        with:
+          name: scan-findings-encrypted-${{ env.TARGET_COMMIT }}
+          path: /tmp/scan-findings.tar.gz.enc
           retention-days: 90
 
       - name: Push deliberation reports
@@ -886,8 +955,6 @@ jobs:
               echo "No session directory found — skipping report push"
             else
               echo "Pushing deliberation reports for session $SESSION_ID"
-              # Logic from deliberation-mcp/scripts/push_reports.sh
-              # (script not available at runtime — pip wheel doesn't include scripts/)
               REPO_URL="https://x-access-token:${DELIBERATION_PAT}@github.com/pestafford/deliberation-mcp.git"
               WORKDIR=$(mktemp -d)
               trap 'rm -rf "$WORKDIR"' EXIT
@@ -904,13 +971,23 @@ jobs:
             fi
           fi
 
-      - name: Upload deliberation transcript (ephemeral — audit trail)
-        if: always()
+      - name: Upload deliberation transcript (plaintext — publishable scan)
+        if: steps.package_findings.outputs.mode == 'plaintext'
         continue-on-error: true
         uses: actions/upload-artifact@v4
         with:
           name: deliberation-${{ env.TARGET_COMMIT }}
           path: /tmp/deliberation-transcript/
+          if-no-files-found: ignore
+          retention-days: 90
+
+      - name: Upload deliberation transcript (encrypted — disclosure hold)
+        if: steps.package_findings.outputs.mode == 'encrypted'
+        continue-on-error: true
+        uses: actions/upload-artifact@v4
+        with:
+          name: deliberation-encrypted-${{ env.TARGET_COMMIT }}
+          path: /tmp/deliberation-transcript.tar.gz.enc
           if-no-files-found: ignore
           retention-days: 90
 
@@ -920,6 +997,7 @@ jobs:
           git config user.name "credence-bot"
           git config user.email "credence-bot@users.noreply.github.com"
           git add scan-results/
+          git add registry/index.json
           if [ "${{ steps.deliberation.outputs.publish }}" = "true" ]; then
             git add registry/ registry.json
           fi

@@ -5,6 +5,9 @@
   "maintainer": "Phil Stafford <phil@securingthesingularity.com>",
   "signing_public_key": "XdvqC/Q6TX90MpL37wdxfUtqOiS8qiQjK8JNJy+BOcM=",
   "updated_at": "2026-02-13T22:41:36Z",
+  "stats": {
+    "total_scans": 4
+  },
   "servers": [
     {
       "server_id": "modelcontextprotocol/servers/filesystem",

@@ -706,8 +706,10 @@
         var latestDate = servers[0].attested_at;
 
         var statsEl = document.getElementById('stats-bar');
+        var totalScanned = (window._registryStats && window._registryStats.total_scans) || servers.length;
         statsEl.innerHTML =
-            '<div class="stat-card"><div class="stat-value">' + servers.length + '</div><div class="stat-label">Servers published</div></div>' +
+            '<div class="stat-card"><div class="stat-value">' + totalScanned + '</div><div class="stat-label">Servers scanned</div></div>' +
+            '<div class="stat-card"><div class="stat-value">' + servers.length + '</div><div class="stat-label">Published</div></div>' +
             '<div class="stat-card"><div class="stat-value">' + avgScore + '</div><div class="stat-label">Average trust score</div></div>' +
             '<div class="stat-card"><div class="stat-value">' + timeAgo(latestDate) + '</div><div class="stat-label">Latest scan</div></div>';
         statsEl.style.display = 'flex';
@@ -771,6 +773,7 @@
                 return new Date(b.attested_at) - new Date(a.attested_at);
             });
 
+            window._registryStats = data.stats || {};
             renderServers(servers);
         })
         .catch(function() {

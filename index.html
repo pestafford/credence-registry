@@ -1300,18 +1300,20 @@ $ credence check modelcontextprotocol/server-github
                 });
 
                 // Stats
-                var totalScanned = servers.length;
-                var avgScore = totalScanned > 0
+                var totalScanned = (data.stats && data.stats.total_scans) || servers.length;
+                var published = servers.length;
+                var avgScore = published > 0
                     ? Math.round(servers.reduce(function(sum, s) {
                         return sum + (s.trust_score || 0);
-                    }, 0) / totalScanned)
+                    }, 0) / published)
                     : '—';
                 var latestDate = servers[0].attested_at;
 
                 var statsEl = document.getElementById('dashboard-stats');
                 statsEl.innerHTML =
                     '<div class="stat-card"><div class="stat-value">' + totalScanned + '</div><div class="stat-label">Servers scanned</div></div>' +
-                    '<div class="stat-card"><div class="stat-value">' + avgScore + '</div><div class="stat-label">Average trust score</div></div>' +
+                    '<div class="stat-card"><div class="stat-value">' + published + '</div><div class="stat-label">Published</div></div>' +
+                    '<div class="stat-card"><div class="stat-value">' + avgScore + '</div><div class="stat-label">Avg trust score</div></div>' +
                     '<div class="stat-card"><div class="stat-value">' + timeAgo(latestDate) + '</div><div class="stat-label">Latest scan</div></div>';
                 statsEl.style.display = 'flex';
 
