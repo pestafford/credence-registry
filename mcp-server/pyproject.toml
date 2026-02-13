@@ -29,7 +29,7 @@ credence = "credence_mcp.cli:main"
 [project.urls]
 Homepage = "https://credence.securingthesingularity.com"
 Repository = "https://github.com/pestafford/credence-registry"
-Documentation = "https://securingthesingularity.com"
+Documentation = "https://credence.securingthesingularity.com/install.html"
 
 [tool.hatch.build.targets.wheel]
 packages = ["credence_mcp"]

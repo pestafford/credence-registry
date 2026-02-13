@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Install — Credence</title>
+    <meta name="description" content="Install the Credence MCP server, CLI, and pre-install hook. Check trust status before installing MCP servers.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --orange: #B8522A;
+            --orange-light: #C96235;
+            --orange-dim: #8E3F1F;
+            --gray-100: #F5F5F5;
+            --gray-200: #E0E0E0;
+            --gray-300: #B0B0B0;
+            --gray-400: #808080;
+            --gray-500: #606060;
+            --gray-600: #505050;
+            --gray-700: #383838;
+            --gray-800: #252525;
+            --gray-900: #1A1A1A;
+            --black: #111111;
+        }
+
+        [data-theme="dark"] {
+            --bg-primary: var(--black);
+            --bg-secondary: var(--gray-900);
+            --bg-card: var(--gray-800);
+            --bg-card-hover: var(--gray-700);
+            --text-primary: var(--gray-100);
+            --text-secondary: var(--gray-300);
+            --text-muted: var(--gray-400);
+            --border-color: var(--gray-700);
+            --border-subtle: var(--gray-800);
+            --code-bg: var(--gray-900);
+            --glow: rgba(184, 82, 42, 0.15);
+        }
+
+        [data-theme="light"] {
+            --bg-primary: #F7F6F4;
+            --bg-secondary: #FFFFFF;
+            --bg-card: #FFFFFF;
+            --bg-card-hover: #F0EEEB;
+            --text-primary: var(--gray-900);
+            --text-secondary: var(--gray-600);
+            --text-muted: var(--gray-500);
+            --border-color: #D8D4CE;
+            --border-subtle: #EBE8E4;
+            --code-bg: #EDEAE6;
+            --glow: rgba(184, 82, 42, 0.08);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'IBM Plex Sans', -apple-system, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            transition: background 0.3s ease, color 0.3s ease;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        /* NAV */
+        nav {
+            padding: 20px 0;
+            border-bottom: 1px solid var(--border-subtle);
+        }
+        nav .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .nav-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .nav-logo {
+            width: 36px;
+            height: 36px;
+        }
+        .nav-title {
+            font-family: 'IBM Plex Mono', monospace;
+            font-weight: 600;
+            font-size: 1.1rem;
+            letter-spacing: 0.02em;
+        }
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        .nav-link {
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+        .nav-link:hover { color: var(--orange); }
+        .nav-link.active { color: var(--orange); }
+
+        .theme-toggle {
+            background: none;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 6px 10px;
+            cursor: pointer;
+            color: var(--text-secondary);
+            font-size: 1rem;
+            transition: border-color 0.2s, color 0.2s;
+        }
+        .theme-toggle:hover {
+            border-color: var(--orange);
+            color: var(--orange);
+        }
+
+        /* PAGE HEADER */
+        .page-header {
+            padding: 48px 0 32px;
+        }
+        .page-header h1 {
+            font-family: 'Space Mono', monospace;
+            font-size: 1.8rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            margin-bottom: 8px;
+        }
+        .page-header p {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            max-width: 700px;
+        }
+
+        /* SECTIONS */
+        .section {
+            padding: 40px 0;
+            border-top: 1px solid var(--border-subtle);
+        }
+        .section-label {
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 0.75rem;
+            color: var(--orange);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 12px;
+        }
+        .section h2 {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+        .section p {
+            color: var(--text-secondary);
+            margin-bottom: 16px;
+            max-width: 700px;
+        }
+
+        /* CODE BLOCK */
+        .code-block {
+            background: var(--code-bg);
+            border: none;
+            border-left: 2px solid var(--border-color);
+            border-radius: 0;
+            padding: 24px;
+            margin-top: 16px;
+            margin-bottom: 16px;
+            overflow-x: auto;
+        }
+        .code-block pre {
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 0.82rem;
+            line-height: 1.7;
+            color: var(--text-secondary);
+        }
+        .code-block .key { color: var(--orange); }
+        .code-block .val { color: var(--gray-300); }
+        .code-block .comment { color: var(--gray-500); }
+
+        /* INLINE CODE */
+        code {
+            color: var(--orange);
+            background: var(--code-bg);
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 0.85rem;
+        }
+
+        /* PIPE CARDS */
+        .pipeline {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 12px;
+            margin-top: 24px;
+        }
+        .pipe-card {
+            display: flex;
+            gap: 20px;
+            padding: 20px 24px;
+            border: none;
+            border-left: 2px solid var(--border-color);
+            border-radius: 0;
+            background: transparent;
+            transition: border-color 0.2s, background 0.2s;
+        }
+        .pipe-card:hover {
+            border-left-color: var(--orange);
+            background: var(--bg-card);
+        }
+        .pipe-num {
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--orange);
+            flex-shrink: 0;
+            width: 28px;
+        }
+        .pipe-card h3 {
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 0.95rem;
+            font-weight: 600;
+            margin-bottom: 6px;
+        }
+        .pipe-card p {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            margin: 0;
+        }
+
+        /* SUBSECTION */
+        h3.sub {
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 0.95rem;
+            font-weight: 600;
+            margin-top: 28px;
+            margin-bottom: 8px;
+        }
+
+        /* TABLE */
+        .ref-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 16px;
+            margin-bottom: 16px;
+        }
+        .ref-table th {
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 0.7rem;
+            font-weight: 500;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            padding: 8px 12px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .ref-table td {
+            padding: 8px 12px;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            border-bottom: 1px solid var(--border-subtle);
+        }
+        .ref-table td:first-child {
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 0.82rem;
+            color: var(--text-primary);
+            white-space: nowrap;
+        }
+
+        /* FOOTER */
+        footer {
+            padding: 32px 0;
+            border-top: 1px solid var(--border-subtle);
+            text-align: center;
+            margin-top: 40px;
+        }
+        footer p {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+        footer a {
+            color: var(--text-secondary);
+            text-decoration: none;
+        }
+        footer a:hover { color: var(--orange); }
+
+        /* RESPONSIVE */
+        @media (max-width: 640px) {
+            .page-header h1 { font-size: 1.4rem; }
+            .nav-right { gap: 8px; }
+            .nav-link { font-size: 0.7rem; }
+            .nav-title { display: none; }
+            .ref-table { font-size: 0.8rem; }
+            .ref-table td, .ref-table th { padding: 6px 8px; }
+        }
+    </style>
+</head>
+<body>
+
+<nav>
+    <div class="container">
+        <div class="nav-left">
+            <a href="index.html"><img src="credencelogo.png" alt="Credence" class="nav-logo"></a>
+            <a href="index.html" style="text-decoration:none; color:inherit;"><span class="nav-title">Credence</span></a>
+        </div>
+        <div class="nav-right">
+            <a href="https://github.com/pestafford/credence-registry" class="nav-link">GitHub</a>
+            <a href="registry.html" class="nav-link">Registry</a>
+            <a href="index.html#submit" class="nav-link">Submit</a>
+            <a href="install.html" class="nav-link active">Install</a>
+            <a href="research.html" class="nav-link">Research</a>
+            <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">&#9684;</button>
+        </div>
+    </div>
+</nav>
+
+<div class="container">
+    <div class="page-header">
+        <h1>Install</h1>
+        <p>Install the Credence package to check MCP server trust status from your AI agent, the command line, or CI. One install gives you the MCP server, the CLI, and the pre-install hook.</p>
+    </div>
+
+    <!-- Section 1: Install -->
+    <section class="section">
+        <div class="section-label">Install</div>
+        <h2>Get Credence</h2>
+        <p>Requires Python 3.10+. Installs both the <code>credence</code> CLI and the MCP server module.</p>
+
+        <div class="code-block">
+<pre>pip install git+https://github.com/pestafford/credence-registry.git#subdirectory=mcp-server</pre>
+        </div>
+
+        <p style="font-size: 0.85rem; color: var(--text-muted);">After install, <code>credence</code> is available on your PATH and <code>python3 -m credence_mcp.server</code> starts the MCP server.</p>
+    </section>
+
+    <!-- Section 2: MCP Server -->
+    <section class="section">
+        <div class="section-label">MCP Server</div>
+        <h2>Add Credence to your AI agent</h2>
+        <p>Credence runs as an MCP server so your AI agent can check trust status before connecting to unknown servers. The agent calls Credence tools through the same protocol it uses for everything else.</p>
+
+        <h3 class="sub">Claude Desktop</h3>
+        <p>Add to your <code>claude_desktop_config.json</code>:</p>
+        <div class="code-block">
+<pre>{
+  <span class="key">"mcpServers"</span>: {
+    <span class="key">"credence"</span>: {
+      <span class="key">"command"</span>: <span class="val">"python3"</span>,
+      <span class="key">"args"</span>: [<span class="val">"-m"</span>, <span class="val">"credence_mcp.server"</span>]
+    }
+  }
+}</pre>
+        </div>
+
+        <h3 class="sub">Claude Code</h3>
+        <div class="code-block">
+<pre>claude mcp add credence -- python3 -m credence_mcp.server</pre>
+        </div>
+
+        <h3 class="sub">Other MCP clients</h3>
+        <p>Any MCP client that supports stdio transport can run Credence:</p>
+        <div class="code-block">
+<pre><span class="comment"># stdio transport (default)</span>
+python3 -m credence_mcp.server
+
+<span class="comment"># HTTP transport</span>
+python3 -m credence_mcp.server --transport http --port 8400</pre>
+        </div>
+
+        <h3 class="sub">Available tools</h3>
+        <div class="pipeline">
+            <div class="pipe-card">
+                <span class="pipe-num">&#9670;</span>
+                <div>
+                    <h3>credence_check_server</h3>
+                    <p>Check whether an MCP server has a Credence attestation and what its trust status is. Use this before installing or connecting to a server you haven't used before.</p>
+                </div>
+            </div>
+            <div class="pipe-card">
+                <span class="pipe-num">&#9670;</span>
+                <div>
+                    <h3>credence_verify_hash</h3>
+                    <p>Verify a local source hash against the attestation on record. Confirms the code you have matches the code that was scanned.</p>
+                </div>
+            </div>
+            <div class="pipe-card">
+                <span class="pipe-num">&#9670;</span>
+                <div>
+                    <h3>credence_hash_local</h3>
+                    <p>Compute a Merkle tree hash of a local server directory. Use this to get a hash you can compare against the attestation.</p>
+                </div>
+            </div>
+            <div class="pipe-card">
+                <span class="pipe-num">&#9670;</span>
+                <div>
+                    <h3>credence_list_servers</h3>
+                    <p>List all attested servers in the registry, with optional minimum score filter.</p>
+                </div>
+            </div>
+            <div class="pipe-card">
+                <span class="pipe-num">&#9670;</span>
+                <div>
+                    <h3>credence_audit_config</h3>
+                    <p>Audit all MCP servers in your client config. Checks each server against the registry and reports any that are unattested, flagged, or rejected.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Section 3: CLI -->
+    <section class="section">
+        <div class="section-label">CLI</div>
+        <h2>Command reference</h2>
+        <p>All commands accept server identifiers in these formats: <code>https://github.com/owner/repo</code>, <code>owner/repo</code>, or the server name from the registry.</p>
+
+        <div class="code-block">
+<pre><span class="comment"># Check trust status of a single server</span>
+credence check &lt;server&gt;
+
+<span class="comment"># Hash local code and verify against attestation</span>
+credence verify &lt;server&gt; [--path .]
+
+<span class="comment"># List all attested servers</span>
+credence list [--min-score N]
+
+<span class="comment"># Audit all servers in your MCP client config</span>
+credence audit [--config PATH]
+
+<span class="comment"># Gate an install on a trust check</span>
+credence guard &lt;server&gt; [-- cmd]
+
+<span class="comment"># Watch config for changes, alert on unattested servers</span>
+credence watch [--config PATH]</pre>
+        </div>
+
+        <h3 class="sub">Examples</h3>
+        <div class="code-block">
+<pre><span class="comment"># Check by GitHub URL</span>
+$ credence check https://github.com/owner/mcp-server
+
+<span class="comment"># Check by shorthand</span>
+$ credence check owner/mcp-server
+
+<span class="comment"># Verify local clone matches attestation</span>
+$ credence verify owner/mcp-server --path ./my-local-clone
+
+<span class="comment"># List servers scoring 70+</span>
+$ credence list --min-score 70
+
+<span class="comment"># Audit your Claude Desktop config</span>
+$ credence audit
+
+<span class="comment"># Audit a custom config path</span>
+$ credence audit --config ~/custom/claude_desktop_config.json
+
+<span class="comment"># Only install if trusted</span>
+$ credence guard owner/mcp-server -- claude mcp add my-server</pre>
+        </div>
+
+        <h3 class="sub">Exit codes</h3>
+        <table class="ref-table">
+            <thead>
+                <tr>
+                    <th>Code</th>
+                    <th>Meaning</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>0</td>
+                    <td>Attested, safe to install</td>
+                </tr>
+                <tr>
+                    <td>1</td>
+                    <td>Not attested or error</td>
+                </tr>
+                <tr>
+                    <td>2</td>
+                    <td>Attested but flagged — review recommended</td>
+                </tr>
+                <tr>
+                    <td>3</td>
+                    <td>Rejected or hash mismatch — do not install</td>
+                </tr>
+                <tr>
+                    <td>4</td>
+                    <td>Audit found unattested or flagged servers</td>
+                </tr>
+            </tbody>
+        </table>
+    </section>
+
+    <!-- Section 4: CI / Scripting -->
+    <section class="section">
+        <div class="section-label">CI / Scripting</div>
+        <h2>Automate trust checks</h2>
+        <p>Use <code>credence guard</code> and exit codes to gate installs in CI pipelines, shell scripts, and orchestration tools.</p>
+
+        <h3 class="sub">Guard an install</h3>
+        <p><code>credence guard</code> checks trust status first. If the server is attested and not rejected, it runs the command after <code>--</code>. Otherwise it exits without running anything.</p>
+        <div class="code-block">
+<pre><span class="comment"># Only install if the server is attested</span>
+credence guard modelcontextprotocol/server-github -- claude mcp add github-server</pre>
+        </div>
+
+        <h3 class="sub">Shell script with exit codes</h3>
+        <div class="code-block">
+<pre><span class="comment">#!/bin/bash</span>
+credence check owner/mcp-server
+status=$?
+
+if [ $status -eq 0 ]; then
+  echo "Trusted — installing"
+  claude mcp add my-server -- python3 -m my_server
+elif [ $status -eq 2 ]; then
+  echo "Flagged — review before installing"
+  exit 1
+else
+  echo "Not attested or rejected — skipping"
+  exit 1
+fi</pre>
+        </div>
+
+        <p style="font-size: 0.85rem; color: var(--text-muted);">Exit codes are stable and intended for programmatic use. See the exit codes table in the CLI section above.</p>
+    </section>
+
+    <!-- Section 5: Configuration -->
+    <section class="section">
+        <div class="section-label">Configuration</div>
+        <h2>Environment &amp; config</h2>
+
+        <h3 class="sub">Environment variables</h3>
+        <table class="ref-table">
+            <thead>
+                <tr>
+                    <th>Variable</th>
+                    <th>Default</th>
+                    <th>Description</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>CREDENCE_CACHE_TTL</td>
+                    <td>300</td>
+                    <td>Registry cache lifetime in seconds</td>
+                </tr>
+                <tr>
+                    <td>CREDENCE_REGISTRY_URL</td>
+                    <td>GitHub raw</td>
+                    <td>Override the registry.json URL</td>
+                </tr>
+                <tr>
+                    <td>CREDENCE_PUBLIC_KEY_URL</td>
+                    <td>GitHub raw</td>
+                    <td>Override the public key URL for signature verification</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h3 class="sub">Config auto-detection</h3>
+        <p>The <code>credence audit</code> and <code>credence watch</code> commands automatically find your MCP client config. Detected paths:</p>
+        <div class="code-block">
+<pre><span class="comment"># macOS</span>
+~/Library/Application Support/Claude/claude_desktop_config.json
+
+<span class="comment"># Linux</span>
+~/.config/Claude/claude_desktop_config.json
+
+<span class="comment"># Windows</span>
+%APPDATA%\Claude\claude_desktop_config.json
+
+<span class="comment"># Claude Code</span>
+~/.claude.json</pre>
+        </div>
+
+        <p style="font-size: 0.85rem; color: var(--text-muted);">Use <code>--config PATH</code> to point at a custom config file instead.</p>
+    </section>
+</div>
+
+<footer>
+    <div class="container">
+        <p>&copy; 2026 Phil Stafford &middot; MIT License &middot; <a href="https://github.com/pestafford/credence-registry">GitHub</a></p>
+    </div>
+</footer>
+
+<script>
+    function toggleTheme() {
+        var html = document.documentElement;
+        var current = html.getAttribute('data-theme');
+        var next = current === 'dark' ? 'light' : 'dark';
+        html.setAttribute('data-theme', next);
+        localStorage.setItem('credence-theme', next);
+    }
+
+    var saved = localStorage.getItem('credence-theme');
+    if (saved) {
+        document.documentElement.setAttribute('data-theme', saved);
+    } else if (window.matchMedia('(prefers-color-scheme: light)').matches) {
+        document.documentElement.setAttribute('data-theme', 'light');
+    }
+</script>
+
+</body>
+</html>
