@@ -704,41 +704,71 @@ jobs:
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
         run: |
-          # Inherit preliminary publish decision (ensures downstream has a value even if we error)
-          echo "publish=${{ steps.score.outputs.publish }}" >> $GITHUB_OUTPUT
+          # Default: do not publish. Deliberation must succeed for any
+          # score to be considered confirmed. Without debate, the
+          # preliminary score is unverified and must not go to registry.
+          echo "publish=false" >> $GITHUB_OUTPUT
+          echo "deliberation_status=failed" >> $GITHUB_OUTPUT
 
           if [ -z "$ANTHROPIC_API_KEY" ]; then
-            echo "ANTHROPIC_API_KEY not set — skipping deliberation, keeping preliminary score"
+            echo "::error::ANTHROPIC_API_KEY not set — deliberation cannot run. Score is unconfirmed."
+            echo "deliberation_status=no_api_key" >> $GITHUB_OUTPUT
+            exit 1
           elif ! command -v deliberation-mcp &>/dev/null; then
-            echo "deliberation-mcp not installed — skipping deliberation, keeping preliminary score"
-          else
-            # Clear any stale deliberation sessions from previous runs
-            rm -rf .deliberations/ /tmp/deliberation-transcript/
-
-            python3 -m credence_mcp.deliberation_adapter run /tmp/ /tmp/scan-summary.json \
-              --repo /tmp/target-server \
-              --timeout 300 \
-              --server-cmd "deliberation-mcp"
-
-            # Copy deliberation artifacts to /tmp for reliable artifact upload
-            cp -r .deliberations/ /tmp/deliberation-transcript/ 2>/dev/null || true
-
-            # Re-extract verdict after deliberation may have updated it
-            VERDICT=$(jq -r '.thinktank_verdict' /tmp/scan-summary.json)
-            TRUST_SCORE=$(jq -r '.trust_score' /tmp/scan-summary.json)
-            THREAT_TYPE=$(jq -r '.threat_type // ""' /tmp/scan-summary.json)
-            echo "Post-deliberation: $VERDICT ($TRUST_SCORE/100), threat_type=$THREAT_TYPE"
-            echo "threat_type=$THREAT_TYPE" >> $GITHUB_OUTPUT
-
-            # Re-check disclosure gating with final verdict
-            if echo "$VERDICT" | grep -qE "FLAGGED|REJECTED"; then
-              echo "publish=false" >> $GITHUB_OUTPUT
-              echo "Disclosure hold after deliberation: $VERDICT"
-            fi
+            echo "::error::deliberation-mcp not installed — deliberation cannot run. Score is unconfirmed."
+            echo "deliberation_status=not_installed" >> $GITHUB_OUTPUT
+            exit 1
           fi
 
+          # Clear any stale deliberation sessions from previous runs
+          rm -rf .deliberations/ /tmp/deliberation-transcript/
+
+          python3 -m credence_mcp.deliberation_adapter run /tmp/ /tmp/scan-summary.json \
+            --repo /tmp/target-server \
+            --timeout 300 \
+            --server-cmd "deliberation-mcp"
+
+          # Copy deliberation artifacts to /tmp for reliable artifact upload
+          cp -r .deliberations/ /tmp/deliberation-transcript/ 2>/dev/null || true
+
+          # ── Deliberation succeeded — score is now confirmed ──
+          echo "deliberation_status=completed" >> $GITHUB_OUTPUT
+
+          VERDICT=$(jq -r '.thinktank_verdict' /tmp/scan-summary.json)
+          TRUST_SCORE=$(jq -r '.trust_score' /tmp/scan-summary.json)
+          THREAT_TYPE=$(jq -r '.threat_type // ""' /tmp/scan-summary.json)
+          echo "Post-deliberation: $VERDICT ($TRUST_SCORE/100), threat_type=$THREAT_TYPE"
+          echo "threat_type=$THREAT_TYPE" >> $GITHUB_OUTPUT
+
+          # Disclosure gating on confirmed verdict
+          if echo "$VERDICT" | grep -qE "FLAGGED|REJECTED"; then
+            echo "publish=false" >> $GITHUB_OUTPUT
+            echo "Disclosure hold after deliberation: $VERDICT"
+          else
+            echo "publish=true" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Annotate deliberation failure
+        if: steps.clone.outputs.clone_failed != 'true' && steps.deliberation.outputs.deliberation_status != 'completed'
+        run: |
+          STATUS="${{ steps.deliberation.outputs.deliberation_status }}"
+          SCORE=$(jq -r '.trust_score' /tmp/scan-summary.json)
+          VERDICT=$(jq -r '.thinktank_verdict' /tmp/scan-summary.json)
+          cat >> $GITHUB_STEP_SUMMARY <<MDEOF
+          ## Deliberation Failed — Score Unconfirmed
+
+          | Field | Value |
+          |-------|-------|
+          | Server | ${{ steps.parse.outputs.server_name }} |
+          | Status | **${STATUS}** |
+          | Preliminary score | ${SCORE}/100 |
+          | Preliminary verdict | ${VERDICT} |
+
+          The preliminary score is **not published**. Deliberation must succeed before any score enters the registry. Fix the issue and re-run the scan.
+          MDEOF
+
       - name: Annotate disclosure hold
-        if: steps.clone.outputs.clone_failed != 'true' && steps.deliberation.outputs.publish == 'false'
+        if: steps.clone.outputs.clone_failed != 'true' && steps.deliberation.outputs.deliberation_status == 'completed' && steps.deliberation.outputs.publish == 'false'
         run: |
           SUMMARY=$(cat /tmp/scan-summary.json)
           SCORE=$(echo "$SUMMARY" | jq -r '.trust_score')
@@ -908,6 +938,7 @@ jobs:
             const flags = summary.provenance_flags || [];
             const verified = '${{ steps.verify.outputs.verified }}' === 'true';
             const publish = '${{ steps.deliberation.outputs.publish }}' === 'true';
+            const deliberationStatus = '${{ steps.deliberation.outputs.deliberation_status }}';
             const threatType = summary.threat_type || '';
 
             const trustScore = summary.trust_score;
@@ -918,7 +949,28 @@ jobs:
 
             let body;
 
-            if (!publish) {
+            if (deliberationStatus !== 'completed') {
+              // ── DELIBERATION FAILED ──
+              // Score is unconfirmed. Do not publish. Must retry.
+              let reason = 'Deliberation did not complete';
+              if (deliberationStatus === 'no_api_key') reason = 'ANTHROPIC_API_KEY not configured';
+              else if (deliberationStatus === 'not_installed') reason = 'deliberation-mcp not installed';
+
+              body = `## Credence Scan — Deliberation Failed
+
+            **Server:** ${summary.server_name}${pathLine}
+            **Commit:** \`${summary.commit_sha}\`
+
+            Scanning completed but adversarial deliberation failed: **${reason}**.
+
+            The preliminary score (${trustScore}/100, ${verdict}) is **unconfirmed** and will not be published. Deliberation is required before any score enters the registry.
+
+            Re-run the scan once the issue is resolved.
+
+            ---
+            _Credence Pipeline v${summary.pipeline_version} · ${summary.scan_timestamp}_`;
+
+            } else if (!publish) {
               // ── DISCLOSURE HOLD ──
               let holdMessage;
               if (threatType === 'adversarial') {
@@ -996,7 +1048,9 @@ jobs:
             // Labels
             const verifyLabel = verified ? 'verified-maintainer' : 'third-party';
             const labels = [verifyLabel, 'scan-complete'];
-            if (!publish) {
+            if (deliberationStatus !== 'completed') {
+              labels.push('deliberation-failed');
+            } else if (!publish) {
               labels.push('disclosure-pending');
             } else {
               const riskLabel = verdict.includes('CONDITIONAL') ? 'risk-medium' : 'risk-low';

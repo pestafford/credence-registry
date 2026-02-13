@@ -601,10 +601,9 @@ def _cli_run():
         response = invoke(request, server_command=server_cmd, timeout=timeout)
     except (TimeoutError, RuntimeError) as e:
         print(f"Deliberation failed: {e}", file=sys.stderr)
-        print("Falling back to preliminary score.", file=sys.stderr)
-        # Leave _PRELIMINARY suffix intact — no update
-        summary_path.write_text(json.dumps(summary, indent=2))
-        sys.exit(0)
+        # Hard fail — deliberation is not optional. The preliminary score
+        # is unconfirmed and must not be published without debate.
+        sys.exit(1)
 
     # Step 3: Process response
     print("Processing deliberation response...", file=sys.stderr)
