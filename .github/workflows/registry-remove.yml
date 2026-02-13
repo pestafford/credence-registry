@@ -1,0 +1,71 @@
+name: Remove server from registry
+
+on:
+  workflow_dispatch:
+    inputs:
+      server_id:
+        description: 'Server ID to remove (e.g. owner/repo/server)'
+        required: true
+        type: string
+      reason:
+        description: 'Reason for removal (logged in commit message)'
+        required: false
+        type: string
+        default: 'Maintainer removal'
+
+permissions:
+  contents: write
+
+jobs:
+  remove:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install credence_mcp
+        run: pip install ./mcp-server
+
+      - name: Remove server
+        id: remove
+        run: |
+          SERVER_ID="${{ github.event.inputs.server_id }}"
+          echo "Removing: $SERVER_ID"
+          python3 -m credence_mcp.registry_update --remove "$SERVER_ID" registry/
+
+          # Update scan stats (total_scans stays the same — scan still happened)
+          TOTAL_SCANS=$(ls -d scan-results/*/ 2>/dev/null | wc -l)
+          if [ -f registry/index.json ]; then
+            jq --argjson n "$TOTAL_SCANS" '.stats.total_scans = $n' registry/index.json > registry/index.tmp && mv registry/index.tmp registry/index.json
+          fi
+
+          echo "server_id=$SERVER_ID" >> $GITHUB_OUTPUT
+
+      - name: Commit and push
+        run: |
+          git config user.name "credence-bot"
+          git config user.email "credence-bot@users.noreply.github.com"
+          git add registry/ registry.json
+          git diff --cached --quiet && echo "No changes to commit" && exit 0
+          REASON="${{ github.event.inputs.reason }}"
+          git commit -m "remove: ${{ github.event.inputs.server_id }} — ${REASON}"
+          git push
+
+      - name: Summary
+        run: |
+          cat >> $GITHUB_STEP_SUMMARY <<MDEOF
+          ## Server Removed
+
+          | Field | Value |
+          |-------|-------|
+          | Server ID | \`${{ github.event.inputs.server_id }}\` |
+          | Reason | ${{ github.event.inputs.reason }} |
+          | Removed by | @${{ github.actor }} |
+
+          The attestation has been removed from the registry. Scan results remain in \`scan-results/\` for audit purposes.
+          MDEOF

@@ -223,9 +223,74 @@ def _build_compat_registry(index: dict, registry_dir: Path) -> dict:
     return compat
 
 
+def remove_server(server_id: str, registry_dir: Path, project_root: Path):
+    """Remove a server from the registry index and delete its per-server file."""
+    index_path = registry_dir / "index.json"
+    compat_path = project_root / "registry.json"
+
+    if not index_path.exists():
+        print(f"Error: {index_path} not found")
+        sys.exit(1)
+
+    index = json.loads(index_path.read_text())
+    servers = index.get("servers", [])
+    original_count = len(servers)
+
+    # Filter out the server
+    servers = [s for s in servers if s.get("server_id") != server_id]
+
+    if len(servers) == original_count:
+        print(f"Error: server_id '{server_id}' not found in registry")
+        sys.exit(1)
+
+    index["servers"] = servers
+    index["updated_at"] = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+
+    # Write updated index
+    index_path.write_text(json.dumps(index, indent=2))
+
+    # Delete per-server file
+    server_file = _server_id_to_path(server_id, registry_dir)
+    if server_file.exists():
+        server_file.unlink()
+        # Clean up empty parent directories
+        for parent in server_file.parents:
+            if parent == registry_dir / "servers":
+                break
+            try:
+                parent.rmdir()
+            except OSError:
+                break
+        print(f"  Deleted: {server_file}")
+
+    # Regenerate compat registry.json
+    compat = _build_compat_registry(index, registry_dir)
+    compat_path.write_text(json.dumps(compat, indent=2))
+
+    print(f"\nRemoved '{server_id}' from registry")
+    print(f"  Servers remaining: {len(servers)}")
+    print(f"  scan-results/ left intact (still counts toward total scans)")
+
+
 def main():
+    # Handle --remove mode
+    if len(sys.argv) >= 3 and sys.argv[1] == "--remove":
+        server_id = sys.argv[2]
+        target_path = Path(sys.argv[3]) if len(sys.argv) > 3 else Path("registry/")
+
+        if target_path.suffix == ".json" or target_path.is_file():
+            project_root = target_path.parent
+            registry_dir = project_root / "registry"
+        else:
+            registry_dir = target_path
+            project_root = registry_dir.parent
+
+        remove_server(server_id, registry_dir, project_root)
+        return
+
     if len(sys.argv) < 3:
         print(f"Usage: {sys.argv[0]} <scan-summary.json> <registry-dir|registry.json> [--key <path> | --key-env <var>]")
+        print(f"       {sys.argv[0]} --remove <server_id> [registry-dir]")
         sys.exit(1)
 
     summary_path = Path(sys.argv[1])
