@@ -4,7 +4,7 @@
   "registry_url": "https://credence.securingthesingularity.com",
   "maintainer": "Phil Stafford <phil@securingthesingularity.com>",
   "signing_public_key": "XdvqC/Q6TX90MpL37wdxfUtqOiS8qiQjK8JNJy+BOcM=",
-  "updated_at": "2026-02-12T14:55:51Z",
+  "updated_at": "2026-02-13T15:43:35Z",
   "servers": [
     {
       "server_id": "modelcontextprotocol/server-filesystem",
@@ -35,22 +35,22 @@
     },
     {
       "server_id": "modelcontextprotocol/servers",
-      "server_name": "filesystem",
+      "server_name": "MCP Memory Server",
       "repo_url": "https://github.com/modelcontextprotocol/servers",
       "attestation": {
         "commit_sha": "618cf4867bca1fa193553d94fb7f2b2cf47f2a04",
-        "source_hash": "43140242e35ba782e4f6f5fd7d1b0496d705969354737f5bb49f36fce4b6052f",
+        "source_hash": "ef6fb96e7b91fcf4381ece65aeea311b274d373dbcdf2b664487c71f81d1545b",
         "source_hash_method": "merkle-tree-sha256",
-        "attested_at": "2026-02-12T14:55:51Z",
+        "attested_at": "2026-02-13T15:43:35Z",
         "pipeline_version": "0.2.0",
         "scoring_version": "1.0.0",
-        "trust_score": 91,
+        "trust_score": 72,
         "trust_dimensions": {
-          "security": 70,
+          "security": 92,
           "provenance": 100,
           "behavioral": 100
         },
-        "thinktank_verdict": "VERIFIED",
+        "thinktank_verdict": "CONDITIONAL",
         "author_identity": {
           "repo_owner": "modelcontextprotocol",
           "identity_match": true,
@@ -61,8 +61,8 @@
         "lockfile_hash": "723b5d17a2ca19632c871f71d3263d349a1340c9609de3737fc1612783fb5402",
         "signature": {
           "algorithm": "ed25519",
-          "value": "2JVcfpoB8LRgKvLZfKXMfA5WsdK7PiBpcKtmZs5N18X1o4kOlft766W7EeoTdyOzAyVn+i0DwMLGqr1O1lr3Cw==",
-          "canonical_hash": "8d0e45c2accad2dc458a81f24354adfb5c00f5877b8a49d15eaca907819964fa"
+          "value": "8Zu5uv38wnGHECZ8fgqyFS1iArWs6Um9aIVT+e1OdnTTRnBuDXpAXAugD6ATlbVdbX+83x2brlnY+sGDhIlQBg==",
+          "canonical_hash": "fb7103a1569128d6978ea1c0eb27e123f8d816dbbfe3868d223a4820526dad98"
         }
       },
       "attestation_url": "https://github.com/pestafford/credence-registry/tree/main/scan-results/618cf486"

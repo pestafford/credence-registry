@@ -1,22 +1,97 @@
 {
-  "server_name": "filesystem",
-  "server_path": "src/filesystem",
+  "server_name": "MCP Memory Server",
+  "server_path": "src/memory",
   "repo_url": "https://github.com/modelcontextprotocol/servers",
   "commit_sha": "618cf4867bca1fa193553d94fb7f2b2cf47f2a04",
-  "source_hash": "43140242e35ba782e4f6f5fd7d1b0496d705969354737f5bb49f36fce4b6052f",
+  "source_hash": "ef6fb96e7b91fcf4381ece65aeea311b274d373dbcdf2b664487c71f81d1545b",
   "source_hash_method": "merkle-tree-sha256",
   "is_fork": false,
   "provenance_flags": [],
   "lockfile_name": "package-lock.json",
   "lockfile_hash": "723b5d17a2ca19632c871f71d3263d349a1340c9609de3737fc1612783fb5402",
-  "scan_timestamp": "2026-02-12T14:55:50Z",
+  "scan_timestamp": "2026-02-13T15:41:57Z",
   "pipeline_version": "0.2.0",
-  "thinktank_verdict": "VERIFIED_PRELIMINARY",
-  "trust_score": 91,
+  "thinktank_verdict": "CONDITIONAL",
+  "trust_score": 72,
   "trust_dimensions": {
-    "security": 70,
+    "security": 92,
     "provenance": 100,
     "behavioral": 100
   },
-  "scoring_version": "1.0.0"
+  "scoring_version": "1.0.0",
+  "thinktank_debate": {
+    "confidence": 87,
+    "risk_summary": "The MCP Memory Server contains one blocking HIGH-severity container security violation (missing USER directive in Dockerfile) that violates CWE-250 and multiple compliance frameworks. While no malicious code patterns were detected, the container runs as root which creates unnecessary privilege escalation risk. The repository's provenance metadata shows anomalies (0-day account age, 0 contributors) that could not be definitively resolved, though no code-level supply chain attack signatures were identified. Approval is conditional on remediating the Dockerfile security finding.",
+    "agent_count": 5,
+    "rounds": 2,
+    "highlights": [
+      {
+        "agent_role": "Adversarial Attacker",
+        "position": "reject",
+        "key_argument": "The root container execution combined with MCP's tool-calling architecture creates an exploitation primitive where any future vulnerability in the server or dependencies enables container escape and host compromise, with the 'reference implementation' framing ensuring this insecure pattern propagates to production deployments",
+        "evidence_cited": [
+          "semgrep-dockerfile.security.missing-user-entrypoint.missing-user-entrypoint-Dockerfile:24"
+        ]
+      },
+      {
+        "agent_role": "Supply Chain Analyst",
+        "position": "reject",
+        "key_argument": "The 0-day account age with 0 contributors is physically impossible for a legitimate repository claiming to be maintained by an MCP steering group, representing an unverifiable chain of custody that prevents confirming the repository's claimed identity",
+        "evidence_cited": []
+      },
+      {
+        "agent_role": "Compliance Reviewer",
+        "position": "conditional",
+        "key_argument": "The missing-user-entrypoint finding is a blocking violation of CIS Docker Benchmark 4.1, NIST SP 800-190, and PCI-DSS 2.2 that must be remediated, but represents a single well-defined fix path with otherwise clean security posture",
+        "evidence_cited": [
+          "semgrep-dockerfile.security.missing-user-entrypoint.missing-user-entrypoint-Dockerfile:24"
+        ]
+      },
+      {
+        "agent_role": "Devil's Advocate",
+        "position": "approve",
+        "key_argument": "The finding distribution (1 high, 0 critical/medium/low, 0 secrets, 0 CVEs, 0 injection vulnerabilities) demonstrates benign intent, with the single Dockerfile issue being contextually appropriate for reference implementations explicitly labeled as educational examples requiring developer customization",
+        "evidence_cited": [
+          "semgrep-dockerfile.security.missing-user-entrypoint.missing-user-entrypoint-Dockerfile:24"
+        ]
+      },
+      {
+        "agent_role": "Pattern Matcher",
+        "position": "approve",
+        "key_argument": "Comprehensive comparison against documented supply chain attack signatures (SmartLoader, typosquatting, dependency confusion, coordinated forks, malicious install hooks, C2 callbacks) found zero matches, with the Dockerfile finding representing a container hardening concern rather than a supply chain attack indicator",
+        "evidence_cited": [
+          "semgrep-dockerfile.security.missing-user-entrypoint.missing-user-entrypoint-Dockerfile:24"
+        ]
+      }
+    ],
+    "dissenting_opinions": [
+      {
+        "agent_role": "Adversarial Attacker & Supply Chain Analyst",
+        "position": "reject",
+        "argument": "The combination of unverifiable provenance (0-day account, 0 contributors) with root container execution creates a high-risk scenario where the repository could be compromised infrastructure establishing insecure patterns as canonical, enabling future supply chain attacks through pattern propagation and privilege escalation primitives"
+      },
+      {
+        "agent_role": "Devil's Advocate & Pattern Matcher",
+        "position": "approve",
+        "argument": "The repository represents legitimate reference implementation code with comprehensive documentation, official organizational ownership, and zero code-level vulnerabilities or supply chain attack signatures, with the single Dockerfile finding being a standard DevOps concern appropriate for educational examples"
+      }
+    ],
+    "completed_at": "2026-02-13T15:43:35.598090+00:00"
+  },
+  "thinktank_score_adjustment": {
+    "original_score": 98,
+    "adjusted_score": 72,
+    "adjustment_reason": "Score reduced by 26 points due to: (1) Blocking HIGH-severity container security violation (-15 points) that violates multiple compliance frameworks and creates privilege escalation risk, (2) Unresolved provenance anomalies (-8 points) that prevent verification of repository identity despite lack of malicious code signatures, (3) Supply chain risk through reference implementation pattern propagation (-3 points) where insecure patterns may be copied to production deployments. Score remains above 70 due to absence of code-level vulnerabilities, malicious patterns, or exploitable attack chains."
+  },
+  "thinktank_flags": {
+    "needs_human_review": true,
+    "novel_attack_pattern": false,
+    "recommended_actions": [
+      "BLOCKING: Add USER directive with non-root user before ENTRYPOINT in Dockerfile to remediate CWE-250 violation",
+      "Verify repository provenance by confirming organizational ownership through official MCP channels or domain verification",
+      "Add security hardening documentation to README explicitly showing production-ready Dockerfile with USER directive",
+      "Consider adding automated security scanning to CI/CD pipeline to prevent future container security regressions",
+      "Human review recommended to resolve provenance metadata anomalies (0-day account age, 0 contributors) through out-of-band verification"
+    ]
+  }
 }
