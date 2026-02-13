@@ -1,0 +1,28 @@
+{
+  "server_name": "Malicious-MCP-Server",
+  "canonical_name": "",
+  "server_path": "",
+  "maintainer_verified": false,
+  "verify_reason": "Third-party submission — submitter is not owner, collaborator, or contributor",
+  "repo_url": "https://github.com/YassWorks/Malicious-MCP-Server",
+  "commit_sha": "c7ffb90c2a6cefe2d0537a4778e66b05a650bff8",
+  "source_hash": "0ae1339101a46b72df4bec96df9828acdb2298736f4b4d71a236d6e56b3c6a15",
+  "source_hash_method": "merkle-tree-sha256",
+  "is_fork": false,
+  "provenance_flags": [
+    "NO_LOCKFILE"
+  ],
+  "lockfile_name": "none",
+  "lockfile_hash": "none",
+  "scan_timestamp": "2026-02-13T21:50:19Z",
+  "pipeline_version": "0.2.0",
+  "thinktank_verdict": "REJECTED",
+  "trust_score": 5,
+  "trust_dimensions": {
+    "security": 100,
+    "provenance": 95,
+    "behavioral": 100
+  },
+  "scoring_version": "1.0.0",
+  "deliberation_session": "b381fbd0-cf8"
+}
