@@ -14,15 +14,14 @@
   ],
   "lockfile_name": "none",
   "lockfile_hash": "none",
-  "scan_timestamp": "2026-02-13T22:12:26Z",
+  "scan_timestamp": "2026-02-13T22:41:34Z",
   "pipeline_version": "0.2.0",
-  "thinktank_verdict": "REJECTED",
-  "trust_score": 12,
+  "thinktank_verdict": "CONDITIONAL_PRELIMINARY",
+  "trust_score": 89,
   "trust_dimensions": {
     "security": 70,
     "provenance": 95,
     "behavioral": 100
   },
-  "scoring_version": "1.0.0",
-  "deliberation_session": "550e3f3d-822"
+  "scoring_version": "1.0.0"
 }

@@ -4,7 +4,7 @@
   "registry_url": "https://credence.securingthesingularity.com",
   "maintainer": "Phil Stafford <phil@securingthesingularity.com>",
   "signing_public_key": "XdvqC/Q6TX90MpL37wdxfUtqOiS8qiQjK8JNJy+BOcM=",
-  "updated_at": "2026-02-13T20:42:18Z",
+  "updated_at": "2026-02-13T22:41:36Z",
   "servers": [
     {
       "server_id": "modelcontextprotocol/servers/filesystem",
@@ -29,6 +29,18 @@
       "scoring_version": "1.0.0",
       "attested_at": "2026-02-13T17:19:51Z",
       "attestation_file": "servers/modelcontextprotocol/servers/memory.json"
+    },
+    {
+      "server_id": "nirda13/mcp-goat-postmarks-test/postmarks-mcp",
+      "server_name": "postmarks-mcp",
+      "canonical_name": "postmarks-mcp",
+      "repo_url": "https://github.com/nirda13/mcp-goat-postmarks-test",
+      "repo_owner": "nirda13",
+      "trust_score": 89,
+      "thinktank_verdict": "CONDITIONAL",
+      "scoring_version": "1.0.0",
+      "attested_at": "2026-02-13T22:41:36Z",
+      "attestation_file": "servers/nirda13/mcp-goat-postmarks-test/postmarks-mcp.json"
     }
   ]
 }
