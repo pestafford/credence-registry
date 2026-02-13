@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Credence — Cryptographic Trust for MCP Servers</title>
-    <meta name="description" content="Credence is a cryptographic attestation registry for MCP servers. Source fingerprinting, author identity verification, and adversarial security analysis for the MCP ecosystem.">
+    <title>Credence — Prove Your MCP Server Is Trustworthy</title>
+    <meta name="description" content="Submit your MCP server for security analysis. Credence scans the code, verifies your identity, and gives you a signed trust score developers can check before they install.">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
@@ -659,8 +659,8 @@
 <section class="hero">
     <div class="container">
         <img src="credencelogo.png" alt="Credence Registry" class="hero-logo">
-        <h1>Cryptographic trust for <span>MCP servers</span></h1>
-        <p class="subtitle">Source fingerprinting. Author identity verification. Adversarial security analysis. Building the trust layer the MCP ecosystem needs as it scales.</p>
+        <h1>Prove your MCP server is <span>trustworthy</span></h1>
+        <p class="subtitle">Submit your server. We scan the code, verify your identity, and give you a signed trust score that developers can check before they install.</p>
         <div class="status-badge">
             <span class="status-dot"></span>
             In active development
@@ -697,46 +697,46 @@
 
 <section class="section">
     <div class="container">
-        <div class="section-label">The Gap</div>
-        <h2>MCP is growing faster than its security tooling</h2>
-        <p>MCP is a powerful protocol — but like HTTP before TLS, the security layer is still being built. The ecosystem doesn't yet have the equivalent of npm audit, Sigstore, or Dependabot for MCP servers. Developers are making install decisions based on GitHub stars and README quality while the verification infrastructure catches up.</p>
-        <p>Those social signals can be manufactured. Straiker's STAR Labs recently <a href="https://www.straiker.ai/blog/smartloader-clones-oura-ring-mcp-to-deploy-supply-chain-attack" style="color: var(--orange); text-decoration: none;">documented exactly this</a> — a supply chain attack using cloned repos and fake accounts to poison MCP registries. Credence adds the cryptographic trust layer the ecosystem needs.</p>
+        <div class="section-label">The Problem</div>
+        <h2>Developers have no way to verify your server is safe</h2>
+        <p>Right now, people decide whether to install an MCP server based on GitHub stars, README quality, and gut feel. There's no <code style="color: var(--orange); background: var(--code-bg); padding: 2px 6px; border-radius: 3px; font-size: 0.85rem;">npm audit</code> for MCP. No Sigstore. No Dependabot. If your server is legitimate, you have no way to prove it — and if someone clones your repo to distribute malware, you have no way to distinguish yourself from the clone.</p>
+        <p>This isn't hypothetical. Straiker's STAR Labs recently <a href="https://www.straiker.ai/blog/smartloader-clones-oura-ring-mcp-to-deploy-supply-chain-attack" style="color: var(--orange); text-decoration: none;">documented a supply chain attack</a> that cloned a real MCP server, created fake GitHub accounts, and published the poisoned version to MCP registries. The original author had no recourse. Credence fixes that.</p>
     </div>
 </section>
 
 <section class="section">
     <div class="container">
-        <div class="section-label">The Pipeline</div>
-        <h2>What Credence does</h2>
-        <p>Credence provides cryptographic attestation at MCP server install time — not social signals, not vibes, not stars.</p>
+        <div class="section-label">How It Works</div>
+        <h2>You submit. We verify. Developers trust.</h2>
+        <p>Credence gives your server a signed trust score — not based on stars or vibes, but on what's actually in the code.</p>
 
         <div class="pipeline">
             <div class="pipe-card">
                 <span class="pipe-num">01</span>
                 <div>
-                    <h3>Collect</h3>
-                    <p>Clone repo at exact commit. Generate SBOM via Syft. Compute Merkle tree SHA-256 source hash. Extract author identity from package metadata, GitHub API, and git history. Detect forks, compare contributor lists, flag provenance anomalies.</p>
+                    <h3>We verify your identity</h3>
+                    <p>We confirm you're the repo owner, check account age and contributor history, detect forks, and flag provenance anomalies. If someone clones your server, the attestation points back to you — not them.</p>
                 </div>
             </div>
             <div class="pipe-card">
                 <span class="pipe-num">02</span>
                 <div>
-                    <h3>Scan</h3>
-                    <p>SAST via Semgrep and Bandit. Dependency CVE scanning via Trivy. Secrets detection via GitLeaks. MCP-specific tool analysis: suspicious patterns in tool definitions, dynamic description loading.</p>
+                    <h3>We scan the code</h3>
+                    <p>Static analysis, dependency CVE scanning, secrets detection, and MCP-specific checks — suspicious tool definitions, dynamic description loading, prompt injection patterns. We look at what the server actually does, not what the README says it does.</p>
                 </div>
             </div>
             <div class="pipe-card">
                 <span class="pipe-num">03</span>
                 <div>
-                    <h3 style="color: var(--orange);">Debate</h3>
-                    <p>Multi-agent adversarial deliberation. Five agents — two skeptics, two believers, one neutral — debate the findings across up to five rounds. Primed with real MCP attack patterns: SmartLoader TTPs, tool poisoning, rug pulls. Produces confidence-scored verdict with dissenting opinions. Probabilistic issues require probabilistic solutions.</p>
+                    <h3 style="color: var(--orange);">AI agents debate the findings</h3>
+                    <p>Five AI agents — skeptics, believers, and a neutral reviewer — argue about the scan results across multiple rounds. They're primed with real attack patterns from the wild. If a finding is ambiguous, the debate surfaces it instead of hiding it behind an arbitrary threshold.</p>
                 </div>
             </div>
             <div class="pipe-card">
                 <span class="pipe-num">04</span>
                 <div>
-                    <h3>Attest</h3>
-                    <p>Cryptographically sign the analysis. Publish attestation with source hash, author identity, provenance flags, verdict, and trust score. Pin to exact commit — new commits invalidate attestation.</p>
+                    <h3>You get a signed attestation</h3>
+                    <p>A cryptographically signed trust score pinned to your exact commit. Developers can verify it from the CLI, from their AI agent, or in CI — before they install. New commits invalidate the attestation, so it always reflects the code that's actually running.</p>
                 </div>
             </div>
         </div>
