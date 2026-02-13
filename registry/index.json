@@ -4,7 +4,7 @@
   "registry_url": "https://credence.securingthesingularity.com",
   "maintainer": "Phil Stafford <phil@securingthesingularity.com>",
   "signing_public_key": "XdvqC/Q6TX90MpL37wdxfUtqOiS8qiQjK8JNJy+BOcM=",
-  "updated_at": "2026-02-13T18:43:39Z",
+  "updated_at": "2026-02-13T19:56:48Z",
   "servers": [
     {
       "server_id": "modelcontextprotocol/servers/filesystem",
@@ -12,10 +12,10 @@
       "canonical_name": "@modelcontextprotocol/server-filesystem",
       "repo_url": "https://github.com/modelcontextprotocol/servers",
       "repo_owner": "modelcontextprotocol",
-      "trust_score": 76,
+      "trust_score": 78,
       "thinktank_verdict": "CONDITIONAL",
       "scoring_version": "1.0.0",
-      "attested_at": "2026-02-13T18:43:39Z",
+      "attested_at": "2026-02-13T19:56:48Z",
       "attestation_file": "servers/modelcontextprotocol/servers/filesystem.json"
     },
     {
