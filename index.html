@@ -745,6 +745,42 @@
 
 <section class="section">
     <div class="container">
+        <div class="section-label">The Debate Layer</div>
+        <h2>A security team for every server</h2>
+        <p>Traditional scanners produce a list of findings and a pass/fail. But security findings are rarely binary — a hardcoded string might be a leaked credential or a test fixture. A fork might be a supply chain attack or a legitimate contribution. Context matters, and thresholds are guesses.</p>
+        <p>Credence replaces the threshold with a debate. Five AI agents — each with a different security perspective — review the scan results and argue about what they mean. Skeptics look for attack patterns. Believers challenge false positives. A neutral reviewer synthesizes the positions into a confidence-scored verdict.</p>
+
+        <div class="pipeline" style="margin-top: 24px;">
+            <div class="pipe-card">
+                <span class="pipe-num" style="color: #C0392B;">⚔</span>
+                <div>
+                    <h3>Adversarial Attacker + Supply Chain Analyst</h3>
+                    <p>The skeptics. Trained on real MCP attack patterns — SmartLoader TTPs, tool poisoning, coordinated fork networks. Their job is to find what the scanners missed and challenge anything that looks suspicious.</p>
+                </div>
+            </div>
+            <div class="pipe-card">
+                <span class="pipe-num" style="color: #6B9E4F;">◉</span>
+                <div>
+                    <h3>Devil's Advocate + Pattern Matcher</h3>
+                    <p>The believers. They push back on overreaction — flagging when a "vulnerability" is actually standard practice, when a fork has legitimate provenance, when a finding is noise. Without them, every server gets flagged.</p>
+                </div>
+            </div>
+            <div class="pipe-card">
+                <span class="pipe-num" style="color: var(--text-secondary);">⚖</span>
+                <div>
+                    <h3>Compliance Reviewer</h3>
+                    <p>The neutral. Weighs both sides, checks for logical consistency, and produces the final verdict. Positions stabilize across rounds — when the agents stop changing their minds, the debate ends.</p>
+                </div>
+            </div>
+        </div>
+
+        <p style="margin-top: 28px; color: var(--text-secondary);">The result is a verdict that captures uncertainty honestly instead of hiding it behind an arbitrary cutoff. Probabilistic issues require probabilistic solutions.</p>
+        <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 8px;"><a href="papers/adversarial-trust-layer.html" style="color: var(--orange); text-decoration: none;">Read the research →</a> The position paper covers the architecture, the threat model, and why multi-agent verification outperforms single-pass analysis.</p>
+    </div>
+</section>
+
+<section class="section">
+    <div class="container">
         <div class="section-label">Attestation Schema</div>
         <h2>What an attestation looks like</h2>
         <div class="code-block">
