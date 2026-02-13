@@ -7,6 +7,36 @@
   "updated_at": "2026-02-13T17:19:51Z",
   "servers": [
     {
+      "server_id": "modelcontextprotocol/servers/filesystem",
+      "server_name": "Filesystem MCP Server",
+      "canonical_name": "",
+      "repo_url": "https://github.com/modelcontextprotocol/servers",
+      "attestation": {
+        "commit_sha": "seed-attestation-pending-live-scan",
+        "source_hash": "seed-attestation-pending-live-scan",
+        "source_hash_method": "merkle-tree-sha256",
+        "attested_at": "2026-02-08T02:58:20Z",
+        "pipeline_version": "0.2.0",
+        "scoring_version": "1.0.0",
+        "trust_score": 95,
+        "thinktank_verdict": "VERIFIED",
+        "author_identity": {
+          "repo_owner": "modelcontextprotocol",
+          "identity_match": true,
+          "is_fork": false,
+          "provenance_flags": [],
+          "maintainer_verified": false,
+          "verify_reason": "Seed entry — predates verification"
+        },
+        "signature": {
+          "algorithm": "ed25519",
+          "value": "xwsp7KchnKfriPct+swdGysSrjUAjqm/A9TEoKibwoJ3Ca/7LguKC9XhXdfLBhutK2+KhXmUjxQr18yAs1D6Ag==",
+          "canonical_hash": "3444f9eb8f36ca985bf4ad6925984dfa9ee09a603e001e44eda2a49ed9694986"
+        }
+      },
+      "attestation_url": "https://github.com/pestafford/credence-registry/tree/main/scan-results/seed-filesystem"
+    },
+    {
       "server_id": "modelcontextprotocol/servers/memory",
       "server_name": "MCP Memory Server",
       "canonical_name": "@modelcontextprotocol/server-memory",
