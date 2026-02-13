@@ -36,6 +36,8 @@ def build_attestation(summary: dict) -> dict:
             "identity_match": "REPO_OWNER_DIFFERS_FROM_CLAIMED_AUTHOR" not in summary.get("provenance_flags", []),
             "is_fork": summary.get("is_fork", False),
             "provenance_flags": summary.get("provenance_flags", []),
+            "maintainer_verified": summary.get("maintainer_verified", False),
+            "verify_reason": summary.get("verify_reason", ""),
         },
         "lockfile_name": summary.get("lockfile_name", "none"),
         "lockfile_hash": summary.get("lockfile_hash", "none"),
@@ -43,17 +45,28 @@ def build_attestation(summary: dict) -> dict:
 
 
 def derive_server_id(summary: dict) -> str:
-    """Derive a server_id from repo URL: owner/repo-name format."""
+    """Derive a server_id from repo URL + server_path.
+
+    For monorepos with a server_path, appends the last path segment
+    so each server gets a unique ID (e.g. modelcontextprotocol/servers/memory).
+    """
     repo_url = summary.get("repo_url", "")
+    server_path = summary.get("server_path", "").strip("/")
     # https://github.com/owner/repo -> owner/repo
     parts = repo_url.rstrip("/").split("/")
     if len(parts) >= 2:
-        return f"{parts[-2]}/{parts[-1]}"
+        base = f"{parts[-2]}/{parts[-1]}"
+        if server_path:
+            # Use last segment of path for readability: src/memory -> memory
+            suffix = server_path.rstrip("/").split("/")[-1]
+            return f"{base}/{suffix}"
+        return base
     return summary.get("server_name", "unknown")
 
 
 def upsert_registry(registry: dict, server_id: str, server_name: str,
-                    repo_url: str, attestation: dict, scan_id: str) -> dict:
+                    repo_url: str, attestation: dict, scan_id: str,
+                    canonical_name: str = "") -> dict:
     """Insert or update a server entry in the registry."""
     servers = registry.get("servers", [])
 
@@ -63,6 +76,7 @@ def upsert_registry(registry: dict, server_id: str, server_name: str,
     entry = {
         "server_id": server_id,
         "server_name": server_name,
+        "canonical_name": canonical_name,
         "repo_url": repo_url,
         "attestation": attestation,
         "attestation_url": attestation_url,
@@ -127,13 +141,15 @@ def main():
     # Derive identifiers
     server_id = derive_server_id(summary)
     server_name = summary.get("server_name", server_id)
+    canonical_name = summary.get("canonical_name", "")
     repo_url = summary.get("repo_url", "")
     commit_sha = summary.get("commit_sha", "")
     scan_id = commit_sha[:8] if commit_sha else "unknown"
 
     # Upsert
     registry = upsert_registry(registry, server_id, server_name,
-                               repo_url, attestation, scan_id)
+                               repo_url, attestation, scan_id,
+                               canonical_name=canonical_name)
 
     # Write
     registry_path.write_text(json.dumps(registry, indent=2))

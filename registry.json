@@ -9,6 +9,7 @@
     {
       "server_id": "modelcontextprotocol/server-filesystem",
       "server_name": "Filesystem MCP Server",
+      "canonical_name": "",
       "repo_url": "https://github.com/modelcontextprotocol/servers",
       "description": "MCP server providing file system operations including reading, writing, and searching files. Maintained by Anthropic as part of the reference MCP server collection.",
       "attestation": {
@@ -23,7 +24,9 @@
           "repo_owner": "modelcontextprotocol",
           "identity_match": true,
           "is_fork": false,
-          "provenance_flags": []
+          "provenance_flags": [],
+          "maintainer_verified": false,
+          "verify_reason": "Seed entry — predates verification"
         },
         "signature": {
           "algorithm": "ed25519",
@@ -36,6 +39,7 @@
     {
       "server_id": "modelcontextprotocol/servers",
       "server_name": "MCP Memory Server",
+      "canonical_name": "",
       "repo_url": "https://github.com/modelcontextprotocol/servers",
       "attestation": {
         "commit_sha": "618cf4867bca1fa193553d94fb7f2b2cf47f2a04",
@@ -55,7 +59,9 @@
           "repo_owner": "modelcontextprotocol",
           "identity_match": true,
           "is_fork": false,
-          "provenance_flags": []
+          "provenance_flags": [],
+          "maintainer_verified": false,
+          "verify_reason": "Backfill — scanned before verification was recorded"
         },
         "lockfile_name": "package-lock.json",
         "lockfile_hash": "723b5d17a2ca19632c871f71d3263d349a1340c9609de3737fc1612783fb5402",

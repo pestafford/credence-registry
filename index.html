@@ -1245,8 +1245,17 @@ $ credence check modelcontextprotocol/server-github
     }
 
     function serverDisplayName(entry) {
-        // Use server_name; fall back to last segment of server_id
-        return entry.server_name || entry.server_id.split('/').pop();
+        var raw = entry.canonical_name || entry.server_name || entry.server_id.split('/').pop();
+        var owner = (entry.attestation.author_identity || {}).repo_owner || '';
+        var name = raw;
+        // Strip npm scope if it matches owner
+        if (owner && raw.indexOf('@') === 0) {
+            var scopeMatch = raw.match(/^@([^/]+)\/(.*)/);
+            if (scopeMatch && scopeMatch[1].toLowerCase() === owner.toLowerCase()) {
+                name = scopeMatch[2];
+            }
+        }
+        return owner ? (owner + ' / ' + name) : name;
     }
 
     function loadDashboard() {

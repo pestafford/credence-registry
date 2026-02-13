@@ -391,6 +391,25 @@
             border-radius: 3px;
         }
 
+        /* Owner scope + verified badge */
+        .server-owner {
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            margin-bottom: 2px;
+        }
+        .verified-maintainer {
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 0.65rem;
+            color: #6B9E4F;
+            border: 1px solid rgba(107, 158, 79, 0.3);
+            padding: 1px 6px;
+            border-radius: 3px;
+            background: rgba(107, 158, 79, 0.08);
+            margin-left: 6px;
+            vertical-align: middle;
+        }
+
         /* EMPTY STATE */
         .empty-state {
             text-align: center;
@@ -575,7 +594,17 @@
             var score = a.trust_score || 0;
             var dims = a.trust_dimensions || {};
             var author = a.author_identity || {};
-            var name = entry.server_name || entry.server_id.split('/').pop();
+            var owner = author.repo_owner || '';
+            var maintainerVerified = author.maintainer_verified || false;
+            var rawName = entry.canonical_name || entry.server_name || entry.server_id.split('/').pop();
+            // Strip npm scope if it matches owner
+            var displayName = rawName;
+            if (owner && rawName.indexOf('@') === 0) {
+                var scopeMatch = rawName.match(/^@([^/]+)\/(.*)/);
+                if (scopeMatch && scopeMatch[1].toLowerCase() === owner.toLowerCase()) {
+                    displayName = scopeMatch[2];
+                }
+            }
             var repoUrl = entry.repo_url || ('https://github.com/' + entry.server_id);
             var attestUrl = entry.attestation_url || '#';
             var commitShort = (a.commit_sha || '').substring(0, 12);
@@ -589,7 +618,14 @@
             html += '<div class="card-header" onclick="toggleCard(this)">';
             html += '<div class="card-header-left">';
             html += '<div>';
-            html += '<div class="server-name"><a href="' + escapeHtml(repoUrl) + '" target="_blank" rel="noopener" onclick="event.stopPropagation()">' + escapeHtml(name) + '</a></div>';
+            if (owner) {
+                html += '<div class="server-owner">' + escapeHtml(owner);
+                if (maintainerVerified) {
+                    html += '<span class="verified-maintainer">maintainer</span>';
+                }
+                html += '</div>';
+            }
+            html += '<div class="server-name"><a href="' + escapeHtml(repoUrl) + '" target="_blank" rel="noopener" onclick="event.stopPropagation()">' + escapeHtml(displayName) + '</a></div>';
             html += '<div class="server-id-label">' + escapeHtml(entry.server_id) + '</div>';
             html += '</div>';
             html += '</div>';
@@ -641,6 +677,8 @@
             html += '<div class="detail-section">';
             html += '<h4>Provenance</h4>';
             html += '<div class="detail-row"><span class="detail-key">Owner</span><span class="detail-val">' + escapeHtml(author.repo_owner || '—') + '</span></div>';
+            var mvLabel = author.maintainer_verified ? 'yes' : 'third-party';
+            html += '<div class="detail-row"><span class="detail-key">Maintainer</span><span class="detail-val ' + (author.maintainer_verified ? 'zero' : 'nonzero') + '">' + mvLabel + '</span></div>';
             html += '<div class="detail-row"><span class="detail-key">Identity match</span><span class="detail-val ' + (author.identity_match ? 'zero' : 'nonzero') + '">' + (author.identity_match ? 'yes' : 'no') + '</span></div>';
             html += '<div class="detail-row"><span class="detail-key">Fork</span><span class="detail-val ' + (author.is_fork ? 'nonzero' : 'zero') + '">' + (author.is_fork ? 'yes' : 'no') + '</span></div>';
 

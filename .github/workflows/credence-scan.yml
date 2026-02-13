@@ -297,10 +297,30 @@ jobs:
             IDENTITY_JSON=$(echo "$IDENTITY_JSON" | jq --arg a "$PKG_AUTHOR" '. + {package_author: $a}')
           fi
 
+          # Package.json name (canonical package name)
+          if [ -f "package.json" ]; then
+            PKG_NAME=$(jq -r '.name // ""' package.json 2>/dev/null || echo "")
+            IDENTITY_JSON=$(echo "$IDENTITY_JSON" | jq --arg n "$PKG_NAME" '. + {package_name: $n}')
+          fi
+
           # pyproject.toml author
           if [ -f "pyproject.toml" ]; then
             PY_AUTHOR=$(grep -E "^authors?\s*=" pyproject.toml | head -1 | sed 's/.*=\s*//' || echo "unknown")
             IDENTITY_JSON=$(echo "$IDENTITY_JSON" | jq --arg a "$PY_AUTHOR" '. + {pyproject_author: $a}')
+          fi
+
+          # pyproject.toml name (canonical package name)
+          if [ -f "pyproject.toml" ]; then
+            PY_NAME=$(python3 -c "
+import tomllib
+try:
+    with open('pyproject.toml', 'rb') as f:
+        data = tomllib.load(f)
+    print(data.get('project', {}).get('name', ''))
+except Exception:
+    print('')
+          " 2>/dev/null || echo "")
+            IDENTITY_JSON=$(echo "$IDENTITY_JSON" | jq --arg n "$PY_NAME" '. + {pyproject_name: $n}')
           fi
 
           # Git remote owner
@@ -589,10 +609,28 @@ jobs:
             IS_FORK_JSON="false"
           fi
 
+          # Extract canonical name from identity metadata
+          CANONICAL_NAME=""
+          if [ -f /tmp/identity.json ]; then
+            CANONICAL_NAME=$(jq -r '.package_name // .pyproject_name // ""' /tmp/identity.json)
+          fi
+
+          # Extract maintainer verification status
+          MAINTAINER_VERIFIED="${{ steps.verify.outputs.verified }}"
+          if [ "$MAINTAINER_VERIFIED" = "true" ]; then
+            MV_JSON="true"
+          else
+            MV_JSON="false"
+          fi
+          VERIFY_REASON="${{ steps.verify.outputs.reason }}"
+
           cat > /tmp/scan-summary.json <<EOF
           {
             "server_name": "${{ steps.parse.outputs.server_name }}",
+            "canonical_name": "$CANONICAL_NAME",
             "server_path": "${{ steps.parse.outputs.server_path }}",
+            "maintainer_verified": $MV_JSON,
+            "verify_reason": "$VERIFY_REASON",
             "repo_url": "${{ steps.parse.outputs.repo_url }}",
             "commit_sha": "${{ env.TARGET_COMMIT }}",
             "source_hash": "${{ env.SOURCE_HASH }}",
