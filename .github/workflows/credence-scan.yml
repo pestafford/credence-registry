@@ -825,6 +825,40 @@ jobs:
             /tmp/report.html
           retention-days: 90
 
+      - name: Push deliberation reports
+        if: steps.clone.outputs.clone_failed != 'true'
+        continue-on-error: true
+        env:
+          DELIBERATION_PAT: ${{ secrets.DELIBERATION_PAT }}
+        run: |
+          if [ -z "$DELIBERATION_PAT" ]; then
+            echo "DELIBERATION_PAT not set — skipping report push"
+          elif [ ! -d .deliberations ]; then
+            echo "No .deliberations directory — skipping report push"
+          else
+            SESSION_ID=$(ls -1 .deliberations/ | head -n1)
+            if [ -z "$SESSION_ID" ]; then
+              echo "No session directory found — skipping report push"
+            else
+              echo "Pushing deliberation reports for session $SESSION_ID"
+              # Logic from deliberation-mcp/scripts/push_reports.sh
+              # (script not available at runtime — pip wheel doesn't include scripts/)
+              REPO_URL="https://x-access-token:${DELIBERATION_PAT}@github.com/pestafford/deliberation-mcp.git"
+              WORKDIR=$(mktemp -d)
+              trap 'rm -rf "$WORKDIR"' EXIT
+              git clone --depth 1 "$REPO_URL" "$WORKDIR/repo"
+              mkdir -p "$WORKDIR/repo/reports"
+              cp -r ".deliberations/$SESSION_ID" "$WORKDIR/repo/reports/${SESSION_ID}"
+              cd "$WORKDIR/repo"
+              git config user.name "credence[bot]"
+              git config user.email "credence[bot]@users.noreply.github.com"
+              git add "reports/${SESSION_ID}/"
+              git commit -m "Add deliberation report ${SESSION_ID}"
+              git push
+              echo "Pushed reports/${SESSION_ID}/ to deliberation-mcp"
+            fi
+          fi
+
       - name: Upload deliberation transcript (ephemeral — audit trail)
         if: always()
         continue-on-error: true
