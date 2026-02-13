@@ -378,36 +378,11 @@ def process_response(response: dict, scan_summary: dict) -> dict:
     if not isinstance(trust_score, (int, float)) or not (0 <= trust_score <= 100):
         raise ValueError(f"Invalid trust_score: {trust_score}. Must be 0-100.")
 
-    # ── Update scan-summary ──
+    # ── Update scan-summary (verdict + score only) ──
+    # Deliberation detail (debate, score_adjustment, flags) stays in the
+    # deliberation-mcp repo via .deliberations/ push — never in scan-summary.
     scan_summary["thinktank_verdict"] = verdict
     scan_summary["trust_score"] = int(trust_score)
-
-    # ── Write debate data ──
-    debate = response.get("debate", {})
-    score_adj = response.get("score_adjustment", {})
-    flags = response.get("flags", {})
-
-    scan_summary["thinktank_debate"] = {
-        "confidence": int(confidence),
-        "risk_summary": response.get("risk_summary", ""),
-        "agent_count": debate.get("agent_count", 0),
-        "rounds": debate.get("rounds", 0),
-        "highlights": debate.get("highlights", []),
-        "dissenting_opinions": debate.get("dissenting_opinions", []),
-        "completed_at": response.get("completed_at", datetime.now(timezone.utc).isoformat()),
-    }
-
-    scan_summary["thinktank_score_adjustment"] = {
-        "original_score": score_adj.get("original_score", scan_summary.get("trust_score")),
-        "adjusted_score": score_adj.get("adjusted_score", int(trust_score)),
-        "adjustment_reason": score_adj.get("adjustment_reason", "No adjustment"),
-    }
-
-    scan_summary["thinktank_flags"] = {
-        "needs_human_review": flags.get("needs_human_review", False),
-        "novel_attack_pattern": flags.get("novel_attack_pattern", False),
-        "recommended_actions": flags.get("recommended_actions", []),
-    }
 
     return scan_summary
 
@@ -625,9 +600,9 @@ def _cli_run():
     print(f"Updated {summary_path}")
     print(f"  Verdict: {updated['thinktank_verdict']}")
     print(f"  Score: {updated['trust_score']}")
-    print(f"  Confidence: {updated['thinktank_debate']['confidence']}")
+    print(f"  Confidence: {response.get('confidence', '?')}")
 
-    flags = updated.get("thinktank_flags", {})
+    flags = response.get("flags", {})
     if flags.get("needs_human_review"):
         print("  NEEDS HUMAN REVIEW")
     if flags.get("novel_attack_pattern"):
@@ -651,9 +626,9 @@ def _cli_process():
     print(f"Updated {summary_path}")
     print(f"  Verdict: {updated['thinktank_verdict']}")
     print(f"  Score: {updated['trust_score']}")
-    print(f"  Confidence: {updated['thinktank_debate']['confidence']}")
+    print(f"  Confidence: {response.get('confidence', '?')}")
 
-    flags = updated.get("thinktank_flags", {})
+    flags = response.get("flags", {})
     if flags.get("needs_human_review"):
         print("  NEEDS HUMAN REVIEW")
     if flags.get("novel_attack_pattern"):
