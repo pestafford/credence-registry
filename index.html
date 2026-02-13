@@ -660,10 +660,104 @@
             display: none;
         }
 
+        /* HERO CTAs */
+        .hero-ctas {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            margin-top: 24px;
+        }
+
+        /* PERSONA CARDS */
+        .persona-cards {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+        }
+        .persona-card {
+            padding: 24px;
+            border-left: 2px solid var(--border-color);
+            background: transparent;
+            transition: border-color 0.2s, background 0.2s;
+        }
+        .persona-card:hover {
+            border-left-color: var(--orange);
+            background: var(--bg-card);
+        }
+        .persona-icon {
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--orange);
+            margin-bottom: 10px;
+        }
+        .persona-card h3 {
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        .persona-card p {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 12px;
+            line-height: 1.5;
+        }
+        .persona-cta {
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 0.8rem;
+            color: var(--orange);
+            text-decoration: none;
+        }
+        .persona-cta:hover {
+            text-decoration: underline;
+        }
+
+        /* EXPERIENCE PANELS */
+        .experience-panels {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-top: 24px;
+        }
+        .experience-panel {
+            background: var(--code-bg);
+            border-left: 2px solid var(--border-color);
+            padding: 24px;
+            overflow-x: auto;
+        }
+        .experience-panel .panel-label {
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--text-muted);
+            margin-bottom: 16px;
+        }
+        .experience-panel pre {
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 0.78rem;
+            line-height: 1.7;
+            color: var(--text-secondary);
+            white-space: pre-wrap;
+        }
+        .experience-panel .speaker {
+            font-weight: 600;
+            color: var(--text-muted);
+            display: block;
+            margin-top: 12px;
+        }
+        .experience-panel .speaker:first-child {
+            margin-top: 0;
+        }
+
         /* RESPONSIVE */
         @media (max-width: 640px) {
             .hero h1 { font-size: 1.8rem; }
             .hero .subtitle { font-size: 1rem; }
+            .hero-ctas { flex-direction: column; align-items: center; }
+            .persona-cards { grid-template-columns: 1fr; }
+            .experience-panels { grid-template-columns: 1fr; }
             .threat-grid { grid-template-columns: 1fr; }
             .cta-links { flex-direction: column; align-items: center; }
             .nav-right { gap: 8px; }
@@ -702,11 +796,82 @@
         <img src="credencelogo.png" alt="Credence Registry" class="hero-logo">
         <h1>The trust layer for <span>MCP servers</span></h1>
         <p class="subtitle">Submit your server. We scan the code, verify your identity, and give you a signed trust score that developers can check before they install.</p>
+        <div class="hero-ctas">
+            <a href="registry.html" class="btn btn-primary">Check a server</a>
+            <a href="#submit" class="btn btn-secondary">Submit yours</a>
+        </div>
         <div class="status-badge">
             <span class="status-dot"></span>
             In active development
         </div>
         <p id="progress-line" class="progress-line" style="display:none;"></p>
+    </div>
+</section>
+
+<section class="section" style="padding: 40px 0 20px; border-top: none;">
+    <div class="container">
+        <div class="persona-cards">
+            <div class="persona-card">
+                <div class="persona-icon">&gt;_</div>
+                <h3>Check before you install</h3>
+                <p>Look up any MCP server's trust score before you install it. Works from your AI agent or the terminal.</p>
+                <a href="registry.html" class="persona-cta">Browse the registry &rarr;</a>
+            </div>
+            <div class="persona-card">
+                <div class="persona-icon">&#x2B21;</div>
+                <h3>Prove your server is safe</h3>
+                <p>Submit your server for independent analysis. Get a signed attestation that developers can verify.</p>
+                <a href="#submit" class="persona-cta">Submit for analysis &rarr;</a>
+            </div>
+            <div class="persona-card">
+                <div class="persona-icon">&#x2696;</div>
+                <h3>Audit the methodology</h3>
+                <p>Five AI agents debate every scan. Review the pipeline, read the research, verify the signatures.</p>
+                <a href="research.html" class="persona-cta">Read the research &rarr;</a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="section" style="padding: 20px 0 40px; border-top: none;">
+    <div class="container">
+        <div class="section-label">What it looks like</div>
+        <h2>Install Credence. Ask before you install anything else.</h2>
+        <p>Once Credence is installed, your AI agent can check any MCP server's trust score before connecting to it. Or use the CLI from the terminal. Either way, one step between you and a bad install.</p>
+
+        <div class="experience-panels">
+            <div class="experience-panel">
+                <div class="panel-label">In your AI agent</div>
+<pre><span class="speaker">You</span>
+Is the filesystem MCP server safe to install?
+
+<span class="speaker" style="color: var(--orange);">Agent</span>
+Let me check Credence.
+
+<span class="val">Filesystem MCP Server</span>
+<span class="key">88</span>/100 &middot; <span style="color:#6B9E4F">VERIFIED</span>
+Signed attestation at commit <span class="val">a1b2c3d4</span>
+
+Trust score is 88. This server has been
+independently scanned and verified.
+<span style="color:#6B9E4F">&check; Safe to install.</span></pre>
+            </div>
+            <div class="experience-panel">
+                <div class="panel-label">From the terminal</div>
+<pre><span class="comment">$ credence check modelcontextprotocol/servers/filesystem</span>
+
+  <span class="val">Filesystem MCP Server</span>
+  modelcontextprotocol/servers/filesystem
+
+  Score     <span class="key">88</span> / 100
+  Verdict   <span style="color:#6B9E4F">VERIFIED</span>
+  Commit    <span class="val">a1b2c3d4e5f6</span>
+  Signed    <span style="color:#6B9E4F">ed25519 &check;</span>
+
+  <span style="color:#6B9E4F">&check; VERIFIED &mdash; safe to install</span></pre>
+            </div>
+        </div>
+        <p style="margin-top: 20px; font-size: 0.85rem; color: var(--text-muted);">Both interfaces hit the same signed registry data. The AI agent calls <code style="color: var(--orange); background: var(--code-bg); padding: 2px 6px; border-radius: 3px; font-size: 0.8rem;">credence_check_server</code> over MCP. The CLI verifies the signature locally. <a href="install.html" style="color: var(--orange); text-decoration: none;">Install guide &rarr;</a></p>
     </div>
 </section>
 
