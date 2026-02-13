@@ -387,6 +387,11 @@ def process_response(response: dict, scan_summary: dict) -> dict:
     if session_id:
         scan_summary["deliberation_session"] = session_id
 
+    # ── threat_type: adversarial vs vulnerability classification ──
+    threat_type = response.get("threat_type")
+    if threat_type in ("adversarial", "vulnerability"):
+        scan_summary["threat_type"] = threat_type
+
     return scan_summary
 
 
@@ -405,6 +410,7 @@ RESPONSE_SCHEMA_OPTIONAL = {
     "debate": dict,
     "score_adjustment": dict,
     "flags": dict,
+    "threat_type": str,
 }
 
 
@@ -431,6 +437,11 @@ def validate_response(response: dict) -> list[str]:
         if field in response and isinstance(response[field], (int, float)):
             if not (0 <= response[field] <= 100):
                 errors.append(f"{field} must be 0-100, got {response[field]}")
+
+    # threat_type values
+    threat_type = response.get("threat_type")
+    if threat_type is not None and threat_type not in ("adversarial", "vulnerability"):
+        errors.append(f"threat_type must be 'adversarial' or 'vulnerability', got '{threat_type}'")
 
     # Debate structure
     debate = response.get("debate", {})
@@ -605,6 +616,10 @@ def _cli_run():
     print(f"  Score: {updated['trust_score']}")
     print(f"  Confidence: {response.get('confidence', '?')}")
 
+    threat_type = response.get("threat_type")
+    if threat_type:
+        print(f"  Threat type: {threat_type}")
+
     flags = response.get("flags", {})
     if flags.get("needs_human_review"):
         print("  NEEDS HUMAN REVIEW")
@@ -630,6 +645,10 @@ def _cli_process():
     print(f"  Verdict: {updated['thinktank_verdict']}")
     print(f"  Score: {updated['trust_score']}")
     print(f"  Confidence: {response.get('confidence', '?')}")
+
+    threat_type = response.get("threat_type")
+    if threat_type:
+        print(f"  Threat type: {threat_type}")
 
     flags = response.get("flags", {})
     if flags.get("needs_human_review"):

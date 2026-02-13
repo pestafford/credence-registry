@@ -294,7 +294,9 @@ async def credence_check_server(params: CheckServerInput) -> str:
     # Verify signature
     sig_result = await _verify_server_signature(attestation)
 
-    return json.dumps({
+    threat_type = attestation.get("threat_type") or match.get("threat_type")
+
+    result = {
         "status": "attested",
         "server_id": detail.get("server_id"),
         "server_name": detail.get("server_name"),
@@ -314,16 +316,28 @@ async def credence_check_server(params: CheckServerInput) -> str:
         },
         "scan_summary": scan,
         "attestation_url": detail.get("attestation_url"),
-        "message": _build_human_message(risk, recommendation, verdict, flags, trust_score)
-    })
+        "message": _build_human_message(risk, recommendation, verdict, flags, trust_score, threat_type)
+    }
+
+    if threat_type:
+        result["threat_type"] = threat_type
+
+    return json.dumps(result)
 
 
-def _build_human_message(risk, recommendation, verdict, flags, trust_score):
+def _build_human_message(risk, recommendation, verdict, flags, trust_score, threat_type=None):
     """Build a natural-language summary for the agent."""
     if recommendation == "DO_NOT_INSTALL":
-        msg = "This server has been analyzed by Credence and is NOT recommended for installation. "
-        if verdict == "REJECTED":
-            msg += "Adversarial analysis rejected it. "
+        if threat_type == "adversarial":
+            msg = "Adversarial patterns detected — do not install. "
+            msg += "This server exhibits intentionally malicious behavior. "
+        elif threat_type == "vulnerability":
+            msg = "Critical vulnerabilities detected. "
+            msg += "This server has serious security issues that need remediation. "
+        else:
+            msg = "This server has been analyzed by Credence and is NOT recommended for installation. "
+            if verdict == "REJECTED":
+                msg += "Adversarial analysis rejected it. "
         if flags:
             msg += f"Provenance flags: {', '.join(flags)}. "
         return msg + "Do not connect to this server."

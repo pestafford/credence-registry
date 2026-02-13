@@ -3,6 +3,8 @@ name: Credence Pipeline — Scan MCP Server
 on:
   issues:
     types: [opened, labeled]
+  schedule:
+    - cron: '0 6 * * *'  # Daily at 06:00 UTC — auto-publish adversarial holds >24h
   workflow_dispatch:
     inputs:
       scan_id:
@@ -724,7 +726,9 @@ jobs:
             # Re-extract verdict after deliberation may have updated it
             VERDICT=$(jq -r '.thinktank_verdict' /tmp/scan-summary.json)
             TRUST_SCORE=$(jq -r '.trust_score' /tmp/scan-summary.json)
-            echo "Post-deliberation: $VERDICT ($TRUST_SCORE/100)"
+            THREAT_TYPE=$(jq -r '.threat_type // ""' /tmp/scan-summary.json)
+            echo "Post-deliberation: $VERDICT ($TRUST_SCORE/100), threat_type=$THREAT_TYPE"
+            echo "threat_type=$THREAT_TYPE" >> $GITHUB_OUTPUT
 
             # Re-check disclosure gating with final verdict
             if echo "$VERDICT" | grep -qE "FLAGGED|REJECTED"; then
@@ -739,6 +743,7 @@ jobs:
           SUMMARY=$(cat /tmp/scan-summary.json)
           SCORE=$(echo "$SUMMARY" | jq -r '.trust_score')
           VERDICT=$(echo "$SUMMARY" | jq -r '.thinktank_verdict')
+          THREAT_TYPE=$(echo "$SUMMARY" | jq -r '.threat_type // ""')
           SERVER="${{ steps.parse.outputs.server_name }}"
           REPO="${{ steps.parse.outputs.repo_url }}"
           DIMS=$(echo "$SUMMARY" | jq -r '.trust_dimensions | "Security: \(.security), Provenance: \(.provenance), Behavioral: \(.behavioral)"')
@@ -749,8 +754,16 @@ jobs:
           MCP_WARN=$(echo "$SUMMARY" | jq -r '.scan_results.mcp_tool_warnings')
           FLAGS=$(echo "$SUMMARY" | jq -r '.provenance_flags | join(", ")')
 
+          if [ "$THREAT_TYPE" = "adversarial" ]; then
+            HOLD_TITLE="## Disclosure Hold — Adversarial (24h auto-publish)"
+            HOLD_NOTE="This server was classified as **adversarial** — the code is working as the author intended. It will be auto-published after a 24-hour sanity-check window."
+          else
+            HOLD_TITLE="## Disclosure Hold — Manual Review Required"
+            HOLD_NOTE="To publish after disclosure: use the **Publish held scan** workflow dispatch with scan ID \`$(echo "${{ env.TARGET_COMMIT }}" | cut -c1-8)\`."
+          fi
+
           cat >> $GITHUB_STEP_SUMMARY <<MDEOF
-          ## Disclosure Hold — Manual Review Required
+          ${HOLD_TITLE}
 
           | Field | Value |
           |-------|-------|
@@ -759,6 +772,7 @@ jobs:
           | Commit | \`${{ env.TARGET_COMMIT }}\` |
           | Score | **${SCORE}/100** |
           | Verdict | **${VERDICT}** |
+          | Threat type | ${THREAT_TYPE:-—} |
           | Dimensions | ${DIMS} |
           | Semgrep | ${SEMGREP} |
           | Bandit | ${BANDIT} |
@@ -769,7 +783,7 @@ jobs:
 
           Detailed findings available in the workflow artifacts (90-day retention).
 
-          To publish after disclosure: use the **Publish held scan** workflow dispatch with scan ID \`$(echo "${{ env.TARGET_COMMIT }}" | cut -c1-8)\`.
+          ${HOLD_NOTE}
           MDEOF
 
       # ── STAGE 4d: SIGN + REPORTS + REGISTRY ──────────
@@ -894,6 +908,7 @@ jobs:
             const flags = summary.provenance_flags || [];
             const verified = '${{ steps.verify.outputs.verified }}' === 'true';
             const publish = '${{ steps.deliberation.outputs.publish }}' === 'true';
+            const threatType = summary.threat_type || '';
 
             const trustScore = summary.trust_score;
             const verdict = summary.thinktank_verdict || 'PENDING';
@@ -905,16 +920,23 @@ jobs:
 
             if (!publish) {
               // ── DISCLOSURE HOLD ──
-              // Score is FLAGGED or REJECTED. Do not publish any results.
-              // The maintainer will be contacted privately.
+              let holdMessage;
+              if (threatType === 'adversarial') {
+                holdMessage = `Scan complete. This server has been classified as **adversarial** — the patterns detected indicate intentional malicious behavior.
+
+            Results will be auto-published after a 24-hour sanity-check window. If you believe this classification is incorrect, open a dispute issue referencing this scan.`;
+              } else {
+                holdMessage = `Scan complete. Results are under responsible disclosure review and will not be published at this time.
+
+            The repository maintainer will be contacted directly.`;
+              }
+
               body = `## Credence Scan Complete
 
             **Server:** ${summary.server_name}${pathLine}
             **Commit:** \`${summary.commit_sha}\`
 
-            Scan complete. Results are under responsible disclosure review and will not be published at this time.
-
-            The repository maintainer will be contacted directly.
+            ${holdMessage}
 
             ---
             _Credence Pipeline v${summary.pipeline_version} · ${summary.scan_timestamp}_`;
@@ -1048,3 +1070,92 @@ jobs:
           echo "- Score: ${SCORE}/100" >> $GITHUB_STEP_SUMMARY
           echo "- Verdict: ${VERDICT}" >> $GITHUB_STEP_SUMMARY
           echo "- Scan ID: ${{ github.event.inputs.scan_id }}" >> $GITHUB_STEP_SUMMARY
+
+  # ── JOB 4: AUTO-PUBLISH ADVERSARIAL HOLDS ────────
+  # Runs daily. Finds adversarial-classified scan results older than 24h
+  # that are not yet in the registry, and publishes them.
+  auto_publish_adversarial:
+    if: github.event_name == 'schedule'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install credence
+        run: |
+          pip install cryptography --break-system-packages -q
+          pip install ./mcp-server --break-system-packages -q
+
+      - name: Find and publish eligible adversarial holds
+        id: auto_publish
+        env:
+          CREDENCE_SIGNING_KEY: ${{ secrets.CREDENCE_SIGNING_KEY }}
+        run: |
+          PUBLISHED=0
+          NOW=$(date +%s)
+          HOLD_SECONDS=86400  # 24 hours
+
+          for SUMMARY_PATH in scan-results/*/summary.json; do
+            [ -f "$SUMMARY_PATH" ] || continue
+
+            THREAT_TYPE=$(jq -r '.threat_type // ""' "$SUMMARY_PATH")
+            [ "$THREAT_TYPE" = "adversarial" ] || continue
+
+            # Check age
+            SCAN_TS=$(jq -r '.scan_timestamp // ""' "$SUMMARY_PATH")
+            [ -n "$SCAN_TS" ] || continue
+            SCAN_EPOCH=$(date -d "$SCAN_TS" +%s 2>/dev/null || echo 0)
+            AGE=$((NOW - SCAN_EPOCH))
+            [ "$AGE" -ge "$HOLD_SECONDS" ] || continue
+
+            # Check if already in registry
+            SCAN_ID=$(basename "$(dirname "$SUMMARY_PATH")")
+            REPO_URL=$(jq -r '.repo_url // ""' "$SUMMARY_PATH")
+            SERVER_PATH=$(jq -r '.server_path // ""' "$SUMMARY_PATH")
+
+            # Derive server_id the same way registry_update.py does
+            PARTS=$(echo "$REPO_URL" | sed 's|/$||' | awk -F/ '{print $(NF-1)"/"$NF}')
+            if [ -n "$SERVER_PATH" ]; then
+              SUFFIX=$(echo "$SERVER_PATH" | sed 's|/$||' | awk -F/ '{print $NF}')
+              SERVER_ID="${PARTS}/${SUFFIX}"
+            else
+              SERVER_ID="$PARTS"
+            fi
+
+            # Skip if already in index
+            if [ -f "registry/index.json" ]; then
+              EXISTING=$(jq --arg sid "$SERVER_ID" '.servers[] | select(.server_id == $sid)' registry/index.json 2>/dev/null)
+              if [ -n "$EXISTING" ]; then
+                echo "Already published: $SERVER_ID — skipping"
+                continue
+              fi
+            fi
+
+            echo "Auto-publishing adversarial hold: $SERVER_ID (age: ${AGE}s)"
+            if [ -n "$CREDENCE_SIGNING_KEY" ]; then
+              python3 -m credence_mcp.registry_update "$SUMMARY_PATH" registry/ --key-env CREDENCE_SIGNING_KEY
+            else
+              python3 -m credence_mcp.registry_update "$SUMMARY_PATH" registry/
+            fi
+            PUBLISHED=$((PUBLISHED + 1))
+          done
+
+          echo "published=$PUBLISHED" >> $GITHUB_OUTPUT
+
+          if [ "$PUBLISHED" -gt 0 ]; then
+            git config user.name "credence-bot"
+            git config user.email "credence-bot@users.noreply.github.com"
+            git add registry/ registry.json
+            git commit -m "auto-publish: ${PUBLISHED} adversarial hold(s) past 24h window"
+            git push
+          else
+            echo "No adversarial holds eligible for auto-publish"
+          fi
+
+      - name: Summary
+        run: |
+          echo "## Auto-Publish Adversarial Holds" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "Published: ${{ steps.auto_publish.outputs.published || '0' }} server(s)" >> $GITHUB_STEP_SUMMARY

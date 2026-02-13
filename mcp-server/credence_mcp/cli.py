@@ -252,9 +252,20 @@ def cmd_check(args) -> int:
                 if isinstance(v, int) and v > 0:
                     print(f"     {k}: {v}")
 
+    # Threat type (from index entry, available without detail fetch)
+    threat_type = match.get("threat_type") or att.get("threat_type")
+    if threat_type:
+        threat_color = C.RED if threat_type == "adversarial" else C.YELLOW
+        print(f"   Threat type:  {threat_color}{threat_type}{C.RESET}")
+
     # Recommendation
     if verdict == "REJECTED" or (trust_score is not None and trust_score < 30):
-        print(f"\n   {C.RED}{C.BOLD}✘ DO NOT INSTALL{C.RESET}")
+        if threat_type == "adversarial":
+            print(f"\n   {C.RED}{C.BOLD}✘ DO NOT INSTALL — ADVERSARIAL{C.RESET}")
+        elif threat_type == "vulnerability":
+            print(f"\n   {C.RED}{C.BOLD}✘ DO NOT INSTALL — VULNERABLE{C.RESET}")
+        else:
+            print(f"\n   {C.RED}{C.BOLD}✘ DO NOT INSTALL{C.RESET}")
         return 3
     elif verdict == "CONDITIONAL" or flags or (trust_score is not None and trust_score < 70):
         print(f"\n   {C.YELLOW}{C.BOLD}⚠ REVIEW BEFORE INSTALLING{C.RESET}")

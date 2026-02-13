@@ -391,6 +391,26 @@
             border-radius: 3px;
         }
 
+        .threat-tag {
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 0.65rem;
+            font-weight: 600;
+            padding: 2px 8px;
+            border-radius: 3px;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+        .threat-tag.adversarial {
+            background: rgba(192, 57, 43, 0.15);
+            color: #C0392B;
+            border: 1px solid rgba(192, 57, 43, 0.3);
+        }
+        .threat-tag.vulnerability {
+            background: rgba(208, 96, 48, 0.15);
+            color: var(--orange);
+            border: 1px solid rgba(208, 96, 48, 0.3);
+        }
+
         /* Owner scope + verified badge */
         .server-owner {
             font-family: 'IBM Plex Mono', monospace;
@@ -629,6 +649,9 @@
         html += '<div class="detail-row"><span class="detail-key">Pipeline</span><span class="detail-val">v' + escapeHtml(a.pipeline_version || '?') + '</span></div>';
         html += '<div class="detail-row"><span class="detail-key">Scoring</span><span class="detail-val">v' + escapeHtml(a.scoring_version || '?') + '</span></div>';
         html += '<div class="detail-row"><span class="detail-key">Signed</span><span class="detail-val ' + (isSigned ? 'zero' : 'nonzero') + '">' + (isSigned ? 'yes' : 'no') + '</span></div>';
+        if (a.threat_type) {
+            html += '<div class="detail-row"><span class="detail-key">Threat type</span><span class="detail-val nonzero">' + escapeHtml(a.threat_type) + '</span></div>';
+        }
         html += '</div>';
 
         html += '<div class="detail-section">';
@@ -720,6 +743,9 @@
             html += '</div>';
             html += '</div>';
             html += '<div class="card-header-right">';
+            if (entry.threat_type) {
+                html += '<span class="threat-tag ' + escapeHtml(entry.threat_type) + '">' + escapeHtml(entry.threat_type) + '</span>';
+            }
             html += '<span class="verdict-label" style="color:' + vColor + '">' + vLabel + '</span>';
             html += '<span class="score-badge ' + badgeClass + '">' + score + '</span>';
             html += '<span class="expand-icon">&#9660;</span>';

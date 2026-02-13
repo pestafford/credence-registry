@@ -634,6 +634,28 @@
         }
 
         /* Mobile: card layout for table */
+        .threat-tag-sm {
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 0.55rem;
+            font-weight: 600;
+            padding: 1px 5px;
+            border-radius: 3px;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            margin-left: 6px;
+            vertical-align: middle;
+        }
+        .threat-tag-sm.adversarial {
+            background: rgba(192, 57, 43, 0.15);
+            color: #C0392B;
+            border: 1px solid rgba(192, 57, 43, 0.3);
+        }
+        .threat-tag-sm.vulnerability {
+            background: rgba(208, 96, 48, 0.15);
+            color: var(--orange);
+            border: 1px solid rgba(208, 96, 48, 0.3);
+        }
+
         .server-card-mobile {
             display: none;
         }
@@ -1309,8 +1331,13 @@ $ credence check modelcontextprotocol/server-github
                     var vLabel = verdictLabel(entry.thinktank_verdict);
                     var vColor = verdictColor(entry.thinktank_verdict);
 
+                    var threatTag = '';
+                    if (entry.threat_type) {
+                        threatTag = '<span class="threat-tag-sm ' + entry.threat_type + '">' + entry.threat_type + '</span>';
+                    }
+
                     rowsHtml += '<tr onclick="window.location=\'registry.html\'" style="cursor:pointer;">' +
-                        '<td><span class="server-name-link">' + name + '</span></td>' +
+                        '<td><span class="server-name-link">' + name + '</span>' + threatTag + '</td>' +
                         '<td><span class="score-badge ' + badgeClass + '">' + score + '</span></td>' +
                         '<td><span class="verdict-cell" style="color:' + vColor + '">' + vLabel + '</span></td>' +
                         '<td class="scan-date">' + date + '</td>' +

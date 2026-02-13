@@ -25,7 +25,7 @@ from credence_mcp.signing import sign_attestation_from_pem
 
 def build_attestation(summary: dict) -> dict:
     """Build a registry attestation object from a scored scan-summary."""
-    return {
+    att = {
         "commit_sha": summary.get("commit_sha", ""),
         "source_hash": summary.get("source_hash", ""),
         "source_hash_method": summary.get("source_hash_method", "merkle-tree-sha256"),
@@ -46,6 +46,12 @@ def build_attestation(summary: dict) -> dict:
         "lockfile_name": summary.get("lockfile_name", "none"),
         "lockfile_hash": summary.get("lockfile_hash", "none"),
     }
+
+    threat_type = summary.get("threat_type")
+    if threat_type:
+        att["threat_type"] = threat_type
+
+    return att
 
 
 def derive_server_id(summary: dict) -> str:
@@ -121,7 +127,7 @@ def _build_index_entry(server_id: str, server_name: str, canonical_name: str,
                        repo_url: str, attestation: dict) -> dict:
     """Build a lightweight index entry from a full server entry."""
     author = attestation.get("author_identity", {})
-    return {
+    entry = {
         "server_id": server_id,
         "server_name": server_name,
         "canonical_name": canonical_name,
@@ -133,6 +139,12 @@ def _build_index_entry(server_id: str, server_name: str, canonical_name: str,
         "attested_at": attestation.get("attested_at", ""),
         "attestation_file": f"servers/{server_id}.json",
     }
+
+    threat_type = attestation.get("threat_type")
+    if threat_type:
+        entry["threat_type"] = threat_type
+
+    return entry
 
 
 def upsert_registry(index: dict, server_id: str, server_name: str,
