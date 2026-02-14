@@ -795,7 +795,7 @@
     <div class="container">
         <img src="credencelogo.png" alt="Credence Registry" class="hero-logo">
         <h1>The trust layer for <span>MCP servers</span></h1>
-        <p style="font-size: 0.88rem; color: var(--text-muted); margin-bottom: 12px;">MCP (Model Context Protocol) lets AI agents connect to external tools and data. There are 17,000+ servers and growing. Most are unvetted.</p>
+        <p style="font-size: 0.88rem; color: var(--text-muted); margin-bottom: 12px;">MCP lets AI agents connect to external tools and data. Most servers are unvetted.</p>
         <p class="subtitle">Submit your server. We scan the code, verify your identity, and give you a signed trust score developers can check before they install.</p>
         <div class="hero-ctas">
             <a href="registry.html" class="btn btn-primary">Check a server</a>
@@ -827,7 +827,7 @@
             <div class="persona-card">
                 <div class="persona-icon">&#x2696;</div>
                 <h3>Audit the methodology</h3>
-                <p>Every scan is reviewed by AI agents with opposing security perspectives. Review the pipeline, read the research, verify the signatures.</p>
+                <p>Open pipeline, open methodology, signed results. Review the code, read the research, verify the signatures yourself.</p>
                 <a href="research.html" class="persona-cta">Read the research &rarr;</a>
             </div>
         </div>
@@ -965,8 +965,8 @@ independently scanned and verified.
             <div class="pipe-card">
                 <span class="pipe-num">03</span>
                 <div>
-                    <h3 style="color: var(--orange);">AI agents debate the findings</h3>
-                    <p>Five AI agents — skeptics, believers, and a neutral reviewer — argue about the scan results across multiple rounds. They're primed with real attack patterns from the wild. If a finding is ambiguous, the debate surfaces it instead of hiding it behind an arbitrary threshold.</p>
+                    <h3 style="color: var(--orange);">Adversarial verification</h3>
+                    <p>Findings are evaluated from multiple opposing perspectives — some looking for threats the scanners missed, others challenging false positives. The result is a confidence-scored verdict, not a binary pass/fail.</p>
                 </div>
             </div>
             <div class="pipe-card">
@@ -1070,88 +1070,36 @@ independently scanned and verified.
 
 <section class="section">
     <div class="container">
-        <div class="section-label">The Debate Layer</div>
-        <h2>A security team for every server</h2>
+        <div class="section-label">Adversarial Verification</div>
+        <h2>Why not just run a scanner?</h2>
         <p>Traditional scanners produce a list of findings and a pass/fail. But security findings are rarely binary — a hardcoded string might be a leaked credential or a test fixture. A fork might be a supply chain attack or a legitimate contribution. Context matters, and thresholds are guesses.</p>
-        <p>Credence replaces the threshold with a debate. Five AI agents — each with a different security perspective — review the scan results and argue about what they mean. Skeptics look for attack patterns. Believers challenge false positives. A neutral reviewer synthesizes the positions into a confidence-scored verdict.</p>
-
-        <svg class="diagram" viewBox="0 0 640 260" style="max-width: 580px;" aria-label="Debate architecture: skeptics and believers converge through neutral reviewer to produce verdict">
-            <defs>
-                <marker id="debate-arrow" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="5" markerHeight="5" orient="auto"><path d="M0,1 L7,4 L0,7" class="connector" fill="none" stroke-width="1.2"/></marker>
-                <marker id="debate-arrow-o" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="5" markerHeight="5" orient="auto"><path d="M0,1 L7,4 L0,7" fill="none" stroke-width="1.2" stroke="#8E3F1F"/></marker>
-            </defs>
-
-            <!-- SKEPTICS label -->
-            <text x="90" y="24" text-anchor="middle" font-family="'IBM Plex Mono', monospace" font-size="9" font-weight="500" letter-spacing="0.1em" class="text-red">SKEPTICS</text>
-
-            <!-- Adversarial Attacker -->
-            <circle cx="90" cy="72" r="30" class="accent-red node-fill" stroke-width="1.2"/>
-            <text x="90" y="68" text-anchor="middle" font-family="'IBM Plex Mono', monospace" font-size="8" class="text-red">Adversarial</text>
-            <text x="90" y="80" text-anchor="middle" font-family="'IBM Plex Mono', monospace" font-size="8" class="text-red">Attacker</text>
-
-            <!-- Supply Chain Analyst -->
-            <circle cx="90" cy="160" r="30" class="accent-red node-fill" stroke-width="1.2"/>
-            <text x="90" y="156" text-anchor="middle" font-family="'IBM Plex Mono', monospace" font-size="8" class="text-red">Supply Chain</text>
-            <text x="90" y="168" text-anchor="middle" font-family="'IBM Plex Mono', monospace" font-size="8" class="text-red">Analyst</text>
-
-            <!-- BELIEVERS label -->
-            <text x="550" y="24" text-anchor="middle" font-family="'IBM Plex Mono', monospace" font-size="9" font-weight="500" letter-spacing="0.1em" class="text-green">BELIEVERS</text>
-
-            <!-- Devil's Advocate -->
-            <circle cx="550" cy="72" r="30" class="accent-green node-fill" stroke-width="1.2"/>
-            <text x="550" y="68" text-anchor="middle" font-family="'IBM Plex Mono', monospace" font-size="8" class="text-green">Devil's</text>
-            <text x="550" y="80" text-anchor="middle" font-family="'IBM Plex Mono', monospace" font-size="8" class="text-green">Advocate</text>
-
-            <!-- Pattern Matcher -->
-            <circle cx="550" cy="160" r="30" class="accent-green node-fill" stroke-width="1.2"/>
-            <text x="550" y="156" text-anchor="middle" font-family="'IBM Plex Mono', monospace" font-size="8" class="text-green">Pattern</text>
-            <text x="550" y="168" text-anchor="middle" font-family="'IBM Plex Mono', monospace" font-size="8" class="text-green">Matcher</text>
-
-            <!-- Connecting lines to center -->
-            <line x1="120" y1="68" x2="278" y2="108" class="connector" stroke-width="1" marker-end="url(#debate-arrow)"/>
-            <line x1="120" y1="156" x2="278" y2="128" class="connector" stroke-width="1" marker-end="url(#debate-arrow)"/>
-            <line x1="520" y1="68" x2="362" y2="108" class="connector" stroke-width="1" marker-end="url(#debate-arrow)"/>
-            <line x1="520" y1="156" x2="362" y2="128" class="connector" stroke-width="1" marker-end="url(#debate-arrow)"/>
-
-            <!-- Center: Compliance Reviewer -->
-            <text x="320" y="76" text-anchor="middle" font-family="'IBM Plex Mono', monospace" font-size="9" font-weight="500" letter-spacing="0.05em" class="label">NEUTRAL</text>
-            <circle cx="320" cy="118" r="34" class="accent-orange node-fill" stroke-width="1.5"/>
-            <text x="320" y="114" text-anchor="middle" font-family="'IBM Plex Mono', monospace" font-size="8" class="text-orange">Compliance</text>
-            <text x="320" y="126" text-anchor="middle" font-family="'IBM Plex Mono', monospace" font-size="8" class="text-orange">Reviewer</text>
-
-            <!-- Arrow down to verdict -->
-            <line x1="320" y1="152" x2="320" y2="200" class="connector-orange" stroke-width="1.2" marker-end="url(#debate-arrow-o)"/>
-
-            <!-- Verdict box -->
-            <rect x="258" y="208" width="124" height="34" rx="4" class="accent-orange node-fill" stroke-width="1.5"/>
-            <text x="320" y="230" text-anchor="middle" font-family="'IBM Plex Mono', monospace" font-size="11" font-weight="600" class="text-orange">VERDICT</text>
-        </svg>
+        <p>Credence replaces the threshold with structured adversarial review. After scanning, findings are evaluated from multiple opposing perspectives — some primed with real attack patterns, others trained to challenge false positives. The positions are synthesized into a confidence-scored verdict that captures uncertainty instead of hiding it.</p>
 
         <div class="pipeline" style="margin-top: 24px;">
             <div class="pipe-card">
-                <span class="pipe-num" style="color: #C0392B;">⚔</span>
+                <span class="pipe-num" style="color: #C0392B;">01</span>
                 <div>
-                    <h3>Adversarial Attacker + Supply Chain Analyst</h3>
-                    <p>The skeptics. Trained on real MCP attack patterns — SmartLoader TTPs, tool poisoning, coordinated fork networks. Their job is to find what the scanners missed and challenge anything that looks suspicious.</p>
+                    <h3>Challenge</h3>
+                    <p>Adversarial reviewers look for what the scanners missed — suspicious patterns, supply chain indicators, MCP-specific attack vectors drawn from real incidents in the wild.</p>
                 </div>
             </div>
             <div class="pipe-card">
-                <span class="pipe-num" style="color: #6B9E4F;">◉</span>
+                <span class="pipe-num" style="color: #6B9E4F;">02</span>
                 <div>
-                    <h3>Devil's Advocate + Pattern Matcher</h3>
-                    <p>The believers. They push back on overreaction — flagging when a "vulnerability" is actually standard practice, when a fork has legitimate provenance, when a finding is noise. Without them, every server gets flagged.</p>
+                    <h3>Defend</h3>
+                    <p>Counter-reviewers push back on false positives — identifying when a flagged pattern is actually standard practice, when a fork has legitimate provenance, when a finding is noise.</p>
                 </div>
             </div>
             <div class="pipe-card">
-                <span class="pipe-num" style="color: var(--text-secondary);">⚖</span>
+                <span class="pipe-num" style="color: var(--orange);">03</span>
                 <div>
-                    <h3>Compliance Reviewer</h3>
-                    <p>The neutral. Weighs both sides, checks for logical consistency, and produces the final verdict. The debate runs up to five rounds, terminating early when further argument stops producing new evidence.</p>
+                    <h3>Synthesize</h3>
+                    <p>A neutral synthesis weighs both sides, checks for logical consistency, and produces a confidence-scored verdict. The process terminates when further review stops producing new evidence.</p>
                 </div>
             </div>
         </div>
 
-        <p style="margin-top: 28px; font-size: 0.85rem; color: var(--text-muted);"><a href="papers/adversarial-trust-layer.html" style="color: var(--orange); text-decoration: none;">Read the research →</a> The position paper covers the architecture, the threat model, and why multi-agent verification outperforms single-pass analysis.</p>
+        <p style="margin-top: 28px; font-size: 0.85rem; color: var(--text-muted);"><a href="papers/adversarial-trust-layer.html" style="color: var(--orange); text-decoration: none;">Read the research →</a> The position paper covers the full methodology, threat model, and why adversarial verification outperforms single-pass analysis.</p>
     </div>
 </section>
 
