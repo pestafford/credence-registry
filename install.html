@@ -510,7 +510,7 @@ $ credence guard owner/mcp-server -- claude mcp add my-server</pre>
         <p><code>credence guard</code> checks trust status first. If the server is attested and not rejected, it runs the command after <code>--</code>. Otherwise it exits without running anything.</p>
         <div class="code-block">
 <pre><span class="comment"># Only install if the server is attested</span>
-credence guard modelcontextprotocol/server-github -- claude mcp add github-server</pre>
+credence guard modelcontextprotocol/servers/filesystem -- claude mcp add filesystem-server</pre>
         </div>
 
         <h3 class="sub">Shell script with exit codes</h3>
@@ -589,7 +589,8 @@ fi</pre>
 
 <footer>
     <div class="container">
-        <p>&copy; 2026 Phil Stafford &middot; MIT License &middot; <a href="https://github.com/pestafford/credence-registry">GitHub</a></p>
+        <p>Built by <a href="https://github.com/pestafford">Phil Stafford</a> &middot; <a href="https://medium.com/@pe.stafford">Writing</a> &middot; <a href="mailto:phil@securingthesingularity.com">Contact</a></p>
+        <p style="margin-top: 4px;">&copy; 2026 &middot; MIT License &middot; <a href="https://github.com/pestafford/credence-registry">GitHub</a></p>
     </div>
 </footer>
 
