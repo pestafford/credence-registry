@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Credence — Prove Your MCP Server Is Trustworthy</title>
-    <meta name="description" content="Submit your MCP server for security analysis. Credence scans the code, verifies your identity, and gives you a signed trust score developers can check before they install.">
+    <title>Credence — Check MCP servers before you install</title>
+    <meta name="description" content="Check any MCP server before you install it. Credence scans the source, verifies the author, and publishes a signed trust score you can check from your AI agent, the CLI, or CI.">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
@@ -796,7 +796,7 @@
         <img src="credencelogo.png" alt="Credence Registry" class="hero-logo">
         <h1>The trust layer for <span>MCP servers</span></h1>
         <p style="font-size: 0.88rem; color: var(--text-muted); margin-bottom: 12px;">MCP lets AI agents connect to external tools and data. Most servers are unvetted.</p>
-        <p class="subtitle">Submit your server. We scan the code, verify your identity, and give you a signed trust score developers can check before they install.</p>
+        <p class="subtitle">Check any MCP server before you install it. Credence scans the source, verifies the author, and publishes a signed trust score you can query from your AI agent, the terminal, or CI.</p>
         <div class="hero-ctas">
             <a href="registry.html" class="btn btn-primary">Check a server</a>
             <a href="#submit" class="btn btn-secondary">Submit yours</a>
@@ -837,9 +837,9 @@
 <section class="section" style="padding: 20px 0 40px; border-top: none;">
     <div class="container">
         <div class="section-label">The Problem</div>
-        <h2>Developers have no way to verify your server is safe</h2>
-        <p>Right now, people decide whether to install an MCP server based on GitHub stars, README quality, and gut feel. There's no <code style="color: var(--orange); background: var(--code-bg); padding: 2px 6px; border-radius: 3px; font-size: 0.85rem;">npm audit</code> for MCP. No Sigstore. No Dependabot. If your server is legitimate, you have no way to prove it — and if someone clones your repo to distribute malware, you have no way to distinguish yourself from the clone.</p>
-        <p>This isn't hypothetical. Straiker's STAR Labs recently <a href="https://www.straiker.ai/blog/smartloader-clones-oura-ring-mcp-to-deploy-supply-chain-attack" style="color: var(--orange); text-decoration: none;">documented a supply chain attack</a> that cloned a real MCP server, created fake GitHub accounts, and published the poisoned version to MCP registries. The original author had no recourse. Credence fixes that.</p>
+        <h2>No way to know if an MCP server is safe before you install it</h2>
+        <p>Right now, people decide whether to install an MCP server based on GitHub stars, README quality, and gut feel. There's no <code style="color: var(--orange); background: var(--code-bg); padding: 2px 6px; border-radius: 3px; font-size: 0.85rem;">npm audit</code> for MCP. No Sigstore. No Dependabot. You have no way to verify that a server does what it claims — or that it hasn't been cloned and poisoned by someone else.</p>
+        <p>This isn't hypothetical. Straiker's STAR Labs recently <a href="https://www.straiker.ai/blog/smartloader-clones-oura-ring-mcp-to-deploy-supply-chain-attack" style="color: var(--orange); text-decoration: none;">documented a supply chain attack</a> that cloned a real MCP server, created fake GitHub accounts, and published the poisoned version to MCP registries. There was nothing to distinguish the real server from the fake one. Credence fixes that.</p>
     </div>
 </section>
 
@@ -915,7 +915,7 @@ independently scanned and verified.
     <div class="container">
         <div class="section-label">How It Works</div>
         <h2>Four stages. Fully automated. Cryptographically signed.</h2>
-        <p>Credence gives your server a signed trust score — not based on stars or vibes, but on what's actually in the code.</p>
+        <p>Every server in the registry has been through the same pipeline. Trust scores are based on what's actually in the code, not stars or vibes.</p>
 
         <svg class="diagram" viewBox="0 0 600 80" style="max-width: 600px;" aria-label="Pipeline flow: Verify, Scan, Debate, Attest">
             <defs>
@@ -951,15 +951,15 @@ independently scanned and verified.
             <div class="pipe-card">
                 <span class="pipe-num">01</span>
                 <div>
-                    <h3>We verify your identity</h3>
-                    <p>We confirm you're the repo owner, check account age and contributor history, detect forks, and flag provenance anomalies. If someone clones your server, the attestation points back to you — not them.</p>
+                    <h3>Author identity is verified</h3>
+                    <p>Credence confirms the submitter is the repo owner, checks account age and contributor history, detects forks, and flags provenance anomalies. If someone clones a legitimate server, the attestation points to the real author — not the clone.</p>
                 </div>
             </div>
             <div class="pipe-card">
                 <span class="pipe-num">02</span>
                 <div>
-                    <h3>We scan the code</h3>
-                    <p>Static analysis, dependency CVE scanning, secrets detection, and MCP-specific checks — suspicious tool definitions, dynamic description loading, prompt injection patterns. We look at what the server actually does, not what the README says it does.</p>
+                    <h3>The code is scanned</h3>
+                    <p>Static analysis, dependency CVE scanning, secrets detection, and MCP-specific checks — suspicious tool definitions, dynamic description loading, prompt injection patterns. Credence looks at what the server actually does, not what the README says it does.</p>
                 </div>
             </div>
             <div class="pipe-card">
@@ -972,8 +972,8 @@ independently scanned and verified.
             <div class="pipe-card">
                 <span class="pipe-num">04</span>
                 <div>
-                    <h3>You get a signed attestation</h3>
-                    <p>A cryptographically signed trust score pinned to your exact commit. Developers can verify it from the CLI, from their AI agent, or in CI — before they install. The attestation covers only the attested commit — new commits require a fresh scan.</p>
+                    <h3>The result is signed and published</h3>
+                    <p>A cryptographically signed trust score pinned to the exact commit that was scanned. You can verify it from the CLI, from your AI agent, or in CI — before you install. The attestation covers only the scanned commit — new commits require a fresh scan.</p>
                 </div>
             </div>
         </div>
