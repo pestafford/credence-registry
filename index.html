@@ -982,6 +982,41 @@ independently scanned and verified.
 
 <section class="section">
     <div class="container">
+        <div class="section-label">Adversarial Verification</div>
+        <h2>Why not just run a scanner?</h2>
+        <p>Traditional scanners produce a list of findings and a pass/fail. But security findings are rarely binary — a hardcoded string might be a leaked credential or a test fixture. A fork might be a supply chain attack or a legitimate contribution. Context matters, and thresholds are guesses.</p>
+        <p>Credence replaces the threshold with structured adversarial review. After scanning, findings are evaluated from multiple opposing perspectives — some primed with real attack patterns, others trained to challenge false positives. The positions are synthesized into a confidence-scored verdict that captures uncertainty instead of hiding it.</p>
+
+        <div class="pipeline" style="margin-top: 24px;">
+            <div class="pipe-card">
+                <span class="pipe-num" style="color: #C0392B;">01</span>
+                <div>
+                    <h3>Challenge</h3>
+                    <p>Adversarial reviewers look for what the scanners missed — suspicious patterns, supply chain indicators, MCP-specific attack vectors drawn from real incidents in the wild.</p>
+                </div>
+            </div>
+            <div class="pipe-card">
+                <span class="pipe-num" style="color: #6B9E4F;">02</span>
+                <div>
+                    <h3>Defend</h3>
+                    <p>Counter-reviewers push back on false positives — identifying when a flagged pattern is actually standard practice, when a fork has legitimate provenance, when a finding is noise.</p>
+                </div>
+            </div>
+            <div class="pipe-card">
+                <span class="pipe-num" style="color: var(--orange);">03</span>
+                <div>
+                    <h3>Synthesize</h3>
+                    <p>A neutral synthesis weighs both sides, checks for logical consistency, and produces a confidence-scored verdict. The process terminates when further review stops producing new evidence.</p>
+                </div>
+            </div>
+        </div>
+
+        <p style="margin-top: 28px; font-size: 0.85rem; color: var(--text-muted);"><a href="papers/adversarial-trust-layer.html" style="color: var(--orange); text-decoration: none;">Read the research →</a> The position paper covers the full methodology, threat model, and why adversarial verification outperforms single-pass analysis.</p>
+    </div>
+</section>
+
+<section class="section">
+    <div class="container">
         <div class="section-label">Coverage</div>
         <h2>What Credence catches</h2>
         <div class="threat-grid">
@@ -1017,89 +1052,6 @@ independently scanned and verified.
             </div>
         </div>
         <p style="margin-top: 24px; font-size: 0.85rem; color: var(--text-muted);">Credence provides install-time trust data. It's complementary to runtime tools — Docker MCP Catalog, ToolHive, Solo.io Agent Mesh — that handle enforcement after installation. Defense in depth.</p>
-    </div>
-</section>
-
-<section class="section" id="submit">
-    <div class="container">
-        <div class="section-label">Submit</div>
-        <h2>Request an attestation</h2>
-        <p>Submit an MCP server for Credence analysis. We'll clone the repo, run the pipeline, and publish the attestation. Submissions are tracked as GitHub Issues — you can follow progress there.</p>
-
-        <div class="submit-form">
-            <div class="form-group">
-                <label for="repo-url">Repository URL</label>
-                <input type="url" id="repo-url" placeholder="https://github.com/owner/mcp-server" />
-            </div>
-            <div class="form-row">
-                <div class="form-group">
-                    <label for="server-name">Server name</label>
-                    <input type="text" id="server-name" placeholder="e.g. My MCP Server" />
-                </div>
-                <div class="form-group">
-                    <label for="commit-sha">Commit SHA <span class="optional">(optional)</span></label>
-                    <input type="text" id="commit-sha" placeholder="Latest if blank" />
-                </div>
-            </div>
-            <div class="form-group">
-                <label for="server-path">Server path <span class="optional">(optional — for monorepos)</span></label>
-                <input type="text" id="server-path" placeholder="e.g. src/filesystem" />
-            </div>
-            <div class="form-group">
-                <label for="context">Additional context <span class="optional">(optional)</span></label>
-                <textarea id="context" rows="3" placeholder="Anything we should know — specific concerns, transport type, known issues..."></textarea>
-            </div>
-            <button class="btn btn-primary submit-btn" id="submit-btn" onclick="submitServer()">
-                Submit for analysis →
-            </button>
-            <p class="form-note">Opens a pre-filled GitHub Issue. You'll need a GitHub account.</p>
-            <div class="submit-confirmation" id="submit-confirmation">
-                <h4>Issue created — you're all set</h4>
-                <p>A maintainer will review your submission and start the scan. Results get posted directly to your GitHub issue — watch it for updates.</p>
-                <p style="margin-top: 8px;"><a href="https://github.com/pestafford/credence-registry/issues" target="_blank">View all submissions →</a></p>
-            </div>
-            <div class="process-steps">
-                <div class="process-step"><span class="step-num">1</span><span class="step-label">You submit</span></div>
-                <div class="process-step"><span class="step-num">2</span><span class="step-label">We review</span></div>
-                <div class="process-step"><span class="step-num">3</span><span class="step-label">Pipeline scans</span></div>
-                <div class="process-step"><span class="step-num">4</span><span class="step-label">Results posted</span></div>
-            </div>
-        </div>
-    </div>
-</section>
-
-<section class="section">
-    <div class="container">
-        <div class="section-label">Adversarial Verification</div>
-        <h2>Why not just run a scanner?</h2>
-        <p>Traditional scanners produce a list of findings and a pass/fail. But security findings are rarely binary — a hardcoded string might be a leaked credential or a test fixture. A fork might be a supply chain attack or a legitimate contribution. Context matters, and thresholds are guesses.</p>
-        <p>Credence replaces the threshold with structured adversarial review. After scanning, findings are evaluated from multiple opposing perspectives — some primed with real attack patterns, others trained to challenge false positives. The positions are synthesized into a confidence-scored verdict that captures uncertainty instead of hiding it.</p>
-
-        <div class="pipeline" style="margin-top: 24px;">
-            <div class="pipe-card">
-                <span class="pipe-num" style="color: #C0392B;">01</span>
-                <div>
-                    <h3>Challenge</h3>
-                    <p>Adversarial reviewers look for what the scanners missed — suspicious patterns, supply chain indicators, MCP-specific attack vectors drawn from real incidents in the wild.</p>
-                </div>
-            </div>
-            <div class="pipe-card">
-                <span class="pipe-num" style="color: #6B9E4F;">02</span>
-                <div>
-                    <h3>Defend</h3>
-                    <p>Counter-reviewers push back on false positives — identifying when a flagged pattern is actually standard practice, when a fork has legitimate provenance, when a finding is noise.</p>
-                </div>
-            </div>
-            <div class="pipe-card">
-                <span class="pipe-num" style="color: var(--orange);">03</span>
-                <div>
-                    <h3>Synthesize</h3>
-                    <p>A neutral synthesis weighs both sides, checks for logical consistency, and produces a confidence-scored verdict. The process terminates when further review stops producing new evidence.</p>
-                </div>
-            </div>
-        </div>
-
-        <p style="margin-top: 28px; font-size: 0.85rem; color: var(--text-muted);"><a href="papers/adversarial-trust-layer.html" style="color: var(--orange); text-decoration: none;">Read the research →</a> The position paper covers the full methodology, threat model, and why adversarial verification outperforms single-pass analysis.</p>
     </div>
 </section>
 
@@ -1180,6 +1132,54 @@ $ credence check modelcontextprotocol/servers/filesystem
 <span class="val">  Trust score:  88/100</span>
 <span class="val">  Verdict:      APPROVED</span>
 <span class="val">  ✔ VERIFIED — safe to install</span></pre>
+        </div>
+    </div>
+</section>
+
+<section class="section" id="submit">
+    <div class="container">
+        <div class="section-label">Submit</div>
+        <h2>Request an attestation</h2>
+        <p>Submit an MCP server for Credence analysis. We'll clone the repo, run the pipeline, and publish the attestation. Submissions are tracked as GitHub Issues — you can follow progress there.</p>
+
+        <div class="submit-form">
+            <div class="form-group">
+                <label for="repo-url">Repository URL</label>
+                <input type="url" id="repo-url" placeholder="https://github.com/owner/mcp-server" />
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="server-name">Server name</label>
+                    <input type="text" id="server-name" placeholder="e.g. My MCP Server" />
+                </div>
+                <div class="form-group">
+                    <label for="commit-sha">Commit SHA <span class="optional">(optional)</span></label>
+                    <input type="text" id="commit-sha" placeholder="Latest if blank" />
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="server-path">Server path <span class="optional">(optional — for monorepos)</span></label>
+                <input type="text" id="server-path" placeholder="e.g. src/filesystem" />
+            </div>
+            <div class="form-group">
+                <label for="context">Additional context <span class="optional">(optional)</span></label>
+                <textarea id="context" rows="3" placeholder="Anything we should know — specific concerns, transport type, known issues..."></textarea>
+            </div>
+            <button class="btn btn-primary submit-btn" id="submit-btn" onclick="submitServer()">
+                Submit for analysis →
+            </button>
+            <p class="form-note">Opens a pre-filled GitHub Issue. You'll need a GitHub account.</p>
+            <div class="submit-confirmation" id="submit-confirmation">
+                <h4>Issue created — you're all set</h4>
+                <p>A maintainer will review your submission and start the scan. Results get posted directly to your GitHub issue — watch it for updates.</p>
+                <p style="margin-top: 8px;"><a href="https://github.com/pestafford/credence-registry/issues" target="_blank">View all submissions →</a></p>
+            </div>
+            <div class="process-steps">
+                <div class="process-step"><span class="step-num">1</span><span class="step-label">You submit</span></div>
+                <div class="process-step"><span class="step-num">2</span><span class="step-label">We review</span></div>
+                <div class="process-step"><span class="step-num">3</span><span class="step-label">Pipeline scans</span></div>
+                <div class="process-step"><span class="step-num">4</span><span class="step-label">Results posted</span></div>
+            </div>
         </div>
     </div>
 </section>
