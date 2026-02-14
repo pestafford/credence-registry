@@ -827,7 +827,7 @@
             <div class="persona-card">
                 <div class="persona-icon">&#x2696;</div>
                 <h3>Audit the methodology</h3>
-                <p>Deterministic scanners plus adversarial AI review — open pipeline, open methodology. Review the code, read the research, verify the signatures.</p>
+                <p>Deterministic scanners plus five AI agents in structured adversarial debate. Open pipeline, open methodology. Review the code, read the research, verify the signatures.</p>
                 <a href="research.html" class="persona-cta">Read the research &rarr;</a>
             </div>
         </div>
@@ -881,7 +881,30 @@ independently scanned and verified.
   <span style="color:#6B9E4F">&check; VERIFIED &mdash; safe to install</span></pre>
             </div>
         </div>
-        <p style="margin-top: 20px; font-size: 0.85rem; color: var(--text-muted);">Both interfaces hit the same signed registry data. The AI agent calls <code style="color: var(--orange); background: var(--code-bg); padding: 2px 6px; border-radius: 3px; font-size: 0.8rem;">credence_check_server</code> over MCP. The CLI verifies the signature locally. <a href="install.html" style="color: var(--orange); text-decoration: none;">Install guide &rarr;</a></p>
+        <div class="experience-panel" style="grid-column: 1 / -1; margin-top: 16px;">
+            <div class="panel-label">Inside the deliberation</div>
+<pre><span class="comment">Scanner score: 82/100 — zero findings, clean code</span>
+
+<span class="speaker" style="color: #C0392B;">Adversarial Attacker</span>  REJECT · confidence 0.85
+Clean scans with zero provenance data is a red flag,
+not a green light. 0-day account age, 0 contributors
+— this could be a newly created repo for distribution.
+
+<span class="speaker" style="color: #6B9E4F;">Devil's Advocate</span>  APPROVE · confidence 0.75
+Zero findings across all severity levels. The repo is
+from the official org. Clean code should count.
+
+<span class="comment">                 ···  3 rounds later  ···</span>
+
+<span class="speaker" style="color: #6B9E4F;">Devil's Advocate</span>  <span style="color: #C0392B;">REJECT</span> · confidence 0.45
+I concede. Provenance gaps are blocking regardless of
+code quality. Without verified ownership, clean scans
+are an unconfirmed trust signal.
+
+<span class="comment">Final: REJECTED · 98% confidence · Score adjusted 82 → 15</span></pre>
+        </div>
+
+        <p style="margin-top: 20px; font-size: 0.85rem; color: var(--text-muted);">Both consumer interfaces hit the same signed registry data. The AI agent calls <code style="color: var(--orange); background: var(--code-bg); padding: 2px 6px; border-radius: 3px; font-size: 0.8rem;">credence_check_server</code> over MCP. The CLI verifies the signature locally. The deliberation panel shows what happens inside the pipeline — five agents debating the scan results across multiple rounds. <a href="install.html" style="color: var(--orange); text-decoration: none;">Install guide &rarr;</a></p>
     </div>
 </section>
 
@@ -965,8 +988,8 @@ independently scanned and verified.
             <div class="pipe-card">
                 <span class="pipe-num">03</span>
                 <div>
-                    <h3 style="color: var(--orange);">AI agents review the findings</h3>
-                    <p>Scanners are deterministic — they find what they're told to find. AI agents add judgment. Multiple agents with opposing security perspectives evaluate the results and produce a confidence-scored verdict, not a binary pass/fail.</p>
+                    <h3 style="color: var(--orange);">Five AI agents debate the findings</h3>
+                    <p>Scanners are deterministic — they find what they're told to find. Five AI agents with competing security mandates debate the results across multiple rounds. Skeptics challenge. Defenders push back. A neutral agent synthesizes. The output is a confidence-scored verdict, not a binary pass/fail.</p>
                 </div>
             </div>
             <div class="pipe-card">
@@ -982,36 +1005,37 @@ independently scanned and verified.
 
 <section class="section">
     <div class="container">
-        <div class="section-label">Adversarial Verification</div>
+        <div class="section-label">Adversarial Deliberation</div>
         <h2>Why not just run a scanner?</h2>
-        <p>Scanners are deterministic — they find known patterns and report them. But security findings need judgment. A hardcoded string might be a leaked credential or a test fixture. A fork might be a supply chain attack or a legitimate contribution. Context matters, and thresholds are guesses.</p>
-        <p>Credence combines deterministic scanning with agentic review. After the scanners run, AI agents with opposing security perspectives evaluate the findings. Some are primed with real attack patterns. Others are trained to challenge false positives. A neutral agent synthesizes the positions into a confidence-scored verdict.</p>
+        <p>Scanners find known patterns. They can't judge context. A hardcoded string might be a leaked credential or a test fixture. A fork might be a supply chain attack or a legitimate contribution. A server with zero findings might be clean — or the scanner might not know what to look for.</p>
+        <p>Credence runs five AI agents with competing security mandates through multiple rounds of structured debate. Skeptics probe for what the scanners missed. Defenders challenge false positives. A neutral agent synthesizes the positions. Rounds continue until positions stabilize or new evidence stops emerging.</p>
+        <p>In a recent scan, the scanner scored a server 82/100 — clean code, zero findings. The deliberation dropped it to 15. The provenance was unverifiable: empty owner field, zero-day account age, zero contributors. The adversarial agents caught what the scanner couldn't see: a clean scan means nothing if you can't verify who wrote the code. The defender agent started at APPROVE and flipped to REJECT by round three.</p>
 
         <div class="pipeline" style="margin-top: 24px;">
             <div class="pipe-card">
                 <span class="pipe-num" style="color: #C0392B;">01</span>
                 <div>
-                    <h3>Challenge</h3>
-                    <p>Adversarial agents look for what the scanners missed — suspicious patterns, supply chain indicators, MCP-specific attack vectors drawn from real incidents in the wild.</p>
+                    <h3>Skeptics probe</h3>
+                    <p>Two adversarial agents — one focused on attack vectors, one on supply chain integrity — look for what the scanners missed. They draw on real MCP incidents (SmartLoader, tool poisoning, rug pulls) and flag patterns that automated tools can't catch: manufactured credibility, missing provenance, suspicious contributor timelines.</p>
                 </div>
             </div>
             <div class="pipe-card">
                 <span class="pipe-num" style="color: #6B9E4F;">02</span>
                 <div>
-                    <h3>Defend</h3>
-                    <p>Counter-agents push back on false positives — identifying when a flagged pattern is actually standard practice, when a fork has legitimate provenance, when a finding is noise.</p>
+                    <h3>Defenders push back</h3>
+                    <p>Two counter-agents argue the other side — identifying when a flagged pattern is standard practice, when a fork has legitimate provenance, when a finding is noise. If they can't defend a finding, their confidence drops, and the record shows it. The Devil's Advocate in the example above started at 0.75 confidence in APPROVE and ended at 0.45 in REJECT.</p>
                 </div>
             </div>
             <div class="pipe-card">
                 <span class="pipe-num" style="color: var(--orange);">03</span>
                 <div>
-                    <h3>Synthesize</h3>
-                    <p>A neutral agent weighs both sides, checks for logical consistency, and produces the final verdict. The process terminates when further argument stops producing new evidence.</p>
+                    <h3>Neutral agent synthesizes</h3>
+                    <p>A compliance-focused agent weighs both sides against SLSA framework requirements and produces the final confidence-scored verdict. The process terminates when positions converge or five rounds complete — whichever comes first. Every round is logged for audit.</p>
                 </div>
             </div>
         </div>
 
-        <p style="margin-top: 28px; font-size: 0.85rem; color: var(--text-muted);"><a href="papers/adversarial-trust-layer.html" style="color: var(--orange); text-decoration: none;">Read the research →</a> The position paper covers the full methodology, threat model, and why adversarial verification outperforms single-pass analysis.</p>
+        <p style="margin-top: 28px; font-size: 0.85rem; color: var(--text-muted);"><a href="papers/adversarial-trust-layer.html" style="color: var(--orange); text-decoration: none;">Read the research →</a> The position paper covers the full methodology, threat model, and why adversarial deliberation outperforms single-pass analysis.</p>
     </div>
 </section>
 
