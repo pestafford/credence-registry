@@ -62,4 +62,5 @@ credence-docs/
 
 # ── Scan queue builder outputs ─────────────────
 tools/.cache/
+tools/.env
 tools/scan-queue.*

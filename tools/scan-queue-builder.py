@@ -67,8 +67,8 @@ CACHE_DIR = Path(__file__).parent / ".cache"
 REGISTRY_INDEX = Path(__file__).resolve().parent.parent / "registry" / "index.json"
 
 AWESOME_MCP_URL = "https://raw.githubusercontent.com/punkpeye/awesome-mcp-servers/main/README.md"
-SMITHERY_BASE = "https://smithery.ai"
-GLAMA_BASE = "https://glama.ai/mcp/servers"
+SMITHERY_API = "https://registry.smithery.ai/servers"
+GLAMA_API = "https://glama.ai/api/mcp/v1/servers"
 
 GITHUB_API = "https://api.github.com"
 NPM_DOWNLOADS_API = "https://api.npmjs.org/downloads/point/last-week"
@@ -155,7 +155,12 @@ def _cached_get(session: requests.Session, url: str, cache_key: str,
         cache_file.write_text(resp.text, encoding="utf-8")
         return resp.text
     except requests.RequestException as e:
-        log.warning("GET %s failed: %s", url, e)
+        # 404s are expected for npm/PyPI lookups and missing GitHub paths — debug only
+        status = getattr(getattr(e, "response", None), "status_code", None)
+        if status == 404:
+            log.debug("GET %s → 404 (not found)", url)
+        else:
+            log.warning("GET %s failed: %s", url, e)
         return None
 
 
@@ -222,92 +227,137 @@ def fetch_awesome_mcp_servers(session: requests.Session) -> list[dict]:
 
 
 # ---------------------------------------------------------------------------
-# Source: Smithery
+# Source: Smithery (JSON API)
 # ---------------------------------------------------------------------------
-def fetch_smithery(session: requests.Session, max_pages: int = 10) -> list[dict]:
-    """Fetch server listings from Smithery."""
-    log.info("Fetching Smithery listings (max %d pages)...", max_pages)
+def fetch_smithery(session: requests.Session, max_pages: int = 200) -> list[dict]:
+    """Fetch server listings from Smithery registry API."""
+    log.info("Fetching Smithery listings via API (max %d pages)...", max_pages)
     servers = []
     seen = set()
+    page_size = 100
 
     for page in range(1, max_pages + 1):
-        url = f"{SMITHERY_BASE}/server"
-        if page > 1:
-            url = f"{url}?page={page}"
-        text = _cached_get(session, url, f"smithery_page_{page}.html")
+        url = f"{SMITHERY_API}?pageSize={page_size}&page={page}"
+        text = _cached_get(session, url, f"smithery_api_page_{page}.json")
         if not text:
             break
 
-        # Look for GitHub repo links in server cards
-        # Smithery links to GitHub repos in their server pages
-        repo_pattern = re.compile(
-            r'href="https://github\.com/([\w.\-]+)/([\w.\-]+)"'
-        )
-        # Also look for server names/descriptions in the page
-        for match in repo_pattern.finditer(text):
-            owner, repo = match.groups()
+        try:
+            data = json.loads(text)
+        except json.JSONDecodeError:
+            log.warning("Smithery API returned invalid JSON on page %d", page)
+            break
+
+        for entry in data.get("servers", []):
+            # qualifiedName is "owner/repo" or just "name" for single-segment
+            qualified = entry.get("qualifiedName", "")
+            if not qualified:
+                continue
+
+            # Build GitHub repo path from qualifiedName
+            # Format: "owner/repo" maps to github.com/owner/repo
+            # Single-segment names (e.g. "exa") don't have a direct repo mapping
+            parts = qualified.split("/")
+            if len(parts) == 2:
+                owner, repo = parts
+            elif len(parts) == 1:
+                # Single-segment — use namespace if available
+                ns = entry.get("namespace", "")
+                if ns and ns != qualified:
+                    owner, repo = ns, qualified
+                else:
+                    continue  # Can't determine repo
+            else:
+                continue
+
             repo_key = f"{owner}/{repo}".lower()
             if repo_key in seen:
                 continue
             seen.add(repo_key)
-            servers.append({
+
+            server = {
                 "repo": f"{owner}/{repo}",
                 "url": f"https://github.com/{owner}/{repo}",
-                "name": repo,
-                "description": "",
+                "name": entry.get("displayName", repo),
+                "description": (entry.get("description") or "")[:500],
                 "category": "unknown",
                 "sources": ["smithery"],
-            })
+            }
 
-        # Check if there's a next page
-        if "next" not in text.lower() or f"page={page + 1}" not in text:
-            # Simple heuristic: if we didn't find pagination markers, stop
-            if page > 1:
-                break
+            # Capture useCount as a pre-enrichment signal
+            use_count = entry.get("useCount", 0)
+            if use_count:
+                server["smithery_use_count"] = use_count
+
+            servers.append(server)
+
+        # Check pagination
+        pagination = data.get("pagination", {})
+        total_pages = pagination.get("totalPages", 1)
+        if page >= total_pages:
+            break
 
     log.info("Found %d servers from Smithery", len(servers))
     return servers
 
 
 # ---------------------------------------------------------------------------
-# Source: Glama
+# Source: Glama (JSON API)
 # ---------------------------------------------------------------------------
-def fetch_glama(session: requests.Session, max_pages: int = 10) -> list[dict]:
-    """Fetch server listings from Glama."""
-    log.info("Fetching Glama listings (max %d pages)...", max_pages)
+def fetch_glama(session: requests.Session, max_pages: int = 200) -> list[dict]:
+    """Fetch server listings from Glama API (cursor-based pagination)."""
+    log.info("Fetching Glama listings via API (max %d pages)...", max_pages)
     servers = []
     seen = set()
+    page_size = 100
+    cursor = None
 
     for page in range(1, max_pages + 1):
-        url = GLAMA_BASE
-        if page > 1:
-            url = f"{url}?page={page}"
-        text = _cached_get(session, url, f"glama_page_{page}.html")
+        url = f"{GLAMA_API}?first={page_size}"
+        if cursor:
+            url += f"&after={cursor}"
+        text = _cached_get(session, url, f"glama_api_page_{page}.json")
         if not text:
             break
 
-        # Look for GitHub repo links
-        repo_pattern = re.compile(
-            r'href="https://github\.com/([\w.\-]+)/([\w.\-]+)"'
-        )
-        for match in repo_pattern.finditer(text):
+        try:
+            data = json.loads(text)
+        except json.JSONDecodeError:
+            log.warning("Glama API returned invalid JSON on page %d", page)
+            break
+
+        for entry in data.get("servers", []):
+            repo_url = (entry.get("repository") or {}).get("url", "")
+            if not repo_url or "github.com" not in repo_url:
+                continue
+
+            # Parse owner/repo from GitHub URL
+            match = re.match(r"https?://github\.com/([\w.\-]+)/([\w.\-]+)", repo_url)
+            if not match:
+                continue
+
             owner, repo = match.groups()
             repo_key = f"{owner}/{repo}".lower()
             if repo_key in seen:
                 continue
             seen.add(repo_key)
+
             servers.append({
                 "repo": f"{owner}/{repo}",
                 "url": f"https://github.com/{owner}/{repo}",
-                "name": repo,
-                "description": "",
+                "name": entry.get("name", repo),
+                "description": (entry.get("description") or "")[:500],
                 "category": "unknown",
                 "sources": ["glama"],
             })
 
-        if "next" not in text.lower():
-            if page > 1:
-                break
+        # Cursor-based pagination
+        page_info = data.get("pageInfo", {})
+        if not page_info.get("hasNextPage", False):
+            break
+        cursor = page_info.get("endCursor")
+        if not cursor:
+            break
 
     log.info("Found %d servers from Glama", len(servers))
     return servers
@@ -334,6 +384,9 @@ def merge_servers(sources: list[list[dict]]) -> dict[str, dict]:
                 # Prefer non-unknown categories
                 if merged[key]["category"] == "unknown" and server["category"] != "unknown":
                     merged[key]["category"] = server["category"]
+                # Carry over Smithery use count
+                if "smithery_use_count" in server:
+                    merged[key]["smithery_use_count"] = server["smithery_use_count"]
             else:
                 merged[key] = server.copy()
 
@@ -591,10 +644,11 @@ def assign_phase(server: dict) -> int:
     if age < 180 and stars > 100:
         return 3
 
-    # Phase 2: High-impact unknowns (has downloads or significant stars)
+    # Phase 2: High-impact unknowns (has downloads, significant stars, or Smithery usage)
     downloads = (signals.get("npm_weekly_downloads", 0)
                  + signals.get("pypi_weekly_downloads", 0))
-    if downloads > 100 or stars > 50:
+    smithery_uses = signals.get("smithery_use_count", 0)
+    if downloads > 100 or stars > 50 or smithery_uses > 100:
         return 2
 
     # Phase 4: Everything else
@@ -610,6 +664,10 @@ def score_server(server: dict) -> dict:
     signals["smithery_listed"] = "smithery" in sources
     signals["glama_listed"] = "glama" in sources
     signals["awesome_listed"] = "awesome-mcp-servers" in sources
+
+    # Carry over Smithery use count into signals
+    if "smithery_use_count" in server:
+        signals["smithery_use_count"] = server["smithery_use_count"]
 
     # Capability
     tier = classify_capability(server)
@@ -726,8 +784,8 @@ def main():
         help="Skip GitHub/npm/PyPI enrichment (fast, uses only registry data)",
     )
     parser.add_argument(
-        "--max-pages", type=int, default=10,
-        help="Max pages to scrape from each registry (default: 10)",
+        "--max-pages", type=int, default=200,
+        help="Max pages to fetch from each registry API (default: 200, enough for ~20k servers)",
     )
     parser.add_argument(
         "--include-scanned", action="store_true",
