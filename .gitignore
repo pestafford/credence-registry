@@ -59,3 +59,7 @@ DEPLOY.md
 THINKTANK_INTERFACE.md
 credence-docs/
 /credence-scan.yml
+
+# ── Scan queue builder outputs ─────────────────
+tools/.cache/
+tools/scan-queue.*
