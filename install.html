@@ -545,7 +545,17 @@ fi</pre>
         <h2>Always-on trust checks</h2>
         <p>Configure Credence once so every new MCP server gets checked automatically — across reboots, new terminals, and new projects.</p>
 
-        <h3 class="sub">Shell function</h3>
+        <h3 class="sub">MCP server (AI agent users)</h3>
+        <p>If you added Credence as an MCP server (see <a href="#" onclick="window.scrollTo({top: document.querySelector('.section:nth-of-type(2)').offsetTop - 20, behavior: 'smooth'}); return false;" class="inline-link" style="color: var(--orange);">above</a>), you're already set. The Credence tools are available in every session, regardless of which MCP client you use — Claude Desktop, Claude Code, Cursor, Windsurf, Cline, or any other stdio-compatible client.</p>
+        <p>To make the agent check automatically without being asked, add a standing instruction to your client's system prompt or project instructions:</p>
+        <div class="code-block">
+<pre>Before installing or connecting to any MCP server,
+use credence_check_server to verify its trust status.
+Do not proceed if the server is not attested or has a score below 70.</pre>
+        </div>
+        <p style="font-size: 0.85rem; color: var(--text-muted);">Where this goes depends on your client: <code>CLAUDE.md</code> for Claude Code, <code>.cursorrules</code> for Cursor, system prompt settings for others. Adjust the score threshold to your risk tolerance.</p>
+
+        <h3 class="sub">Shell function (CLI users)</h3>
         <p>Add to your shell profile so <code>mcp-install</code> is always available. The first argument is the server identifier; everything after is the install command that runs only if the server is attested.</p>
         <div class="code-block">
 <pre><span class="comment"># Add to ~/.bashrc or ~/.zshrc</span>
@@ -554,23 +564,12 @@ mcp-install() {
 }
 
 <span class="comment"># Usage</span>
-mcp-install owner/mcp-server claude mcp add my-server
-mcp-install owner/mcp-server npm install @owner/mcp-server</pre>
+mcp-install owner/mcp-server npm install @owner/mcp-server
+mcp-install owner/mcp-server pip install mcp-server</pre>
         </div>
-
-        <h3 class="sub">CLAUDE.md instruction</h3>
-        <p>For Claude Code users: add a line to <code>CLAUDE.md</code> so Claude checks Credence before using any new MCP server. No shell configuration required.</p>
-        <div class="code-block">
-<pre><span class="comment"># Add to ~/.claude/CLAUDE.md (all projects) or ./CLAUDE.md (single project)</span>
-
-Before installing or connecting to any MCP server,
-use credence_check_server to verify its trust status.
-Do not proceed if the server is not attested or has a score below 70.</pre>
-        </div>
-        <p style="font-size: 0.85rem; color: var(--text-muted);">Claude Code reads CLAUDE.md at the start of every session. Adjust the score threshold to your risk tolerance.</p>
 
         <h3 class="sub">Background watcher (system service)</h3>
-        <p>Run <code>credence watch</code> as a system service so it starts on boot and monitors your MCP client config file for changes. Best for Claude Desktop, which has no hook or guard mechanism.</p>
+        <p>Run <code>credence watch</code> as a system service so it starts on boot and monitors your MCP client config file for changes. Works with any MCP client — alerts you when a new unattested server appears.</p>
 
         <h3 class="sub" style="margin-top: 16px; font-size: 0.85rem;">macOS (launchd)</h3>
         <p>Save the plist, then load it:</p>
