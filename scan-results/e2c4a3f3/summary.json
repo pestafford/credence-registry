@@ -1,0 +1,27 @@
+{
+  "server_name": "MCP Weather Server",
+  "canonical_name": "mcp_weather_server",
+  "server_path": "",
+  "maintainer_verified": false,
+  "verify_reason": "Third-party submission — submitter is not owner, collaborator, or contributor",
+  "repo_url": "https://github.com/isdaniel/mcp_weather_server",
+  "commit_sha": "e2c4a3f3af44a67f69e7d413f55e6e072cdaebf0",
+  "source_hash": "b1b6c7f80098da3dfc18a1dbd22e73b113effb4698bb4698597d56d70807ab3f",
+  "source_hash_method": "merkle-tree-sha256",
+  "is_fork": false,
+  "provenance_flags": [
+    "NO_LOCKFILE"
+  ],
+  "lockfile_name": "none",
+  "lockfile_hash": "none",
+  "scan_timestamp": "2026-02-16T01:46:44Z",
+  "pipeline_version": "0.2.0",
+  "thinktank_verdict": "FLAGGED_PRELIMINARY",
+  "trust_score": 69,
+  "trust_dimensions": {
+    "security": 62,
+    "provenance": 95,
+    "behavioral": 100
+  },
+  "scoring_version": "1.0.0"
+}
