@@ -4,7 +4,7 @@
   "registry_url": "https://credence.securingthesingularity.com",
   "maintainer": "Phil Stafford <phil@securingthesingularity.com>",
   "signing_public_key": "XdvqC/Q6TX90MpL37wdxfUtqOiS8qiQjK8JNJy+BOcM=",
-  "updated_at": "2026-02-13T23:23:40Z",
+  "updated_at": "2026-02-16T01:55:20Z",
   "servers": [
     {
       "server_id": "modelcontextprotocol/servers/filesystem",
@@ -79,6 +79,45 @@
         }
       },
       "attestation_url": "https://github.com/pestafford/credence-registry/tree/main/scan-results/618cf486"
+    },
+    {
+      "server_id": "isdaniel/mcp_weather_server",
+      "server_name": "MCP Weather Server",
+      "canonical_name": "mcp_weather_server",
+      "repo_url": "https://github.com/isdaniel/mcp_weather_server",
+      "attestation": {
+        "commit_sha": "e2c4a3f3af44a67f69e7d413f55e6e072cdaebf0",
+        "source_hash": "b1b6c7f80098da3dfc18a1dbd22e73b113effb4698bb4698597d56d70807ab3f",
+        "source_hash_method": "merkle-tree-sha256",
+        "attested_at": "2026-02-16T01:55:20Z",
+        "pipeline_version": "0.2.0",
+        "scoring_version": "1.0.0",
+        "trust_score": 74,
+        "trust_dimensions": {
+          "security": 62,
+          "provenance": 95,
+          "behavioral": 100
+        },
+        "thinktank_verdict": "CONDITIONAL",
+        "author_identity": {
+          "repo_owner": "isdaniel",
+          "identity_match": true,
+          "is_fork": false,
+          "provenance_flags": [
+            "NO_LOCKFILE"
+          ],
+          "maintainer_verified": false,
+          "verify_reason": "Third-party submission \u2014 submitter is not owner, collaborator, or contributor"
+        },
+        "lockfile_name": "none",
+        "lockfile_hash": "none",
+        "signature": {
+          "algorithm": "ed25519",
+          "value": "JD0CYUbQ2S13LPYmwZWAYEgSpg7EIxNFNoy+P5fVKCyNL7rLDtTk5J5arlamL2q3Y57AuYWOjiBkQtImgLuuAg==",
+          "canonical_hash": "c855d283888592c11f65487501ad3a37564932ad723a001b76e36d3b7ee63de3"
+        }
+      },
+      "attestation_url": "https://github.com/pestafford/credence-registry/tree/main/scan-results/e2c4a3f3"
     }
   ]
 }

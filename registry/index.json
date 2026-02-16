@@ -4,7 +4,7 @@
   "registry_url": "https://credence.securingthesingularity.com",
   "maintainer": "Phil Stafford <phil@securingthesingularity.com>",
   "signing_public_key": "XdvqC/Q6TX90MpL37wdxfUtqOiS8qiQjK8JNJy+BOcM=",
-  "updated_at": "2026-02-13T23:23:40Z",
+  "updated_at": "2026-02-16T01:55:20Z",
   "stats": {
     "total_scans": 5
   },
@@ -32,6 +32,18 @@
       "scoring_version": "1.0.0",
       "attested_at": "2026-02-13T17:19:51Z",
       "attestation_file": "servers/modelcontextprotocol/servers/memory.json"
+    },
+    {
+      "server_id": "isdaniel/mcp_weather_server",
+      "server_name": "MCP Weather Server",
+      "canonical_name": "mcp_weather_server",
+      "repo_url": "https://github.com/isdaniel/mcp_weather_server",
+      "repo_owner": "isdaniel",
+      "trust_score": 74,
+      "thinktank_verdict": "CONDITIONAL",
+      "scoring_version": "1.0.0",
+      "attested_at": "2026-02-16T01:55:20Z",
+      "attestation_file": "servers/isdaniel/mcp_weather_server.json"
     }
   ]
 }
