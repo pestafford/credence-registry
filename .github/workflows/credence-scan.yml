@@ -395,6 +395,7 @@ jobs:
 
             try {
               const { data: repoData } = await github.rest.repos.get({ owner, repo });
+              let contributorCount = 0;
 
               if (repoData.fork) {
                 flags.push('IS_FORK');
@@ -404,6 +405,7 @@ jobs:
                   const parentOwner = repoData.parent.owner.login;
                   try {
                     const { data: contributors } = await github.rest.repos.listContributors({ owner, repo, per_page: 100 });
+                    contributorCount = contributors.length;
                     const contributorLogins = contributors.map(c => c.login);
 
                     if (!contributorLogins.includes(parentOwner)) {
@@ -412,6 +414,14 @@ jobs:
                   } catch (e) {
                     flags.push('CONTRIBUTORS_UNAVAILABLE');
                   }
+                }
+              } else {
+                // Fetch contributor count for non-forks
+                try {
+                  const { data: contributors } = await github.rest.repos.listContributors({ owner, repo, per_page: 100 });
+                  contributorCount = contributors.length;
+                } catch (e) {
+                  flags.push('CONTRIBUTORS_UNAVAILABLE');
                 }
               }
 
@@ -424,6 +434,18 @@ jobs:
                 flags.push('ACCOUNT_YOUNG_LT_90_DAYS');
               } else if (accountAge < 180) {
                 flags.push('ACCOUNT_YOUNG_LT_180_DAYS');
+              }
+
+              // Persist account age and contributor count into identity.json
+              // so the deliberation adapter can pass real values to the debate
+              try {
+                const idPath = '/tmp/identity.json';
+                const identity = JSON.parse(fs.readFileSync(idPath, 'utf8'));
+                identity.account_age_days = Math.round(accountAge);
+                identity.contributor_count = contributorCount;
+                fs.writeFileSync(idPath, JSON.stringify(identity, null, 2));
+              } catch (e) {
+                // identity.json might not exist yet — non-critical
               }
 
               // Check if repo owner differs from claimed author in package metadata
