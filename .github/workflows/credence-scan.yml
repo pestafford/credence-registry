@@ -113,7 +113,9 @@ jobs:
             const repoUrl = repoMatch[1].replace(/\/$/, '');
             const commitSha = commitMatch ? commitMatch[1] : '';
             const serverName = nameMatch ? nameMatch[1].trim() : 'unknown';
-            const serverPath = pathMatch ? pathMatch[1].trim().replace(/`/g, '').replace(/^\/+|\/+$/g, '') : '';
+            let serverPath = pathMatch ? pathMatch[1].trim().replace(/`/g, '').replace(/^\/+|\/+$/g, '') : '';
+            // Treat common "no path" sentinels as empty
+            if (/^\(?(root|none|n\/a|\.)\)?$/i.test(serverPath)) serverPath = '';
 
             // Detect host type and extract owner/repo
             const ghMatch = repoUrl.match(/github\.com\/([^\/]+)\/([^\/]+)/);
