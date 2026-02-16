@@ -539,7 +539,99 @@ fi</pre>
         <p style="font-size: 0.85rem; color: var(--text-muted);">Exit codes are stable and intended for programmatic use. See the exit codes table in the CLI section above.</p>
     </section>
 
-    <!-- Section 5: Configuration -->
+    <!-- Section 5: Persistent protection -->
+    <section class="section" id="persistent">
+        <div class="section-label">Persistent Protection</div>
+        <h2>Always-on trust checks</h2>
+        <p>Configure Credence once so every new MCP server gets checked automatically — across reboots, new terminals, and new projects.</p>
+
+        <h3 class="sub">Shell function</h3>
+        <p>Add to your shell profile so <code>mcp-install</code> is always available. The first argument is the server identifier; everything after is the install command that runs only if the server is attested.</p>
+        <div class="code-block">
+<pre><span class="comment"># Add to ~/.bashrc or ~/.zshrc</span>
+mcp-install() {
+  credence guard "$1" -- "${@:2}"
+}
+
+<span class="comment"># Usage</span>
+mcp-install owner/mcp-server claude mcp add my-server
+mcp-install owner/mcp-server npm install @owner/mcp-server</pre>
+        </div>
+
+        <h3 class="sub">CLAUDE.md instruction</h3>
+        <p>For Claude Code users: add a line to <code>CLAUDE.md</code> so Claude checks Credence before using any new MCP server. No shell configuration required.</p>
+        <div class="code-block">
+<pre><span class="comment"># Add to ~/.claude/CLAUDE.md (all projects) or ./CLAUDE.md (single project)</span>
+
+Before installing or connecting to any MCP server,
+use credence_check_server to verify its trust status.
+Do not proceed if the server is not attested or has a score below 70.</pre>
+        </div>
+        <p style="font-size: 0.85rem; color: var(--text-muted);">Claude Code reads CLAUDE.md at the start of every session. Adjust the score threshold to your risk tolerance.</p>
+
+        <h3 class="sub">Background watcher (system service)</h3>
+        <p>Run <code>credence watch</code> as a system service so it starts on boot and monitors your MCP client config file for changes. Best for Claude Desktop, which has no hook or guard mechanism.</p>
+
+        <h3 class="sub" style="margin-top: 16px; font-size: 0.85rem;">macOS (launchd)</h3>
+        <p>Save the plist, then load it:</p>
+        <div class="code-block">
+<pre><span class="comment"># ~/Library/LaunchAgents/com.credence.watch.plist</span>
+&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN"
+  "http://www.apple.com/DTDs/PropertyList-1.0.dtd"&gt;
+&lt;plist version="1.0"&gt;
+&lt;dict&gt;
+  &lt;key&gt;Label&lt;/key&gt;
+  &lt;string&gt;com.credence.watch&lt;/string&gt;
+  &lt;key&gt;ProgramArguments&lt;/key&gt;
+  &lt;array&gt;
+    &lt;string&gt;credence&lt;/string&gt;
+    &lt;string&gt;watch&lt;/string&gt;
+  &lt;/array&gt;
+  &lt;key&gt;RunAtLoad&lt;/key&gt;&lt;true/&gt;
+  &lt;key&gt;KeepAlive&lt;/key&gt;&lt;true/&gt;
+  &lt;key&gt;StandardOutPath&lt;/key&gt;
+  &lt;string&gt;/tmp/credence-watch.log&lt;/string&gt;
+  &lt;key&gt;StandardErrorPath&lt;/key&gt;
+  &lt;string&gt;/tmp/credence-watch.log&lt;/string&gt;
+&lt;/dict&gt;
+&lt;/plist&gt;
+
+<span class="comment"># Load</span>
+launchctl load ~/Library/LaunchAgents/com.credence.watch.plist
+
+<span class="comment"># Check status</span>
+launchctl list | grep credence</pre>
+        </div>
+
+        <h3 class="sub" style="margin-top: 16px; font-size: 0.85rem;">Linux (systemd)</h3>
+        <p>Save the unit file, then enable it:</p>
+        <div class="code-block">
+<pre><span class="comment"># ~/.config/systemd/user/credence-watch.service</span>
+[Unit]
+Description=Credence MCP config watcher
+After=network.target
+
+[Service]
+ExecStart=credence watch
+Restart=on-failure
+RestartSec=10
+
+[Install]
+WantedBy=default.target
+
+<span class="comment"># Enable and start</span>
+systemctl --user daemon-reload
+systemctl --user enable --now credence-watch
+
+<span class="comment"># Check status</span>
+systemctl --user status credence-watch</pre>
+        </div>
+
+        <p style="font-size: 0.85rem; color: var(--text-muted);">The watcher monitors your MCP client config for changes. When a new server appears, it checks the registry and alerts you if the server is unattested, flagged, or rejected.</p>
+    </section>
+
+    <!-- Section 6: Configuration -->
     <section class="section">
         <div class="section-label">Configuration</div>
         <h2>Environment &amp; config</h2>
