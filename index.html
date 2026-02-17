@@ -173,7 +173,7 @@
             height: 1.15em;
         }
         .hero h1 .rotating-wrapper::after {
-            content: 'Claude extensions';
+            content: 'OpenClaw skills';
             display: block;
             visibility: hidden;
             height: 0;
@@ -181,7 +181,7 @@
         }
         .hero h1 .rotating-words {
             display: block;
-            animation: rotate-words 6.25s ease-in-out infinite;
+            animation: rotate-words 5s ease-in-out infinite;
         }
         .hero h1 .rotating-words span {
             display: block;
@@ -192,11 +192,10 @@
         }
         .mobile-break { display: none; }
         @keyframes rotate-words {
-            0%, 20%     { transform: translateY(0); }
-            23%, 36%    { transform: translateY(-1.15em); }
-            39%, 52%    { transform: translateY(-2.3em); }
-            55%, 68%    { transform: translateY(-3.45em); }
-            71%, 100%   { transform: translateY(-4.6em); }
+            0%, 24%     { transform: translateY(0); }
+            28%, 48%    { transform: translateY(-1.15em); }
+            52%, 72%    { transform: translateY(-2.3em); }
+            76%, 100%   { transform: translateY(-3.45em); }
         }
         .hero .subtitle {
             font-size: 1.15rem;
@@ -839,9 +838,9 @@
     <div class="container">
         <img src="credencelogo.png" alt="Credence Registry" class="hero-logo">
         <div class="hero-tagline">Know what your agents trust.</div>
-        <h1>The trust layer for<br class="mobile-break"> <span class="rotating-wrapper"><span class="rotating-words"><span>AI tools</span><span>MCP servers</span><span>OpenClaw skills</span><span>Claude extensions</span><span>AI tools</span></span></span></h1>
+        <h1>The trust layer for<br class="mobile-break"> <span class="rotating-wrapper"><span class="rotating-words"><span>AI tools</span><span>MCP servers</span><span>OpenClaw skills</span><span>AI tools</span></span></span></h1>
         <p style="font-size: 0.88rem; color: var(--text-muted); margin-bottom: 12px;">AI agents connect to external tools and data sources. Most are unvetted.</p>
-        <p class="subtitle">Check any MCP server, OpenClaw skill, or Claude extension before you install it. Credence scans the source, verifies the author, and publishes a signed trust score you can query from your AI agent, the terminal, or CI.</p>
+        <p class="subtitle">Check any MCP server or OpenClaw skill before you install it. Credence scans the source, verifies the author, and publishes a signed trust score you can query from your AI agent, the terminal, or CI.</p>
         <div class="hero-ctas">
             <a href="registry.html" class="btn btn-primary">Check a server</a>
             <a href="#submit" class="btn btn-secondary">Submit yours</a>
@@ -1357,6 +1356,13 @@ $ credence check modelcontextprotocol/servers/filesystem
                 <div>
                     <h3>Lockfile drift detection</h3>
                     <p>Compare lockfile hashes across successive attestations for the same server. Flag when dependencies change between scans — even if the code hasn't.</p>
+                </div>
+            </div>
+            <div class="pipe-card">
+                <span class="pipe-num" style="color: var(--orange);">▸</span>
+                <div>
+                    <h3>Claude Desktop Extensions and MCP Apps</h3>
+                    <p>Extend scanning to MCPB-bundled extensions and MCP Apps. Manifest validation, template injection detection, bundled dependency analysis, and source-vs-bundle verification for packages distributed outside Git.</p>
                 </div>
             </div>
             <div class="pipe-card">
