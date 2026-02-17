@@ -157,11 +157,18 @@
             margin-bottom: 16px;
         }
         .hero h1 span { color: var(--orange); }
+        .hero-tagline {
+            font-family: 'Space Mono', monospace;
+            font-size: 2.4rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            margin-bottom: 8px;
+        }
         .hero h1 .rotating-wrapper {
             display: inline-block;
             position: relative;
             overflow: hidden;
-            vertical-align: baseline;
+            vertical-align: text-bottom;
             height: 1.15em;
         }
         .hero h1 .rotating-wrapper::after {
@@ -183,12 +190,11 @@
         }
         .mobile-break { display: none; }
         @keyframes rotate-words {
-            0%, 14.4%   { transform: translateY(0); }
-            17.6%, 34.4%  { transform: translateY(-1.15em); }
-            37.6%, 54.4%  { transform: translateY(-2.3em); }
-            57.6%, 74.4%  { transform: translateY(-3.45em); }
-            77.6%, 94.4%  { transform: translateY(-4.6em); }
-            97.6%, 100%   { transform: translateY(-4.6em); }
+            0%, 20%     { transform: translateY(0); }
+            23%, 36%    { transform: translateY(-1.15em); }
+            39%, 52%    { transform: translateY(-2.3em); }
+            55%, 68%    { transform: translateY(-3.45em); }
+            71%, 100%   { transform: translateY(-4.6em); }
         }
         .hero .subtitle {
             font-size: 1.15rem;
@@ -786,6 +792,7 @@
 
         /* RESPONSIVE */
         @media (max-width: 640px) {
+            .hero-tagline { font-size: 1.8rem; }
             .hero h1 { font-size: 1.8rem; }
             .mobile-break { display: inline; }
             .hero .subtitle { font-size: 1rem; }
@@ -829,7 +836,8 @@
 <section class="hero">
     <div class="container">
         <img src="credencelogo.png" alt="Credence Registry" class="hero-logo">
-        <h1>The trust layer for<br class="mobile-break"> <span class="rotating-wrapper"><span class="rotating-words"><span>MCP servers</span><span>OpenClaw skills</span><span>Claude extensions</span><span>AI tools</span><span>MCP servers</span></span></span></h1>
+        <div class="hero-tagline">Know what your agents trust.</div>
+        <h1>The trust layer for<br class="mobile-break"> <span class="rotating-wrapper"><span class="rotating-words"><span>AI tools</span><span>MCP servers</span><span>OpenClaw skills</span><span>Claude extensions</span><span>AI tools</span></span></span></h1>
         <p style="font-size: 0.88rem; color: var(--text-muted); margin-bottom: 12px;">AI agents connect to external tools and data sources. Most are unvetted.</p>
         <p class="subtitle">Check any MCP server, OpenClaw skill, or Claude extension before you install it. Credence scans the source, verifies the author, and publishes a signed trust score you can query from your AI agent, the terminal, or CI.</p>
         <div class="hero-ctas">
