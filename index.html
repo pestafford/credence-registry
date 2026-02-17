@@ -159,10 +159,11 @@
         .hero h1 span { color: var(--orange); }
         .hero-tagline {
             font-family: 'Space Mono', monospace;
-            font-size: 2.4rem;
+            font-size: 1.6rem;
             font-weight: 700;
             letter-spacing: -0.02em;
             margin-bottom: 8px;
+            color: var(--orange);
         }
         .hero h1 .rotating-wrapper {
             display: inline-block;
@@ -187,6 +188,7 @@
             height: 1.15em;
             line-height: 1.15em;
             white-space: nowrap;
+            text-align: left;
         }
         .mobile-break { display: none; }
         @keyframes rotate-words {
@@ -792,7 +794,7 @@
 
         /* RESPONSIVE */
         @media (max-width: 640px) {
-            .hero-tagline { font-size: 1.8rem; }
+            .hero-tagline { font-size: 1.2rem; }
             .hero h1 { font-size: 1.8rem; }
             .mobile-break { display: inline; }
             .hero .subtitle { font-size: 1rem; }
