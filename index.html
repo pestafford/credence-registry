@@ -157,6 +157,38 @@
             margin-bottom: 16px;
         }
         .hero h1 span { color: var(--orange); }
+        .hero h1 .rotating-wrapper {
+            display: inline-block;
+            position: relative;
+            overflow: hidden;
+            vertical-align: bottom;
+            height: 1.2em;
+        }
+        .hero h1 .rotating-wrapper::after {
+            content: 'Claude extensions';
+            display: block;
+            visibility: hidden;
+            height: 0;
+            overflow: hidden;
+        }
+        .hero h1 .rotating-words {
+            display: block;
+            animation: rotate-words 5s ease-in-out infinite;
+        }
+        .hero h1 .rotating-words span {
+            display: block;
+            height: 1.2em;
+            line-height: 1.2em;
+            white-space: nowrap;
+        }
+        .mobile-break { display: none; }
+        @keyframes rotate-words {
+            0%, 18%   { transform: translateY(0); }
+            22%, 43%  { transform: translateY(-1.2em); }
+            47%, 68%  { transform: translateY(-2.4em); }
+            72%, 93%  { transform: translateY(-3.6em); }
+            97%, 100% { transform: translateY(0); }
+        }
         .hero .subtitle {
             font-size: 1.15rem;
             color: var(--text-secondary);
@@ -754,6 +786,7 @@
         /* RESPONSIVE */
         @media (max-width: 640px) {
             .hero h1 { font-size: 1.8rem; }
+            .mobile-break { display: inline; }
             .hero .subtitle { font-size: 1rem; }
             .hero-ctas { flex-direction: column; align-items: center; }
             .persona-cards { grid-template-columns: 1fr; }
@@ -795,7 +828,7 @@
 <section class="hero">
     <div class="container">
         <img src="credencelogo.png" alt="Credence Registry" class="hero-logo">
-        <h1>Know what your <span>agent trusts</span></h1>
+        <h1>The trust layer for<br class="mobile-break"> <span class="rotating-wrapper"><span class="rotating-words"><span>MCP servers</span><span>OpenClaw skills</span><span>Claude extensions</span><span>AI tools</span></span></span></h1>
         <p style="font-size: 0.88rem; color: var(--text-muted); margin-bottom: 12px;">MCP lets AI agents connect to external tools and data. Most servers are unvetted.</p>
         <p class="subtitle">Check any MCP server before you install it. Credence scans the source, verifies the author, and publishes a signed trust score you can query from your AI agent, the terminal, or CI.</p>
         <div class="hero-ctas">
