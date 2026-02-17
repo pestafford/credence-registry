@@ -35,14 +35,18 @@ SEVERITY_WEIGHT = {
 # Category multipliers applied to each finding's severity weight
 CATEGORY_MULTIPLIER = {
     "secrets": 2.0,   # Immediately exploitable, OWASP max ease-of-exploit
+    "skill": 1.5,     # Skills-as-installers are direct attack vectors (OpenClaw campaigns)
     "sast": 1.0,      # Baseline code-level findings
+    "mcpb": 1.0,      # Bundled code analysis, same risk tier as sast
     "cve": 0.8,       # Often transitive/non-exploitable, per EPSS data
 }
 
 # Category caps prevent one noisy scanner from dominating (Socket.dev model)
 CATEGORY_CAP = {
     "secrets": 60,
+    "skill": 40,    # More headroom for skill-specific attacks (installer pattern)
     "sast": 30,
+    "mcpb": 30,     # Same as sast
     "cve": 30,
 }
 
@@ -66,6 +70,11 @@ PROVENANCE_DEDUCTION = {
     "CONTRIBUTORS_UNAVAILABLE": 5,
     # ACCOUNT_YOUNG_LT_180_DAYS is recorded but not scored
     "ACCOUNT_YOUNG_LT_180_DAYS": 0,
+    # Skill / MCPB provenance flags
+    "SKILL_NO_MANIFEST": 10,           # No permissions declared — opaque skill
+    "SKILL_EXTERNAL_PAYLOAD": 15,      # Install instructions reference external URLs
+    "MCPB_NO_SOURCE_REPO": 10,         # Can't verify source against bundle
+    "MCPB_SOURCE_MISMATCH": 25,        # Bundled code differs from repo (Phase 2)
 }
 
 # Hard-reject patterns (score forced to 0)
@@ -112,7 +121,7 @@ def score_security(findings: list[dict]) -> tuple[int, dict]:
         (score, breakdown) where breakdown shows per-category deductions.
     """
     # Accumulate raw deductions per category
-    raw_deductions = {"secrets": 0.0, "sast": 0.0, "cve": 0.0}
+    raw_deductions = {"secrets": 0.0, "skill": 0.0, "sast": 0.0, "mcpb": 0.0, "cve": 0.0}
 
     for f in findings:
         cat = f.get("category", "")
@@ -153,7 +162,7 @@ def score_security_from_counts(scan_results: dict) -> tuple[int, dict]:
     This is less accurate than score_security() but allows scoring
     when only scan-summary.json exists (e.g., evidence.json not yet wired).
     """
-    raw_deductions = {"secrets": 0.0, "sast": 0.0, "cve": 0.0}
+    raw_deductions = {"secrets": 0.0, "skill": 0.0, "sast": 0.0, "mcpb": 0.0, "cve": 0.0}
 
     # Map scan_results fields to categories (all assumed medium severity)
     count_map = {
@@ -161,6 +170,10 @@ def score_security_from_counts(scan_results: dict) -> tuple[int, dict]:
         "semgrep_findings": ("sast", "medium"),
         "bandit_findings": ("sast", "medium"),
         "eslint_security_issues": ("sast", "medium"),
+        "skill_critical": ("skill", "high"),
+        "skill_warnings": ("skill", "medium"),
+        "mcpb_critical": ("mcpb", "high"),
+        "mcpb_warnings": ("mcpb", "medium"),
         "trivy_vulnerabilities": ("cve", "medium"),
         "npm_audit_vulnerabilities": ("cve", "medium"),
         "pip_audit_vulnerabilities": ("cve", "medium"),

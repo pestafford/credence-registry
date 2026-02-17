@@ -231,6 +231,52 @@ def normalize_mcp_tools(path: Path) -> list[dict]:
     return findings
 
 
+def normalize_skill_analyzer(path: Path) -> list[dict]:
+    """Normalize OpenClaw Skill Analyzer results."""
+    try:
+        data = json.loads(path.read_text())
+    except Exception:
+        return []
+
+    findings = []
+    for f in data.get("findings", []):
+        findings.append({
+            "id": f.get("id", "unknown"),
+            "scanner": "skill-analyzer",
+            "severity": f.get("severity", "medium"),
+            "category": "skill",
+            "file": f.get("file", ""),
+            "line": f.get("line", 0),
+            "title": f.get("title", ""),
+            "description": f.get("description", ""),
+            "evidence": f.get("evidence", ""),
+        })
+    return findings
+
+
+def normalize_mcpb_analyzer(path: Path) -> list[dict]:
+    """Normalize MCPB Extension Analyzer results."""
+    try:
+        data = json.loads(path.read_text())
+    except Exception:
+        return []
+
+    findings = []
+    for f in data.get("findings", []):
+        findings.append({
+            "id": f.get("id", "unknown"),
+            "scanner": "mcpb-analyzer",
+            "severity": f.get("severity", "medium"),
+            "category": "mcpb",
+            "file": f.get("file", ""),
+            "line": f.get("line", 0),
+            "title": f.get("title", ""),
+            "description": f.get("description", ""),
+            "evidence": f.get("evidence", ""),
+        })
+    return findings
+
+
 # ── Helpers ──────────────────────────────────────────────────────
 
 def _map_severity(raw: str) -> str:
@@ -272,6 +318,10 @@ def normalize_all(scan_dir: str) -> dict:
         "eslint-results.json": normalize_eslint,
         "mcp-tools.json": normalize_mcp_tools,
         "mcp-tool-analysis.json": normalize_mcp_tools,
+        "skill-analysis.json": normalize_skill_analyzer,
+        "skill-analysis-results.json": normalize_skill_analyzer,
+        "mcpb-analysis.json": normalize_mcpb_analyzer,
+        "mcpb-analysis-results.json": normalize_mcpb_analyzer,
     }
 
     scanners_run = []
