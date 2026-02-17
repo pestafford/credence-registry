@@ -168,12 +168,13 @@
         .hero h1 .rotating-wrapper {
             display: inline-block;
             position: relative;
-            overflow: hidden;
+            overflow-x: visible;
+            overflow-y: clip;
             vertical-align: text-bottom;
             height: 1.15em;
         }
         .hero h1 .rotating-wrapper::after {
-            content: 'OpenClaw skills';
+            content: 'MCP servers';
             display: block;
             visibility: hidden;
             height: 0;
