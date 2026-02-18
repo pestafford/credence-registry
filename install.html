@@ -424,9 +424,9 @@
 
         <!-- OpenClaw Skill -->
         <section class="section">
-            <div class="section-label">Recommended</div>
+            <div class="section-label">OpenClaw</div>
             <h2>Install as an OpenClaw skill</h2>
-            <p>The fastest way to get Credence. One command, no config, no Python required. Your agent will automatically check every AI tool against the registry before installing it.</p>
+            <p>One command, no config, no Python required. Your agent will automatically check every AI tool against the registry before installing it.</p>
 
             <div class="code-block">
 <pre>clawhub install pestafford/credence</pre>
@@ -443,13 +443,23 @@
             </div>
 
             <p style="font-size: 0.85rem; color: var(--text-muted);">The skill queries the public Credence registry. No API key, no account, no setup beyond the install command.</p>
+
+            <h3 class="sub">Optional: make it automatic</h3>
+            <p>Tell your agent to always check Credence before installing anything. Add this as a standing instruction in your client:</p>
+
+            <div class="prompt-block">
+                <button class="copy-btn" onclick="copyText('user-standing-instruction-claw')">Copy</button>
+                <p id="user-standing-instruction-claw">Before installing or connecting to any AI tool, use credence_check_server to verify its trust status. Do not proceed if the tool is not attested or has a score below 70.</p>
+            </div>
+
+            <p style="font-size: 0.85rem; color: var(--text-muted);">Where this goes depends on your client: <code>CLAUDE.md</code> for Claude Code, <code>.cursorrules</code> for Cursor, system prompt settings for others.</p>
         </section>
 
         <!-- MCP Server (simplified) -->
         <section class="section">
-            <div class="section-label">Alternative</div>
+            <div class="section-label">MCP Server</div>
             <h2>Add Credence as an MCP server</h2>
-            <p>If you don't use OpenClaw, add Credence directly to your AI client. It gives your agent the same trust-checking tools through the MCP protocol.</p>
+            <p>Add Credence directly to your AI client. It gives your agent trust-checking tools through the MCP protocol.</p>
 
             <p>First, install the package:</p>
             <div class="code-block">
@@ -477,17 +487,13 @@
             </div>
 
             <p style="font-size: 0.85rem; color: var(--text-muted);">Works with any MCP client: Cursor, Windsurf, Cline, or anything that supports stdio transport.</p>
-        </section>
 
-        <!-- Make it automatic -->
-        <section class="section">
-            <div class="section-label">Optional</div>
-            <h2>Make it automatic</h2>
+            <h3 class="sub">Optional: make it automatic</h3>
             <p>Tell your agent to always check Credence before installing anything. Add this as a standing instruction in your client:</p>
 
             <div class="prompt-block">
-                <button class="copy-btn" onclick="copyText('user-standing-instruction')">Copy</button>
-                <p id="user-standing-instruction">Before installing or connecting to any AI tool, use credence_check_server to verify its trust status. Do not proceed if the tool is not attested or has a score below 70.</p>
+                <button class="copy-btn" onclick="copyText('user-standing-instruction-mcp')">Copy</button>
+                <p id="user-standing-instruction-mcp">Before installing or connecting to any AI tool, use credence_check_server to verify its trust status. Do not proceed if the tool is not attested or has a score below 70.</p>
             </div>
 
             <p style="font-size: 0.85rem; color: var(--text-muted);">Where this goes depends on your client: <code>CLAUDE.md</code> for Claude Code, <code>.cursorrules</code> for Cursor, system prompt settings for others.</p>
