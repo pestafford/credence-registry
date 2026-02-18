@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FAQ — Credence</title>
+    <meta name="description" content="Frequently asked questions about the Credence trust registry — what we scan, what we publish, scoring, and how to get involved.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --orange: #B8522A;
+            --orange-light: #C96235;
+            --orange-dim: #8E3F1F;
+            --gray-100: #F5F5F5;
+            --gray-200: #E0E0E0;
+            --gray-300: #B0B0B0;
+            --gray-400: #808080;
+            --gray-500: #606060;
+            --gray-600: #505050;
+            --gray-700: #383838;
+            --gray-800: #252525;
+            --gray-900: #1A1A1A;
+            --black: #111111;
+        }
+
+        [data-theme="dark"] {
+            --bg-primary: var(--black);
+            --bg-secondary: var(--gray-900);
+            --bg-card: var(--gray-800);
+            --bg-card-hover: var(--gray-700);
+            --text-primary: var(--gray-100);
+            --text-secondary: var(--gray-300);
+            --text-muted: var(--gray-400);
+            --border-color: var(--gray-700);
+            --border-subtle: var(--gray-800);
+            --code-bg: var(--gray-900);
+            --glow: rgba(184, 82, 42, 0.15);
+        }
+
+        [data-theme="light"] {
+            --bg-primary: #F7F6F4;
+            --bg-secondary: #FFFFFF;
+            --bg-card: #FFFFFF;
+            --bg-card-hover: #F0EEEB;
+            --text-primary: var(--gray-900);
+            --text-secondary: var(--gray-600);
+            --text-muted: var(--gray-500);
+            --border-color: #D8D4CE;
+            --border-subtle: #EBE8E4;
+            --code-bg: #EDEAE6;
+            --glow: rgba(184, 82, 42, 0.08);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'IBM Plex Sans', -apple-system, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            transition: background 0.3s ease, color 0.3s ease;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        /* NAV */
+        nav {
+            padding: 20px 0;
+            border-bottom: 1px solid var(--border-subtle);
+        }
+        nav .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .nav-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .nav-logo {
+            width: 36px;
+            height: 36px;
+        }
+        .nav-title {
+            font-family: 'IBM Plex Mono', monospace;
+            font-weight: 600;
+            font-size: 1.1rem;
+            letter-spacing: 0.02em;
+        }
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        .nav-link {
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+        .nav-link:hover { color: var(--orange); }
+        .nav-link.active { color: var(--orange); }
+
+        .theme-toggle {
+            background: none;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 6px 10px;
+            cursor: pointer;
+            color: var(--text-secondary);
+            font-size: 1rem;
+            transition: border-color 0.2s, color 0.2s;
+        }
+        .theme-toggle:hover {
+            border-color: var(--orange);
+            color: var(--orange);
+        }
+
+        /* PAGE HEADER */
+        .page-header {
+            padding: 48px 0 32px;
+        }
+        .page-header h1 {
+            font-family: 'Space Mono', monospace;
+            font-size: 1.8rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            margin-bottom: 8px;
+        }
+        .page-header p {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            max-width: 700px;
+        }
+
+        /* SECTIONS */
+        .section {
+            padding: 40px 0;
+            border-top: 1px solid var(--border-subtle);
+        }
+        .section-label {
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 0.75rem;
+            color: var(--orange);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 12px;
+        }
+        .section h2 {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+
+        /* FAQ ITEMS */
+        .faq-list {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 0;
+        }
+        .faq-item {
+            padding: 20px 0 20px 20px;
+            border-bottom: 1px solid var(--border-subtle);
+            border-left: 2px solid var(--border-color);
+            transition: border-color 0.2s, background 0.2s;
+        }
+        .faq-item:last-child {
+            border-bottom: none;
+        }
+        .faq-item:hover {
+            border-left-color: var(--orange);
+        }
+        .faq-question {
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 0.9rem;
+            font-weight: 500;
+            margin-bottom: 8px;
+            color: var(--text-primary);
+        }
+        .faq-answer {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            max-width: 750px;
+        }
+        .faq-answer p {
+            margin-bottom: 10px;
+        }
+        .faq-answer p:last-child {
+            margin-bottom: 0;
+        }
+        .faq-answer code {
+            color: var(--orange);
+            background: var(--code-bg);
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 0.85rem;
+        }
+        .faq-answer a {
+            color: var(--text-primary);
+            text-decoration: none;
+            border-bottom: 1px solid var(--border-color);
+            transition: color 0.2s, border-color 0.2s;
+        }
+        .faq-answer a:hover {
+            color: var(--orange);
+            border-bottom-color: var(--orange);
+        }
+
+        /* FOOTER */
+        footer {
+            padding: 32px 0;
+            border-top: 1px solid var(--border-subtle);
+            text-align: center;
+            margin-top: 40px;
+        }
+        footer p {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+        footer a {
+            color: var(--text-secondary);
+            text-decoration: none;
+        }
+        footer a:hover { color: var(--orange); }
+
+        /* RESPONSIVE */
+        @media (max-width: 640px) {
+            .page-header h1 { font-size: 1.4rem; }
+            .nav-right { gap: 8px; }
+            .nav-link { font-size: 0.7rem; }
+            .nav-title { display: none; }
+        }
+    </style>
+</head>
+<body>
+
+<nav>
+    <div class="container">
+        <div class="nav-left">
+            <a href="index.html"><img src="credencelogo.png" alt="Credence" class="nav-logo"></a>
+            <a href="index.html" style="text-decoration:none; color:inherit;"><span class="nav-title">Credence</span></a>
+        </div>
+        <div class="nav-right">
+            <a href="https://github.com/pestafford/credence-registry" class="nav-link">GitHub</a>
+            <a href="registry.html" class="nav-link">Registry</a>
+            <a href="index.html#submit" class="nav-link">Submit</a>
+            <a href="quickstart.html" class="nav-link">Quick Start</a>
+            <a href="install.html" class="nav-link">Install</a>
+            <a href="research.html" class="nav-link">Research</a>
+            <a href="faq.html" class="nav-link active">FAQ</a>
+            <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">&#9684;</button>
+        </div>
+    </div>
+</nav>
+
+<div class="container">
+    <div class="page-header">
+        <h1>Frequently Asked Questions</h1>
+        <p>What Credence does, what it doesn't do, what we publish, and what stays private.</p>
+    </div>
+
+    <!-- ── BASICS ────────────────────────────────── -->
+
+    <section class="section">
+        <div class="section-label">Basics</div>
+        <h2>What Credence is</h2>
+        <div class="faq-list">
+
+            <div class="faq-item">
+                <div class="faq-question">What is Credence?</div>
+                <div class="faq-answer">
+                    <p>Credence is a trust registry for AI tools. It scans MCP servers, OpenClaw skills, and Claude Desktop extensions, then publishes a cryptographically signed attestation with a trust score, verdict, and provenance data. You can check that attestation from the CLI, an MCP client, or CI before you install anything.</p>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question">How is this different from just running a scanner?</div>
+                <div class="faq-answer">
+                    <p>Scanners find things. They don't decide what those things mean. Credence runs multiple scanners (Semgrep, Bandit, Trivy, Gitleaks, plus custom analyzers for skills and extensions), normalizes the results, and then passes them through adversarial deliberation: five AI agents with different security mandates debate the findings and produce a verdict. A scanner tells you "there are 3 high-severity findings." Credence tells you whether that means the tool is dangerous or just noisy.</p>
+                    <p>The provenance layer matters too. Scanners don't check who wrote the code, whether it's a fork, whether the original author was removed from the contributor list, or whether the GitHub account is 12 days old. Credence does.</p>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question">What kinds of tools does Credence cover?</div>
+                <div class="faq-answer">
+                    <p>Currently: MCP servers (git repos), OpenClaw skills from ClawHub, and Claude Desktop extensions (MCPB bundles). Each gets the same scanning pipeline and attestation model. The registry tracks a <code>tool_type</code> field so you can filter by category. We're adding new tool types as the AI tool ecosystem evolves.</p>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question">Is Credence open source?</div>
+                <div class="faq-answer">
+                    <p>The registry, scanning pipeline, CLI, and MCP server are all open source under the MIT license. The adversarial deliberation engine is a separate service. The full scan pipeline and attestation schema are in the <a href="https://github.com/pestafford/credence-registry">GitHub repo</a>.</p>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- ── SCORING ───────────────────────────────── -->
+
+    <section class="section">
+        <div class="section-label">Scoring</div>
+        <h2>How trust scores work</h2>
+        <div class="faq-list">
+
+            <div class="faq-item">
+                <div class="faq-question">What does the trust score measure?</div>
+                <div class="faq-answer">
+                    <p>Three dimensions, each scored 0&ndash;100:</p>
+                    <p><strong>Security</strong> (30% weight) &mdash; Code-level findings from static analysis and vulnerability scanners. Secrets detection is weighted highest because leaked credentials are immediately exploitable.</p>
+                    <p><strong>Provenance</strong> (40% weight) &mdash; Who wrote it and can we verify that? Checks fork status, account age, author identity, lockfile presence, and contributor history. This is the heaviest dimension because the SmartLoader attack that motivated Credence was a pure provenance attack.</p>
+                    <p><strong>Behavioral</strong> (30% weight) &mdash; What does the tool claim to do vs. what it actually does? Analyzes MCP tool definitions, permission requests, and suspicious patterns in skill/extension metadata.</p>
+                    <p>The aggregate score is a weighted average with hard overrides: if any dimension scores 39 or below, the aggregate is capped at 39 regardless of the other dimensions. If provenance is 0, the aggregate is forced to 0.</p>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question">What do the verdicts mean?</div>
+                <div class="faq-answer">
+                    <p><strong>VERIFIED</strong> (90+) &mdash; No significant findings. Provenance checks out. The deliberation panel agreed this tool looks clean.</p>
+                    <p><strong>CONDITIONAL</strong> (70&ndash;89) &mdash; Some findings or provenance gaps, but nothing that looks intentionally malicious. Might have a missing lockfile, a low-severity CVE, or a young account. Use your judgment.</p>
+                    <p><strong>FLAGGED</strong> (40&ndash;69) &mdash; Significant concerns. Could be a poorly maintained project, or could be something worse. The deliberation panel saw enough to warrant caution. Read the attestation details before installing.</p>
+                    <p><strong>REJECTED</strong> (0&ndash;39) &mdash; The tool failed hard on one or more dimensions. This is what a supply chain attack, a coordinated fork network, or a project with critical unpatched vulnerabilities looks like.</p>
+                    <p>Verdicts carry a <code>_PRELIMINARY</code> suffix until adversarial deliberation confirms them. Only confirmed verdicts enter the registry.</p>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question">What is adversarial deliberation?</div>
+                <div class="faq-answer">
+                    <p>After the scanners run, five AI agents with different mandates debate the findings. Two are skeptics (looking for attacks and supply chain red flags), one is neutral (checking compliance), and two are believers (arguing for legitimate use cases). They go up to five rounds, and the debate terminates early when positions stabilize.</p>
+                    <p>This catches things scanners miss. Obfuscated Lua bytecode in a text file wouldn't trigger a Semgrep rule, but the combination of that file plus a forked repo plus a missing original author plus a brand-new account is enough for the skeptic agents to argue rejection. Deliberation lets Credence reason about signals in aggregate, not just count findings.</p>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question">Can a tool get re-scanned?</div>
+                <div class="faq-answer">
+                    <p>Yes. Attestations are pinned to a specific git commit. If the code changes, submit a new scan. The new attestation will replace the old one in the registry. The previous scan results stay in <code>scan-results/</code> for the historical record.</p>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- ── SECURITY & PRIVACY ────────────────────── -->
+
+    <section class="section">
+        <div class="section-label">Security &amp; Privacy</div>
+        <h2>What we publish and what we don't</h2>
+        <div class="faq-list">
+
+            <div class="faq-item">
+                <div class="faq-question">Do you publish the raw scanner output?</div>
+                <div class="faq-answer">
+                    <p>No. Raw scanner output (Semgrep findings, Trivy CVE details, Gitleaks secret locations) is ephemeral. It stays on the CI runner during the scan and is passed to the deliberation engine for analysis, but it never enters the public registry. What we publish is the trust score, verdict, provenance flags, and dimension breakdowns. Counts, not details.</p>
+                    <p>This is a deliberate security boundary. Publishing "there's a hardcoded AWS key on line 47 of config.py" would be handing attackers a roadmap. We tell you the tool has a secrets problem. We don't tell the world exactly where.</p>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question">What happens when a tool scores poorly?</div>
+                <div class="faq-answer">
+                    <p>Tools that receive a FLAGGED or REJECTED verdict go into a responsible disclosure hold. The score and verdict are recorded internally but not published to the registry until the disclosure process completes. For tools classified as adversarial (intentionally malicious), the hold is 24 hours and then auto-publishes. For tools with vulnerabilities, a maintainer reviews first.</p>
+                    <p>The goal is to give maintainers time to fix legitimate issues before the score goes public, while still publishing adversarial tools quickly so people know to avoid them.</p>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question">What does a Credence attestation contain?</div>
+                <div class="faq-answer">
+                    <p>Each attestation includes: the commit SHA, a deterministic source fingerprint (SHA-256 hash of all files), the trust score and dimension breakdowns, the confirmed verdict, provenance flags, lockfile information, author identity data, the tool type, and an Ed25519 signature covering all of it. You can verify the signature independently with the public key published in the registry index.</p>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question">What is the source fingerprint?</div>
+                <div class="faq-answer">
+                    <p>Every file in the repository (excluding <code>.git/</code>) is hashed individually with SHA-256. Those per-file hashes are combined into a single deterministic fingerprint for the entire codebase. This fingerprint is pinned to a specific git commit and included in the signed attestation. If even one byte of source code changes, the fingerprint changes.</p>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question">Can I verify an attestation myself?</div>
+                <div class="faq-answer">
+                    <p>Yes. Install the Credence CLI (<code>pip install credence-mcp</code>) and run <code>credence verify &lt;server-name&gt;</code>. It fetches the attestation, checks the Ed25519 signature, and compares the source hash against the code on your machine. You can also query attestations through the Credence MCP server from Claude Desktop or any MCP client.</p>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- ── LIMITATIONS ───────────────────────────── -->
+
+    <section class="section">
+        <div class="section-label">Limitations</div>
+        <h2>What Credence doesn't do</h2>
+        <div class="faq-list">
+
+            <div class="faq-item">
+                <div class="faq-question">Does Credence monitor tools at runtime?</div>
+                <div class="faq-answer">
+                    <p>No. Credence is install-time verification only. It tells you whether to trust a tool before you run it. Once installed, runtime behavior is out of scope. For runtime enforcement, look at Docker's MCP Catalog, ToolHive, Solo.io's Agent Mesh, or Acuvity's runtime guardrails. Credence is complementary to those tools.</p>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question">Can an attacker submit a malicious tool to Credence?</div>
+                <div class="faq-answer">
+                    <p>Yes. Anyone can submit a tool for scanning. But the attestation carries their identity, not the original author's. The provenance checks would flag the mismatch: fork status, excluded original author, account age, identity discrepancies. The deliberation would evaluate those signals. You can't get a clean attestation without clean provenance, and you can't fake provenance without leaving flags that Credence is specifically built to detect.</p>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question">What if a tool is compromised after attestation?</div>
+                <div class="faq-answer">
+                    <p>The attestation only covers the exact commit that was scanned. If the code changes, the source fingerprint won't match. The Credence CLI's <code>credence watch</code> command monitors your MCP client config for newly added servers and alerts you if they don't have a current attestation. But if a previously-attested server pushes a malicious update to the same commit hash (which would require compromising git itself), Credence won't catch that.</p>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question">Does Credence catch every attack?</div>
+                <div class="faq-answer">
+                    <p>No. Credence catches supply chain attacks that leave provenance signals (forks, identity mismatches, young accounts, excluded authors) and code-level issues that scanners can detect. It does not catch: zero-day vulnerabilities in dependencies, runtime-only attacks, indirect prompt injection, or a perfectly patient attacker who builds a legitimate reputation over years before going malicious. Credence raises the cost and complexity of supply chain attacks. It doesn't make them impossible.</p>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- ── SUBMITTING ────────────────────────────── -->
+
+    <section class="section">
+        <div class="section-label">Submitting</div>
+        <h2>Getting scanned</h2>
+        <div class="faq-list">
+
+            <div class="faq-item">
+                <div class="faq-question">How do I submit a tool for scanning?</div>
+                <div class="faq-answer">
+                    <p>Use the <a href="index.html#submit">submission form</a> on the homepage. Provide the public git repository URL and optionally a specific commit SHA and server path (for monorepos). A Credence maintainer reviews the submission, and scanning starts when approved.</p>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question">Can I scan private repositories?</div>
+                <div class="faq-answer">
+                    <p>Not currently. Credence clones the repository during scanning, so it needs to be publicly accessible. The attestation model is designed for public trust decisions about public tools. Private tools are a different problem with different trust assumptions.</p>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question">Does it matter if I'm the author or a third party?</div>
+                <div class="faq-answer">
+                    <p>Both can submit. The attestation records whether the submitter is a verified maintainer (repo owner, collaborator, or contributor) or a third party. Verified maintainer submissions get that noted in the attestation. Third-party submissions still get scanned, but the submitter identity is recorded separately from the author identity.</p>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question">How long does a scan take?</div>
+                <div class="faq-answer">
+                    <p>Phase 1 (deterministic scanning) takes a few minutes. Phase 2 (adversarial deliberation) typically takes 5&ndash;15 minutes depending on the complexity of the findings. Total end-to-end is usually under 20 minutes. You'll see results posted to the submission issue when complete.</p>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- ── TECHNICAL ─────────────────────────────── -->
+
+    <section class="section">
+        <div class="section-label">Technical</div>
+        <h2>Under the hood</h2>
+        <div class="faq-list">
+
+            <div class="faq-item">
+                <div class="faq-question">What scanners does Credence run?</div>
+                <div class="faq-answer">
+                    <p><strong>Semgrep</strong> &mdash; Static analysis with auto-config rules for Python, JavaScript, TypeScript, and more.</p>
+                    <p><strong>Bandit</strong> &mdash; Python-specific security linter.</p>
+                    <p><strong>Trivy</strong> &mdash; CVE scanning for dependencies across all major package ecosystems.</p>
+                    <p><strong>Gitleaks</strong> &mdash; Secrets detection (API keys, tokens, credentials in source).</p>
+                    <p><strong>Skill Analyzer</strong> &mdash; Custom scanner for OpenClaw skills: checks for encoded payloads, broad permission requests, quarantine bypass, and other skill-specific attack patterns.</p>
+                    <p><strong>MCPB Analyzer</strong> &mdash; Custom scanner for Claude Desktop extensions: checks manifest integrity, template injection, dynamic code loading, and source-bundle mismatches.</p>
+                    <p>Results from all scanners are normalized into a unified evidence format before scoring and deliberation.</p>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question">What provenance checks does Credence perform?</div>
+                <div class="faq-answer">
+                    <p>For GitHub-hosted tools: fork status, whether the original author is in the contributor list, account creation date (tiered: 30/90/180 days), repo owner vs. package metadata author match, lockfile presence and hash, coordinated fork network detection (cross-fork ring patterns among multiple accounts), and contributor availability.</p>
+                    <p>For non-GitHub hosts: provenance checks are limited to lockfile detection. The attestation records this gap with a <code>NON_GITHUB_HOST</code> flag.</p>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question">What cryptography does Credence use?</div>
+                <div class="faq-answer">
+                    <p>Ed25519 for attestation signing. SHA-256 for source fingerprinting and lockfile hashing. The attestation is canonicalized as sorted JSON, signed, and the signature is stored as base64 alongside a canonical hash for independent verification. The public key is published in the registry index.</p>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question">Where does the data live?</div>
+                <div class="faq-answer">
+                    <p>Everything is static files served by GitHub Pages. The registry index (<code>registry/index.json</code>), per-server attestation files (<code>registry/servers/</code>), and redacted scan results (<code>scan-results/</code>) are all committed to the git repository. No database. No API server. The Credence CLI and MCP server read directly from these files.</p>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+</div>
+
+<footer>
+    <div class="container">
+        <p>Built by <a href="https://github.com/pestafford">Phil Stafford</a> &middot; <a href="https://medium.com/@pe.stafford">Writing</a> &middot; <a href="mailto:phil@securingthesingularity.com">Contact</a></p>
+        <p style="margin-top: 4px;">&copy; 2026 &middot; MIT License &middot; <a href="https://github.com/pestafford/credence-registry">GitHub</a></p>
+    </div>
+</footer>
+
+<script>
+    function toggleTheme() {
+        var html = document.documentElement;
+        var current = html.getAttribute('data-theme');
+        var next = current === 'dark' ? 'light' : 'dark';
+        html.setAttribute('data-theme', next);
+        localStorage.setItem('credence-theme', next);
+    }
+
+    var saved = localStorage.getItem('credence-theme');
+    if (saved) {
+        document.documentElement.setAttribute('data-theme', saved);
+    } else if (window.matchMedia('(prefers-color-scheme: light)').matches) {
+        document.documentElement.setAttribute('data-theme', 'light');
+    }
+</script>
+
+</body>
+</html>

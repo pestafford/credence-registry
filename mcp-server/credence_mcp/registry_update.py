@@ -51,6 +51,10 @@ def build_attestation(summary: dict) -> dict:
     if threat_type:
         att["threat_type"] = threat_type
 
+    tool_type = summary.get("tool_type")
+    if tool_type:
+        att["tool_type"] = tool_type
+
     return att
 
 
@@ -143,6 +147,10 @@ def _build_index_entry(server_id: str, server_name: str, canonical_name: str,
     threat_type = attestation.get("threat_type")
     if threat_type:
         entry["threat_type"] = threat_type
+
+    tool_type = attestation.get("tool_type")
+    if tool_type:
+        entry["tool_type"] = tool_type
 
     return entry
 

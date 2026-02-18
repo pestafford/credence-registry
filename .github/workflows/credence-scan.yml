@@ -615,6 +615,38 @@ jobs:
           echo "$TOOL_REPORT" > /tmp/mcp-tool-analysis.json
           cat /tmp/mcp-tool-analysis.json
 
+      - name: Analyze OpenClaw skill metadata
+        if: steps.clone.outputs.clone_failed != 'true'
+        run: |
+          python3 -m credence_mcp.skill_analyzer "$SCAN_DIR" /tmp/skill-analysis.json || true
+          if [ -f /tmp/skill-analysis.json ]; then
+            echo "Skill analysis complete:"
+            cat /tmp/skill-analysis.json
+          fi
+
+      - name: Analyze MCPB extension metadata
+        if: steps.clone.outputs.clone_failed != 'true'
+        run: |
+          python3 -m credence_mcp.mcpb_analyzer "$SCAN_DIR" /tmp/mcpb-analysis.json || true
+          if [ -f /tmp/mcpb-analysis.json ]; then
+            echo "MCPB analysis complete:"
+            cat /tmp/mcpb-analysis.json
+          fi
+
+      - name: Detect tool type
+        if: steps.clone.outputs.clone_failed != 'true'
+        id: tool_type
+        run: |
+          cd $SCAN_DIR
+          if [ -f "SKILL.md" ] || [ -f "claw.json" ]; then
+            echo "tool_type=openclaw-skill" >> $GITHUB_OUTPUT
+          elif [ -f "manifest.json" ] && jq -e '.mcpb_version' manifest.json >/dev/null 2>&1; then
+            echo "tool_type=mcpb-extension" >> $GITHUB_OUTPUT
+          else
+            echo "tool_type=mcp-server" >> $GITHUB_OUTPUT
+          fi
+          echo "Detected tool type: $(grep tool_type $GITHUB_OUTPUT | tail -1)"
+
       # ── STAGE 4: COMPILE RESULTS ──────────────────────
 
       - name: Compile scan summary
@@ -627,6 +659,10 @@ jobs:
           GITLEAKS_COUNT=$(jq 'length' /tmp/gitleaks-results.json 2>/dev/null || echo 0)
           MCP_WARNINGS=$(jq '.warnings | length' /tmp/mcp-tool-analysis.json 2>/dev/null || echo 0)
           MCP_CRITICAL=$(jq '.critical_count // 0' /tmp/mcp-tool-analysis.json 2>/dev/null || echo 0)
+          SKILL_WARNINGS=$(jq '.warning_count // 0' /tmp/skill-analysis.json 2>/dev/null || echo 0)
+          SKILL_CRITICAL=$(jq '.critical_count // 0' /tmp/skill-analysis.json 2>/dev/null || echo 0)
+          MCPB_WARNINGS=$(jq '.warning_count // 0' /tmp/mcpb-analysis.json 2>/dev/null || echo 0)
+          MCPB_CRITICAL=$(jq '.critical_count // 0' /tmp/mcpb-analysis.json 2>/dev/null || echo 0)
           PROV_FLAGS='${{ steps.provenance.outputs.flags }}'
           IS_FORK='${{ steps.provenance.outputs.is_fork }}'
           if [ "$IS_FORK" = "true" ]; then
@@ -655,6 +691,7 @@ jobs:
             "server_name": "${{ steps.parse.outputs.server_name }}",
             "canonical_name": "$CANONICAL_NAME",
             "server_path": "${{ steps.parse.outputs.server_path }}",
+            "tool_type": "${{ steps.tool_type.outputs.tool_type }}",
             "maintainer_verified": $MV_JSON,
             "verify_reason": "$VERIFY_REASON",
             "repo_url": "${{ steps.parse.outputs.repo_url }}",
@@ -671,7 +708,11 @@ jobs:
               "trivy_vulnerabilities": $TRIVY_VULNS,
               "gitleaks_secrets": $GITLEAKS_COUNT,
               "mcp_tool_warnings": $MCP_WARNINGS,
-              "mcp_tool_critical": $MCP_CRITICAL
+              "mcp_tool_critical": $MCP_CRITICAL,
+              "skill_warnings": $SKILL_WARNINGS,
+              "skill_critical": $SKILL_CRITICAL,
+              "mcpb_warnings": $MCPB_WARNINGS,
+              "mcpb_critical": $MCPB_CRITICAL
             },
             "scan_timestamp": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
             "pipeline_version": "0.2.0",
