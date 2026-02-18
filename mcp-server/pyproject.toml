@@ -1,6 +1,6 @@
 [project]
 name = "credence-mcp"
-version = "0.2.0"
+version = "0.3.0"
 description = "Install-time trust verification for MCP servers. Cryptographic attestation registry with CLI and MCP server interface."
 readme = {text = "Credence MCP — Install-time trust verification for MCP servers.", content-type = "text/plain"}
 license = { text = "MIT" }
