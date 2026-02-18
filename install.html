@@ -277,6 +277,85 @@
             white-space: nowrap;
         }
 
+        /* TABS */
+        .install-tabs {
+            display: flex;
+            gap: 0;
+            margin-bottom: 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .install-tab {
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 0.9rem;
+            font-weight: 500;
+            padding: 12px 28px;
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            transition: color 0.2s, border-color 0.2s;
+        }
+        .install-tab:hover { color: var(--text-secondary); }
+        .install-tab.active {
+            color: var(--orange);
+            border-bottom-color: var(--orange);
+        }
+        .tab-pane {
+            display: none;
+        }
+        .tab-pane.active {
+            display: block;
+        }
+
+        /* PROMPT BLOCK */
+        .prompt-block {
+            position: relative;
+            background: var(--code-bg);
+            border: 1px solid var(--orange-dim);
+            border-left: 3px solid var(--orange);
+            padding: 24px;
+            padding-right: 48px;
+            margin-top: 16px;
+            margin-bottom: 16px;
+        }
+        .prompt-block p {
+            font-family: 'IBM Plex Sans', sans-serif;
+            font-size: 0.9rem;
+            line-height: 1.7;
+            color: var(--text-primary);
+            margin: 0;
+        }
+        .copy-btn {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            padding: 6px 10px;
+            cursor: pointer;
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            transition: border-color 0.2s, color 0.2s;
+        }
+        .copy-btn:hover {
+            border-color: var(--orange);
+            color: var(--orange);
+        }
+        .copy-btn.copied {
+            border-color: #6B9E4F;
+            color: #6B9E4F;
+        }
+
+        /* INLINE LINK */
+        a.inline-link {
+            color: var(--orange);
+            text-decoration: none;
+        }
+        a.inline-link:hover { text-decoration: underline; }
+
         /* FOOTER */
         footer {
             padding: 32px 0;
@@ -329,58 +408,59 @@
 <div class="container">
     <div class="page-header">
         <h1>Install</h1>
-        <p>Install once, check every AI tool before you connect. Choose your path: an OpenClaw skill (zero config), a pip package with CLI and MCP server, or both.</p>
+        <p>Check every AI tool before you connect. Pick the path that fits how you work.</p>
     </div>
 
-    <div style="padding: 12px 20px; background: var(--glow); border: 1px solid var(--orange-dim); border-radius: 6px; margin-bottom: 24px;">
-        <p style="font-family: 'IBM Plex Mono', monospace; font-size: 0.85rem; color: var(--text-secondary); margin: 0;">New here? <a href="quickstart.html" style="color: var(--orange); text-decoration: none; font-weight: 500;">Start with the quick start guide &rarr;</a> Scan your existing tools in two minutes.</p>
+    <div class="install-tabs">
+        <button class="install-tab active" onclick="switchTab('users')">For Users</button>
+        <button class="install-tab" onclick="switchTab('devs')">For Developers</button>
     </div>
 
-    <!-- Section 1: Install -->
-    <section class="section">
-        <div class="section-label">Install</div>
-        <h2>Get Credence</h2>
-        <p>Requires Python 3.10+. Installs both the <code>credence</code> CLI and the MCP server module.</p>
+    <!-- ════════════════════════════════════════════════ -->
+    <!-- FOR USERS                                       -->
+    <!-- ════════════════════════════════════════════════ -->
 
-        <div class="code-block">
-<pre>pip install git+https://github.com/pestafford/credence-registry.git#subdirectory=mcp-server</pre>
-        </div>
+    <div id="tab-users" class="tab-pane active">
 
-        <p style="font-size: 0.85rem; color: var(--text-muted);">After install, <code>credence</code> is available on your PATH and <code>python3 -m credence_mcp.server</code> starts the MCP server.</p>
-    </section>
+        <!-- OpenClaw Skill -->
+        <section class="section">
+            <div class="section-label">Recommended</div>
+            <h2>Install as an OpenClaw skill</h2>
+            <p>The fastest way to get Credence. One command, no config, no Python required. Your agent will automatically check every AI tool against the registry before installing it.</p>
 
-    <!-- Section 1b: OpenClaw Skill -->
-    <section class="section">
-        <div class="section-label">OpenClaw</div>
-        <h2>Install as a skill</h2>
-        <p>If you use <a href="https://openclaw.ai" style="color: var(--orange); text-decoration: none;">OpenClaw</a>, install Credence as a skill. Your agent will check every AI tool against the registry before installing it — no pip install or config needed.</p>
-
-        <div class="code-block">
+            <div class="code-block">
 <pre>clawhub install pestafford/credence</pre>
-        </div>
+            </div>
 
-        <p>That's it. Once installed, the skill runs automatically whenever your agent installs a new tool. You can also check any tool manually:</p>
+            <p>That's it. Once installed, the skill runs automatically whenever your agent installs a new tool. You can also check any tool yourself:</p>
 
-        <div class="code-block">
-<pre><span class="comment"># Ask your agent</span>
+            <div class="code-block">
+<pre><span class="comment"># Use the slash command</span>
 /credence modelcontextprotocol/servers/filesystem
 
-<span class="comment"># Or just mention it</span>
+<span class="comment"># Or just ask</span>
 "Check the trust score for owner/mcp-server before we install it"</pre>
-        </div>
+            </div>
 
-        <p>The skill queries the public Credence registry — no API key, no account, no setup beyond the install command.</p>
-    </section>
+            <p style="font-size: 0.85rem; color: var(--text-muted);">The skill queries the public Credence registry. No API key, no account, no setup beyond the install command.</p>
+        </section>
 
-    <!-- Section 2: MCP Server -->
-    <section class="section">
-        <div class="section-label">MCP Server</div>
-        <h2>Add Credence to your AI agent</h2>
-        <p>Credence runs as an MCP server so your AI agent can check trust status before connecting to unknown tools. The agent calls Credence tools through the same protocol it uses for everything else.</p>
+        <!-- MCP Server (simplified) -->
+        <section class="section">
+            <div class="section-label">Alternative</div>
+            <h2>Add Credence as an MCP server</h2>
+            <p>If you don't use OpenClaw, add Credence directly to your AI client. It gives your agent the same trust-checking tools through the MCP protocol.</p>
 
-        <h3 class="sub">Claude Desktop</h3>
-        <p>Add to your <code>claude_desktop_config.json</code>:</p>
-        <div class="code-block">
+            <p>First, install the package:</p>
+            <div class="code-block">
+<pre>pip install git+https://github.com/pestafford/credence-registry.git#subdirectory=mcp-server</pre>
+            </div>
+
+            <p>Then add it to your client:</p>
+
+            <h3 class="sub">Claude Desktop</h3>
+            <p>Add to your <code>claude_desktop_config.json</code>:</p>
+            <div class="code-block">
 <pre>{
   <span class="key">"mcpServers"</span>: {
     <span class="key">"credence"</span>: {
@@ -389,70 +469,155 @@
     }
   }
 }</pre>
-        </div>
+            </div>
 
-        <h3 class="sub">Claude Code</h3>
-        <div class="code-block">
+            <h3 class="sub">Claude Code</h3>
+            <div class="code-block">
 <pre>claude mcp add credence -- python3 -m credence_mcp.server</pre>
-        </div>
+            </div>
 
-        <h3 class="sub">Other MCP clients</h3>
-        <p>Any MCP client that supports stdio transport can run Credence:</p>
-        <div class="code-block">
+            <p style="font-size: 0.85rem; color: var(--text-muted);">Works with any MCP client: Cursor, Windsurf, Cline, or anything that supports stdio transport.</p>
+        </section>
+
+        <!-- Make it automatic -->
+        <section class="section">
+            <div class="section-label">Optional</div>
+            <h2>Make it automatic</h2>
+            <p>Tell your agent to always check Credence before installing anything. Add this as a standing instruction in your client:</p>
+
+            <div class="prompt-block">
+                <button class="copy-btn" onclick="copyText('user-standing-instruction')">Copy</button>
+                <p id="user-standing-instruction">Before installing or connecting to any AI tool, use credence_check_server to verify its trust status. Do not proceed if the tool is not attested or has a score below 70.</p>
+            </div>
+
+            <p style="font-size: 0.85rem; color: var(--text-muted);">Where this goes depends on your client: <code>CLAUDE.md</code> for Claude Code, <code>.cursorrules</code> for Cursor, system prompt settings for others.</p>
+
+            <p style="margin-top: 24px;">Want the full CLI, CI integration, and system service setup? <a href="#" onclick="switchTab('devs'); return false;" class="inline-link">Switch to the developer guide</a>.</p>
+        </section>
+
+    </div>
+
+    <!-- ════════════════════════════════════════════════ -->
+    <!-- FOR DEVELOPERS                                  -->
+    <!-- ════════════════════════════════════════════════ -->
+
+    <div id="tab-devs" class="tab-pane">
+
+        <!-- OpenClaw Skill -->
+        <section class="section">
+            <div class="section-label">OpenClaw</div>
+            <h2>Install as a skill</h2>
+            <p>If your team uses <a href="https://openclaw.ai" style="color: var(--orange); text-decoration: none;">OpenClaw</a>, Credence is available as a skill. No Python dependency, no MCP config — the skill queries the public registry via curl.</p>
+
+            <div class="code-block">
+<pre>clawhub install pestafford/credence</pre>
+            </div>
+
+            <p>The skill runs automatically on tool installs. Manual invocation:</p>
+
+            <div class="code-block">
+<pre><span class="comment"># Slash command</span>
+/credence modelcontextprotocol/servers/filesystem
+
+<span class="comment"># Natural language</span>
+"Check the trust score for owner/mcp-server before we install it"</pre>
+            </div>
+        </section>
+
+        <!-- pip install -->
+        <section class="section">
+            <div class="section-label">Install</div>
+            <h2>pip install</h2>
+            <p>Requires Python 3.10+. Installs the <code>credence</code> CLI and the MCP server module.</p>
+
+            <div class="code-block">
+<pre>pip install git+https://github.com/pestafford/credence-registry.git#subdirectory=mcp-server</pre>
+            </div>
+
+            <p style="font-size: 0.85rem; color: var(--text-muted);">After install, <code>credence</code> is available on your PATH and <code>python3 -m credence_mcp.server</code> starts the MCP server.</p>
+        </section>
+
+        <!-- MCP Server -->
+        <section class="section">
+            <div class="section-label">MCP Server</div>
+            <h2>Add Credence to your AI agent</h2>
+            <p>Credence runs as an MCP server so your AI agent can check trust status before connecting to unknown tools.</p>
+
+            <h3 class="sub">Claude Desktop</h3>
+            <p>Add to your <code>claude_desktop_config.json</code>:</p>
+            <div class="code-block">
+<pre>{
+  <span class="key">"mcpServers"</span>: {
+    <span class="key">"credence"</span>: {
+      <span class="key">"command"</span>: <span class="val">"python3"</span>,
+      <span class="key">"args"</span>: [<span class="val">"-m"</span>, <span class="val">"credence_mcp.server"</span>]
+    }
+  }
+}</pre>
+            </div>
+
+            <h3 class="sub">Claude Code</h3>
+            <div class="code-block">
+<pre>claude mcp add credence -- python3 -m credence_mcp.server</pre>
+            </div>
+
+            <h3 class="sub">Other MCP clients</h3>
+            <p>Any MCP client that supports stdio transport can run Credence:</p>
+            <div class="code-block">
 <pre><span class="comment"># stdio transport (default)</span>
 python3 -m credence_mcp.server
 
 <span class="comment"># HTTP transport</span>
 python3 -m credence_mcp.server --transport http --port 8400</pre>
-        </div>
+            </div>
 
-        <h3 class="sub">Available tools</h3>
-        <div class="pipeline">
-            <div class="pipe-card">
-                <span class="pipe-num">&#9670;</span>
-                <div>
-                    <h3>credence_check_server</h3>
-                    <p>Check whether an AI tool has a Credence attestation and what its trust status is. Use this before installing or connecting to a tool you haven't used before.</p>
+            <h3 class="sub">Available tools</h3>
+            <div class="pipeline">
+                <div class="pipe-card">
+                    <span class="pipe-num">&#9670;</span>
+                    <div>
+                        <h3>credence_check_server</h3>
+                        <p>Check whether an AI tool has a Credence attestation and what its trust status is. Use this before installing or connecting to a tool you haven't used before.</p>
+                    </div>
+                </div>
+                <div class="pipe-card">
+                    <span class="pipe-num">&#9670;</span>
+                    <div>
+                        <h3>credence_verify_hash</h3>
+                        <p>Verify a local source hash against the attestation on record. Confirms the code you have matches the code that was scanned.</p>
+                    </div>
+                </div>
+                <div class="pipe-card">
+                    <span class="pipe-num">&#9670;</span>
+                    <div>
+                        <h3>credence_hash_local</h3>
+                        <p>Compute a Merkle tree hash of a local directory. Use this to get a hash you can compare against the attestation.</p>
+                    </div>
+                </div>
+                <div class="pipe-card">
+                    <span class="pipe-num">&#9670;</span>
+                    <div>
+                        <h3>credence_list_servers</h3>
+                        <p>List all attested tools in the registry, with optional minimum score filter.</p>
+                    </div>
+                </div>
+                <div class="pipe-card">
+                    <span class="pipe-num">&#9670;</span>
+                    <div>
+                        <h3>credence_audit_config</h3>
+                        <p>Audit all tools in your MCP client config. Checks each one against the registry and reports any that are unattested, flagged, or rejected.</p>
+                    </div>
                 </div>
             </div>
-            <div class="pipe-card">
-                <span class="pipe-num">&#9670;</span>
-                <div>
-                    <h3>credence_verify_hash</h3>
-                    <p>Verify a local source hash against the attestation on record. Confirms the code you have matches the code that was scanned.</p>
-                </div>
-            </div>
-            <div class="pipe-card">
-                <span class="pipe-num">&#9670;</span>
-                <div>
-                    <h3>credence_hash_local</h3>
-                    <p>Compute a Merkle tree hash of a local server directory. Use this to get a hash you can compare against the attestation.</p>
-                </div>
-            </div>
-            <div class="pipe-card">
-                <span class="pipe-num">&#9670;</span>
-                <div>
-                    <h3>credence_list_servers</h3>
-                    <p>List all attested tools in the registry, with optional minimum score filter.</p>
-                </div>
-            </div>
-            <div class="pipe-card">
-                <span class="pipe-num">&#9670;</span>
-                <div>
-                    <h3>credence_audit_config</h3>
-                    <p>Audit all tools in your MCP client config. Checks each one against the registry and reports any that are unattested, flagged, or rejected.</p>
-                </div>
-            </div>
-        </div>
-    </section>
+        </section>
 
-    <!-- Section 3: CLI -->
-    <section class="section">
-        <div class="section-label">CLI</div>
-        <h2>Command reference</h2>
-        <p>All commands accept tool identifiers in these formats: <code>https://github.com/owner/repo</code>, <code>owner/repo</code>, or the tool name from the registry.</p>
+        <!-- CLI -->
+        <section class="section">
+            <div class="section-label">CLI</div>
+            <h2>Command reference</h2>
+            <p>All commands accept tool identifiers in these formats: <code>https://github.com/owner/repo</code>, <code>owner/repo</code>, or the tool name from the registry.</p>
 
-        <div class="code-block">
+            <div class="code-block">
 <pre><span class="comment"># Check trust status of a tool</span>
 credence check &lt;server&gt;
 
@@ -470,10 +635,10 @@ credence guard &lt;server&gt; [-- cmd]
 
 <span class="comment"># Watch config for changes, alert on unattested tools</span>
 credence watch [--config PATH]</pre>
-        </div>
+            </div>
 
-        <h3 class="sub">Examples</h3>
-        <div class="code-block">
+            <h3 class="sub">Examples</h3>
+            <div class="code-block">
 <pre><span class="comment"># Check by GitHub URL</span>
 $ credence check https://github.com/owner/mcp-server
 
@@ -494,56 +659,56 @@ $ credence audit --config ~/custom/claude_desktop_config.json
 
 <span class="comment"># Only install if trusted</span>
 $ credence guard owner/mcp-server -- claude mcp add my-server</pre>
-        </div>
+            </div>
 
-        <h3 class="sub">Exit codes</h3>
-        <table class="ref-table">
-            <thead>
-                <tr>
-                    <th>Code</th>
-                    <th>Meaning</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>0</td>
-                    <td>Attested, safe to install</td>
-                </tr>
-                <tr>
-                    <td>1</td>
-                    <td>Not attested or error</td>
-                </tr>
-                <tr>
-                    <td>2</td>
-                    <td>Attested but flagged — review recommended</td>
-                </tr>
-                <tr>
-                    <td>3</td>
-                    <td>Rejected or hash mismatch — do not install</td>
-                </tr>
-                <tr>
-                    <td>4</td>
-                    <td>Audit found unattested or flagged servers</td>
-                </tr>
-            </tbody>
-        </table>
-    </section>
+            <h3 class="sub">Exit codes</h3>
+            <table class="ref-table">
+                <thead>
+                    <tr>
+                        <th>Code</th>
+                        <th>Meaning</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>0</td>
+                        <td>Attested, safe to install</td>
+                    </tr>
+                    <tr>
+                        <td>1</td>
+                        <td>Not attested or error</td>
+                    </tr>
+                    <tr>
+                        <td>2</td>
+                        <td>Attested but flagged — review recommended</td>
+                    </tr>
+                    <tr>
+                        <td>3</td>
+                        <td>Rejected or hash mismatch — do not install</td>
+                    </tr>
+                    <tr>
+                        <td>4</td>
+                        <td>Audit found unattested or flagged tools</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
 
-    <!-- Section 4: CI / Scripting -->
-    <section class="section">
-        <div class="section-label">CI / Scripting</div>
-        <h2>Automate trust checks</h2>
-        <p>Use <code>credence guard</code> and exit codes to gate installs in CI pipelines, shell scripts, and orchestration tools.</p>
+        <!-- CI / Scripting -->
+        <section class="section">
+            <div class="section-label">CI / Scripting</div>
+            <h2>Automate trust checks</h2>
+            <p>Use <code>credence guard</code> and exit codes to gate installs in CI pipelines, shell scripts, and orchestration tools.</p>
 
-        <h3 class="sub">Guard an install</h3>
-        <p><code>credence guard</code> checks trust status first. If the tool is attested and not rejected, it runs the command after <code>--</code>. Otherwise it exits without running anything.</p>
-        <div class="code-block">
+            <h3 class="sub">Guard an install</h3>
+            <p><code>credence guard</code> checks trust status first. If the tool is attested and not rejected, it runs the command after <code>--</code>. Otherwise it exits without running anything.</p>
+            <div class="code-block">
 <pre><span class="comment"># Only install if the tool is attested</span>
 credence guard modelcontextprotocol/servers/filesystem -- claude mcp add filesystem-server</pre>
-        </div>
+            </div>
 
-        <h3 class="sub">Shell script with exit codes</h3>
-        <div class="code-block">
+            <h3 class="sub">Shell script with exit codes</h3>
+            <div class="code-block">
 <pre><span class="comment">#!/bin/bash</span>
 credence check owner/mcp-server
 status=$?
@@ -558,30 +723,29 @@ else
   echo "Not attested or rejected — skipping"
   exit 1
 fi</pre>
-        </div>
+            </div>
 
-        <p style="font-size: 0.85rem; color: var(--text-muted);">Exit codes are stable and intended for programmatic use. See the exit codes table in the CLI section above.</p>
-    </section>
+            <p style="font-size: 0.85rem; color: var(--text-muted);">Exit codes are stable and intended for programmatic use. See the exit codes table above.</p>
+        </section>
 
-    <!-- Section 5: Persistent protection -->
-    <section class="section" id="persistent">
-        <div class="section-label">Persistent Protection</div>
-        <h2>Always-on trust checks</h2>
-        <p>Configure Credence once so every new AI tool gets checked automatically — across reboots, new terminals, and new projects.</p>
+        <!-- Persistent protection -->
+        <section class="section" id="persistent">
+            <div class="section-label">Persistent Protection</div>
+            <h2>Always-on trust checks</h2>
+            <p>Configure Credence once so every new AI tool gets checked automatically — across reboots, new terminals, and new projects.</p>
 
-        <h3 class="sub">MCP server (AI agent users)</h3>
-        <p>If you added Credence as an MCP server (see <a href="#" onclick="window.scrollTo({top: document.querySelector('.section:nth-of-type(2)').offsetTop - 20, behavior: 'smooth'}); return false;" class="inline-link" style="color: var(--orange);">above</a>), you're already set. The Credence tools are available in every session, regardless of which MCP client you use — Claude Desktop, Claude Code, Cursor, Windsurf, Cline, or any other stdio-compatible client.</p>
-        <p>To make the agent check automatically without being asked, add a standing instruction to your client's system prompt or project instructions:</p>
-        <div class="code-block">
+            <h3 class="sub">Standing instruction (AI agent users)</h3>
+            <p>Add a standing instruction to your client's system prompt or project instructions:</p>
+            <div class="code-block">
 <pre>Before installing or connecting to any AI tool,
 use credence_check_server to verify its trust status.
 Do not proceed if the tool is not attested or has a score below 70.</pre>
-        </div>
-        <p style="font-size: 0.85rem; color: var(--text-muted);">Where this goes depends on your client: <code>CLAUDE.md</code> for Claude Code, <code>.cursorrules</code> for Cursor, system prompt settings for others. Adjust the score threshold to your risk tolerance.</p>
+            </div>
+            <p style="font-size: 0.85rem; color: var(--text-muted);">Where this goes depends on your client: <code>CLAUDE.md</code> for Claude Code, <code>.cursorrules</code> for Cursor, system prompt settings for others. Adjust the score threshold to your risk tolerance.</p>
 
-        <h3 class="sub">Shell function (CLI users)</h3>
-        <p>Add to your shell profile so <code>mcp-install</code> is always available. The first argument is the tool identifier; everything after is the install command that runs only if the tool is attested.</p>
-        <div class="code-block">
+            <h3 class="sub">Shell function (CLI users)</h3>
+            <p>Add to your shell profile so <code>mcp-install</code> is always available. The first argument is the tool identifier; everything after is the install command that runs only if the tool is attested.</p>
+            <div class="code-block">
 <pre><span class="comment"># Add to ~/.bashrc or ~/.zshrc</span>
 mcp-install() {
   credence guard "$1" -- "${@:2}"
@@ -590,14 +754,13 @@ mcp-install() {
 <span class="comment"># Usage</span>
 mcp-install owner/mcp-server npm install @owner/mcp-server
 mcp-install owner/mcp-server pip install mcp-server</pre>
-        </div>
+            </div>
 
-        <h3 class="sub">Background watcher (system service)</h3>
-        <p>Run <code>credence watch</code> as a system service so it starts on boot and monitors your MCP client config file for changes. Works with any MCP client — alerts you when a new unattested tool appears.</p>
+            <h3 class="sub">Background watcher (system service)</h3>
+            <p>Run <code>credence watch</code> as a system service so it starts on boot and monitors your MCP client config file for changes. Alerts you when a new unattested tool appears.</p>
 
-        <h3 class="sub" style="margin-top: 16px; font-size: 0.85rem;">macOS (launchd)</h3>
-        <p>Save the plist, then load it:</p>
-        <div class="code-block">
+            <h3 class="sub" style="margin-top: 16px; font-size: 0.85rem;">macOS (launchd)</h3>
+            <div class="code-block">
 <pre><span class="comment"># ~/Library/LaunchAgents/com.credence.watch.plist</span>
 &lt;?xml version="1.0" encoding="UTF-8"?&gt;
 &lt;!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN"
@@ -621,15 +784,11 @@ mcp-install owner/mcp-server pip install mcp-server</pre>
 &lt;/plist&gt;
 
 <span class="comment"># Load</span>
-launchctl load ~/Library/LaunchAgents/com.credence.watch.plist
+launchctl load ~/Library/LaunchAgents/com.credence.watch.plist</pre>
+            </div>
 
-<span class="comment"># Check status</span>
-launchctl list | grep credence</pre>
-        </div>
-
-        <h3 class="sub" style="margin-top: 16px; font-size: 0.85rem;">Linux (systemd)</h3>
-        <p>Save the unit file, then enable it:</p>
-        <div class="code-block">
+            <h3 class="sub" style="margin-top: 16px; font-size: 0.85rem;">Linux (systemd)</h3>
+            <div class="code-block">
 <pre><span class="comment"># ~/.config/systemd/user/credence-watch.service</span>
 [Unit]
 Description=Credence MCP config watcher
@@ -645,51 +804,46 @@ WantedBy=default.target
 
 <span class="comment"># Enable and start</span>
 systemctl --user daemon-reload
-systemctl --user enable --now credence-watch
+systemctl --user enable --now credence-watch</pre>
+            </div>
+        </section>
 
-<span class="comment"># Check status</span>
-systemctl --user status credence-watch</pre>
-        </div>
+        <!-- Configuration -->
+        <section class="section">
+            <div class="section-label">Configuration</div>
+            <h2>Environment &amp; config</h2>
 
-        <p style="font-size: 0.85rem; color: var(--text-muted);">The watcher monitors your MCP client config for changes. When a new tool appears, it checks the registry and alerts you if the tool is unattested, flagged, or rejected.</p>
-    </section>
+            <h3 class="sub">Environment variables</h3>
+            <table class="ref-table">
+                <thead>
+                    <tr>
+                        <th>Variable</th>
+                        <th>Default</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>CREDENCE_CACHE_TTL</td>
+                        <td>300</td>
+                        <td>Registry cache lifetime in seconds</td>
+                    </tr>
+                    <tr>
+                        <td>CREDENCE_REGISTRY_URL</td>
+                        <td>GitHub raw</td>
+                        <td>Override the registry.json URL</td>
+                    </tr>
+                    <tr>
+                        <td>CREDENCE_PUBLIC_KEY_URL</td>
+                        <td>GitHub raw</td>
+                        <td>Override the public key URL for signature verification</td>
+                    </tr>
+                </tbody>
+            </table>
 
-    <!-- Section 6: Configuration -->
-    <section class="section">
-        <div class="section-label">Configuration</div>
-        <h2>Environment &amp; config</h2>
-
-        <h3 class="sub">Environment variables</h3>
-        <table class="ref-table">
-            <thead>
-                <tr>
-                    <th>Variable</th>
-                    <th>Default</th>
-                    <th>Description</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>CREDENCE_CACHE_TTL</td>
-                    <td>300</td>
-                    <td>Registry cache lifetime in seconds</td>
-                </tr>
-                <tr>
-                    <td>CREDENCE_REGISTRY_URL</td>
-                    <td>GitHub raw</td>
-                    <td>Override the registry.json URL</td>
-                </tr>
-                <tr>
-                    <td>CREDENCE_PUBLIC_KEY_URL</td>
-                    <td>GitHub raw</td>
-                    <td>Override the public key URL for signature verification</td>
-                </tr>
-            </tbody>
-        </table>
-
-        <h3 class="sub">Config auto-detection</h3>
-        <p>The <code>credence audit</code> and <code>credence watch</code> commands automatically find your MCP client config. Detected paths:</p>
-        <div class="code-block">
+            <h3 class="sub">Config auto-detection</h3>
+            <p>The <code>credence audit</code> and <code>credence watch</code> commands automatically find your MCP client config. Detected paths:</p>
+            <div class="code-block">
 <pre><span class="comment"># macOS</span>
 ~/Library/Application Support/Claude/claude_desktop_config.json
 
@@ -701,10 +855,12 @@ systemctl --user status credence-watch</pre>
 
 <span class="comment"># Claude Code</span>
 ~/.claude.json</pre>
-        </div>
+            </div>
 
-        <p style="font-size: 0.85rem; color: var(--text-muted);">Use <code>--config PATH</code> to point at a custom config file instead.</p>
-    </section>
+            <p style="font-size: 0.85rem; color: var(--text-muted);">Use <code>--config PATH</code> to point at a custom config file instead.</p>
+        </section>
+
+    </div>
 </div>
 
 <footer>
@@ -728,6 +884,38 @@ systemctl --user status credence-watch</pre>
         document.documentElement.setAttribute('data-theme', saved);
     } else if (window.matchMedia('(prefers-color-scheme: light)').matches) {
         document.documentElement.setAttribute('data-theme', 'light');
+    }
+
+    function switchTab(tab) {
+        document.querySelectorAll('.install-tab').forEach(function(el) {
+            el.classList.remove('active');
+        });
+        document.querySelectorAll('.tab-pane').forEach(function(el) {
+            el.classList.remove('active');
+        });
+        document.getElementById('tab-' + tab).classList.add('active');
+        // Activate the clicked button
+        var buttons = document.querySelectorAll('.install-tab');
+        buttons.forEach(function(btn) {
+            if ((tab === 'users' && btn.textContent.trim() === 'For Users') ||
+                (tab === 'devs' && btn.textContent.trim() === 'For Developers')) {
+                btn.classList.add('active');
+            }
+        });
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function copyText(elementId) {
+        var text = document.getElementById(elementId).innerText;
+        var btn = event.target;
+        navigator.clipboard.writeText(text).then(function() {
+            btn.textContent = 'Copied';
+            btn.classList.add('copied');
+            setTimeout(function() {
+                btn.textContent = 'Copy';
+                btn.classList.remove('copied');
+            }, 2000);
+        });
     }
 </script>
 

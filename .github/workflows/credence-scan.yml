@@ -905,16 +905,46 @@ jobs:
 
       - name: Store scan results
         if: steps.clone.outputs.clone_failed != 'true'
+        env:
+          CREDENCE_FINDINGS_KEY: ${{ secrets.CREDENCE_FINDINGS_KEY }}
         run: |
           SCAN_ID=$(echo "${{ env.TARGET_COMMIT }}" | cut -c1-8)
           RESULTS_DIR="scan-results/${SCAN_ID}"
+          PUBLISH="${{ steps.deliberation.outputs.publish }}"
           mkdir -p "$RESULTS_DIR"
 
-          # Public: scores/verdict/provenance only + badge.
-          # Deliberation detail never enters scan-summary (stays in .deliberations/).
-          # The del() is defense-in-depth in case any field leaks through.
-          jq 'del(.scan_results, .scoring_breakdowns, .thinktank_debate, .thinktank_score_adjustment, .thinktank_flags)' /tmp/scan-summary.json > "$RESULTS_DIR/summary.json"
-          cp /tmp/badge.svg "$RESULTS_DIR/badge.svg" 2>/dev/null || true
+          if [ "$PUBLISH" = "true" ]; then
+            # Publishable: write redacted summary + badge
+            jq 'del(.scan_results, .scoring_breakdowns, .thinktank_debate, .thinktank_score_adjustment, .thinktank_flags)' /tmp/scan-summary.json > "$RESULTS_DIR/summary.json"
+            cp /tmp/badge.svg "$RESULTS_DIR/badge.svg" 2>/dev/null || true
+          else
+            # Disclosure hold: write hold marker (no scores) + encrypted summary
+            THREAT_TYPE=$(jq -r '.threat_type // ""' /tmp/scan-summary.json)
+            jq -n \
+              --arg status "disclosure_hold" \
+              --arg server_name "$(jq -r '.server_name' /tmp/scan-summary.json)" \
+              --arg repo_url "$(jq -r '.repo_url' /tmp/scan-summary.json)" \
+              --arg commit_sha "$(jq -r '.commit_sha' /tmp/scan-summary.json)" \
+              --arg scan_timestamp "$(jq -r '.scan_timestamp' /tmp/scan-summary.json)" \
+              --arg threat_type "$THREAT_TYPE" \
+              --arg server_path "$(jq -r '.server_path // ""' /tmp/scan-summary.json)" \
+              --arg tool_type "$(jq -r '.tool_type // ""' /tmp/scan-summary.json)" \
+              '{status: $status, server_name: $server_name, repo_url: $repo_url,
+                commit_sha: $commit_sha, scan_timestamp: $scan_timestamp,
+                threat_type: $threat_type, server_path: $server_path,
+                tool_type: $tool_type}' > "$RESULTS_DIR/hold.json"
+
+            # Encrypt full summary for later publish/auto-publish
+            if [ -n "$CREDENCE_FINDINGS_KEY" ]; then
+              jq 'del(.scan_results, .scoring_breakdowns, .thinktank_debate, .thinktank_score_adjustment, .thinktank_flags)' /tmp/scan-summary.json | \
+                openssl enc -aes-256-cbc -salt -pbkdf2 \
+                  -pass env:CREDENCE_FINDINGS_KEY \
+                  -out "$RESULTS_DIR/summary.json.enc"
+              echo "Full summary encrypted for disclosure hold"
+            else
+              echo "::warning::CREDENCE_FINDINGS_KEY not set — held scan summary cannot be encrypted. Manual re-scan will be needed to publish."
+            fi
+          fi
 
           echo "SCAN_ID=$SCAN_ID" >> $GITHUB_ENV
           echo "RESULTS_DIR=$RESULTS_DIR" >> $GITHUB_ENV
@@ -1224,19 +1254,37 @@ jobs:
           pip install cryptography --break-system-packages -q
           pip install ./mcp-server --break-system-packages -q
 
-      - name: Locate scan summary
+      - name: Locate and decrypt scan summary
         id: locate
+        env:
+          CREDENCE_FINDINGS_KEY: ${{ secrets.CREDENCE_FINDINGS_KEY }}
         run: |
           SCAN_ID="${{ github.event.inputs.scan_id }}"
-          SUMMARY_PATH="scan-results/${SCAN_ID}/summary.json"
-          if [ ! -f "$SUMMARY_PATH" ]; then
-            echo "Error: No scan results found at ${SUMMARY_PATH}"
+          SCAN_DIR="scan-results/${SCAN_ID}"
+          SUMMARY_PATH="${SCAN_DIR}/summary.json"
+          ENCRYPTED_PATH="${SCAN_DIR}/summary.json.enc"
+
+          if [ -f "$SUMMARY_PATH" ]; then
+            echo "Found plaintext summary (already published or no hold)"
+          elif [ -f "$ENCRYPTED_PATH" ]; then
+            if [ -z "$CREDENCE_FINDINGS_KEY" ]; then
+              echo "::error::Encrypted summary found but CREDENCE_FINDINGS_KEY not set — cannot decrypt"
+              exit 1
+            fi
+            openssl enc -d -aes-256-cbc -pbkdf2 \
+              -in "$ENCRYPTED_PATH" \
+              -out "$SUMMARY_PATH" \
+              -pass env:CREDENCE_FINDINGS_KEY
+            echo "Decrypted held scan summary"
+          else
+            echo "Error: No scan results found at ${SCAN_DIR}/"
             echo "Available scan IDs:"
             ls scan-results/ 2>/dev/null || echo "  (none)"
             exit 1
           fi
+
           echo "summary_path=$SUMMARY_PATH" >> $GITHUB_OUTPUT
-          echo "Found: $SUMMARY_PATH"
+          echo "scan_dir=$SCAN_DIR" >> $GITHUB_OUTPUT
 
       - name: Update registry
         env:
@@ -1249,11 +1297,19 @@ jobs:
             python3 -m credence_mcp.registry_update "$SUMMARY_PATH" registry/
           fi
 
-      - name: Commit and push
+      - name: Generate badge
         run: |
+          python3 -m credence_mcp.badge_generator --from-summary "${{ steps.locate.outputs.summary_path }}" "${{ steps.locate.outputs.scan_dir }}/badge.svg"
+
+      - name: Clean up hold artifacts and commit
+        run: |
+          SCAN_DIR="${{ steps.locate.outputs.scan_dir }}"
+          # Remove hold marker and encrypted summary now that we've published
+          rm -f "$SCAN_DIR/hold.json" "$SCAN_DIR/summary.json.enc"
+
           git config user.name "credence-bot"
           git config user.email "credence-bot@users.noreply.github.com"
-          git add registry/ registry.json
+          git add registry/ registry.json "$SCAN_DIR/"
           SERVER_NAME=$(jq -r '.server_name' "${{ steps.locate.outputs.summary_path }}")
           git commit -m "publish: ${SERVER_NAME} (manual disclosure clearance)"
           git push
@@ -1291,30 +1347,45 @@ jobs:
         id: auto_publish
         env:
           CREDENCE_SIGNING_KEY: ${{ secrets.CREDENCE_SIGNING_KEY }}
+          CREDENCE_FINDINGS_KEY: ${{ secrets.CREDENCE_FINDINGS_KEY }}
         run: |
           PUBLISHED=0
           NOW=$(date +%s)
           HOLD_SECONDS=86400  # 24 hours
 
-          for SUMMARY_PATH in scan-results/*/summary.json; do
-            [ -f "$SUMMARY_PATH" ] || continue
+          for HOLD_PATH in scan-results/*/hold.json; do
+            [ -f "$HOLD_PATH" ] || continue
 
-            THREAT_TYPE=$(jq -r '.threat_type // ""' "$SUMMARY_PATH")
+            SCAN_DIR=$(dirname "$HOLD_PATH")
+            THREAT_TYPE=$(jq -r '.threat_type // ""' "$HOLD_PATH")
             [ "$THREAT_TYPE" = "adversarial" ] || continue
 
             # Check age
-            SCAN_TS=$(jq -r '.scan_timestamp // ""' "$SUMMARY_PATH")
+            SCAN_TS=$(jq -r '.scan_timestamp // ""' "$HOLD_PATH")
             [ -n "$SCAN_TS" ] || continue
             SCAN_EPOCH=$(date -d "$SCAN_TS" +%s 2>/dev/null || echo 0)
             AGE=$((NOW - SCAN_EPOCH))
             [ "$AGE" -ge "$HOLD_SECONDS" ] || continue
 
+            # Decrypt the full summary
+            ENCRYPTED_PATH="${SCAN_DIR}/summary.json.enc"
+            SUMMARY_PATH="${SCAN_DIR}/summary.json"
+            if [ ! -f "$ENCRYPTED_PATH" ]; then
+              echo "::warning::No encrypted summary for $(basename "$SCAN_DIR") — skipping"
+              continue
+            fi
+            if [ -z "$CREDENCE_FINDINGS_KEY" ]; then
+              echo "::error::CREDENCE_FINDINGS_KEY not set — cannot decrypt held scans"
+              exit 1
+            fi
+            openssl enc -d -aes-256-cbc -pbkdf2 \
+              -in "$ENCRYPTED_PATH" \
+              -out "$SUMMARY_PATH" \
+              -pass env:CREDENCE_FINDINGS_KEY
+
             # Check if already in registry
-            SCAN_ID=$(basename "$(dirname "$SUMMARY_PATH")")
             REPO_URL=$(jq -r '.repo_url // ""' "$SUMMARY_PATH")
             SERVER_PATH=$(jq -r '.server_path // ""' "$SUMMARY_PATH")
-
-            # Derive server_id the same way registry_update.py does
             PARTS=$(echo "$REPO_URL" | sed 's|/$||' | awk -F/ '{print $(NF-1)"/"$NF}')
             if [ -n "$SERVER_PATH" ]; then
               SUFFIX=$(echo "$SERVER_PATH" | sed 's|/$||' | awk -F/ '{print $NF}')
@@ -1322,8 +1393,6 @@ jobs:
             else
               SERVER_ID="$PARTS"
             fi
-
-            # Skip if already in index
             if [ -f "registry/index.json" ]; then
               EXISTING=$(jq --arg sid "$SERVER_ID" '.servers[] | select(.server_id == $sid)' registry/index.json 2>/dev/null)
               if [ -n "$EXISTING" ]; then
@@ -1338,6 +1407,10 @@ jobs:
             else
               python3 -m credence_mcp.registry_update "$SUMMARY_PATH" registry/
             fi
+
+            # Generate badge and clean up hold artifacts
+            python3 -m credence_mcp.badge_generator --from-summary "$SUMMARY_PATH" "${SCAN_DIR}/badge.svg"
+            rm -f "$HOLD_PATH" "$ENCRYPTED_PATH"
             PUBLISHED=$((PUBLISHED + 1))
           done
 
@@ -1346,7 +1419,7 @@ jobs:
           if [ "$PUBLISHED" -gt 0 ]; then
             git config user.name "credence-bot"
             git config user.email "credence-bot@users.noreply.github.com"
-            git add registry/ registry.json
+            git add registry/ registry.json scan-results/
             git commit -m "auto-publish: ${PUBLISHED} adversarial hold(s) past 24h window"
             git push
           else

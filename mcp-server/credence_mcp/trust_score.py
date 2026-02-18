@@ -127,7 +127,7 @@ def score_security(findings: list[dict]) -> tuple[int, dict]:
         cat = f.get("category", "")
         sev = f.get("severity", "info")
 
-        # Only score security categories (mcp-tool goes to behavioral)
+        # Only score security categories (mcp-tool and skill-behavioral go to behavioral)
         if cat not in raw_deductions:
             continue
 
@@ -259,23 +259,30 @@ def score_provenance(flags: list[str], tool_type: str = "") -> tuple[int, dict]:
     return score, breakdown
 
 
+BEHAVIORAL_CATEGORIES = {"mcp-tool", "skill-behavioral"}
+
+
 def score_behavioral(findings: list[dict]) -> tuple[int, dict]:
     """
-    Compute Behavioral dimension score from MCP tool analysis findings.
+    Compute Behavioral dimension score from behavioral findings.
+
+    Includes MCP tool analysis (category 'mcp-tool') and skill manifest
+    permission declarations (category 'skill-behavioral').
 
     Args:
-        findings: List of normalized findings from evidence.json where
-                  category == 'mcp-tool'.
+        findings: List of normalized findings from evidence.json.
 
     Returns:
         (score, breakdown) with per-finding deductions.
     """
-    mcp_findings = [f for f in findings if f.get("category") == "mcp-tool"]
+    behavioral_findings = [
+        f for f in findings if f.get("category") in BEHAVIORAL_CATEGORIES
+    ]
 
     total_deduction = 0.0
     finding_impacts = []
 
-    for f in mcp_findings:
+    for f in behavioral_findings:
         sev = f.get("severity", "info")
         weight = SEVERITY_WEIGHT.get(sev, 0)
         total_deduction += weight
@@ -288,7 +295,7 @@ def score_behavioral(findings: list[dict]) -> tuple[int, dict]:
     score = max(0, round(100 - total_deduction))
 
     breakdown = {
-        "mcp_findings_count": len(mcp_findings),
+        "behavioral_findings_count": len(behavioral_findings),
         "finding_impacts": finding_impacts,
         "total_deduction": round(total_deduction, 1),
     }

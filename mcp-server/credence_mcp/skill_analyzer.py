@@ -114,13 +114,14 @@ def _make_finding(
     file: str = "",
     line: int = 0,
     evidence: str = "",
+    category: str = "skill",
 ) -> dict:
     """Create a finding dict in the standard Credence format."""
     return {
         "id": finding_id,
         "scanner": "skill-analyzer",
         "severity": severity,
-        "category": "skill",
+        "category": category,
         "file": file,
         "line": line,
         "title": title,
@@ -182,6 +183,7 @@ def _analyze_manifest(repo_path: Path) -> list[dict]:
             "Skill has no SKILL.md frontmatter or claw.json declaring permissions. "
             "Cannot verify what access the skill requires.",
             file="SKILL.md",
+            category="skill-behavioral",
         ))
         return findings
 
@@ -196,6 +198,7 @@ def _analyze_manifest(repo_path: Path) -> list[dict]:
             "Skill requests execution permission, allowing it to run arbitrary commands. "
             "Verify the skill's purpose justifies command execution access.",
             file="SKILL.md" if frontmatter and EXEC_PERMISSION_RE.search(frontmatter) else "claw.json",
+            category="skill-behavioral",
         ))
 
     # Check: credential access
@@ -207,6 +210,7 @@ def _analyze_manifest(repo_path: Path) -> list[dict]:
             "Skill declares sensitive_data.credentials: true, requesting access to "
             "stored credentials.",
             file="SKILL.md" if frontmatter and CREDENTIAL_ACCESS_RE.search(frontmatter) else "claw.json",
+            category="skill-behavioral",
         ))
 
     # Check: broad filesystem write
@@ -219,6 +223,7 @@ def _analyze_manifest(repo_path: Path) -> list[dict]:
             "to the entire filesystem. Legitimate skills should scope writes to "
             "specific directories.",
             file="SKILL.md" if frontmatter and BROAD_FILESYSTEM_RE.search(frontmatter) else "claw.json",
+            category="skill-behavioral",
         ))
 
     # Check: broad network
@@ -230,6 +235,7 @@ def _analyze_manifest(repo_path: Path) -> list[dict]:
             "Skill declares wildcard network permissions, allowing connections to "
             "any host. Legitimate skills should declare specific domains.",
             file="SKILL.md" if frontmatter and BROAD_NETWORK_RE.search(frontmatter) else "claw.json",
+            category="skill-behavioral",
         ))
 
     return findings
