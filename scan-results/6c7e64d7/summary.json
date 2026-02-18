@@ -1,0 +1,30 @@
+{
+  "server_name": "paolorollo/openclaw-sec",
+  "canonical_name": "openclaw-sec",
+  "server_path": "skills/paolorollo/openclaw-sec",
+  "tool_type": "openclaw-skill",
+  "maintainer_verified": false,
+  "verify_reason": "Third-party submission — submitter is not owner, collaborator, or contributor",
+  "repo_url": "https://github.com/openclaw/skills",
+  "commit_sha": "6c7e64d7dd632f9b0d28e3c09a46dfff6890e6f6",
+  "source_hash": "8657a20a87b6cb55ab78e32f2bdbc9e8ad89ba8cc97e27bbaf77effefec492b4",
+  "source_hash_method": "merkle-tree-sha256",
+  "is_fork": false,
+  "provenance_flags": [
+    "ACCOUNT_YOUNG_LT_90_DAYS"
+  ],
+  "lockfile_name": "package-lock.json",
+  "lockfile_hash": "5f107ca13a13d755ff33902bb739d2e52ee0618675c3da89b3ea8f8187edd412",
+  "scan_timestamp": "2026-02-18T16:08:11Z",
+  "pipeline_version": "0.2.0",
+  "thinktank_verdict": "CONDITIONAL",
+  "trust_score": 49,
+  "trust_dimensions": {
+    "security": 36,
+    "provenance": 90,
+    "behavioral": 100
+  },
+  "scoring_version": "1.0.0",
+  "deliberation_session": "f96dfc9e-f65",
+  "threat_type": "vulnerability"
+}
