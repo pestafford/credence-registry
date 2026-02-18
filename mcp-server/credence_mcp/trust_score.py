@@ -205,12 +205,13 @@ def score_security_from_counts(scan_results: dict) -> tuple[int, dict]:
     return score, breakdown
 
 
-def score_provenance(flags: list[str]) -> tuple[int, dict]:
+def score_provenance(flags: list[str], tool_type: str = "") -> tuple[int, dict]:
     """
     Compute Provenance dimension score from provenance flags.
 
     Args:
         flags: List of provenance flag strings from scan-summary.json.
+        tool_type: Tool type from scan-summary (e.g. "openclaw-skill").
 
     Returns:
         (score, breakdown) with deduction details and override status.
@@ -233,6 +234,10 @@ def score_provenance(flags: list[str]) -> tuple[int, dict]:
     active_flags = list(flags)
     if "ACCOUNT_YOUNG_LT_30_DAYS" in active_flags and "ACCOUNT_YOUNG_LT_90_DAYS" in active_flags:
         active_flags.remove("ACCOUNT_YOUNG_LT_90_DAYS")
+
+    # Waive NO_LOCKFILE for OpenClaw skills — monorepo skills never have lockfiles
+    if tool_type == "openclaw-skill" and "NO_LOCKFILE" in active_flags:
+        active_flags.remove("NO_LOCKFILE")
 
     # Sum deductions
     deductions = {}
@@ -381,6 +386,7 @@ def compute_trust_score(summary: dict, evidence: dict | None = None) -> dict:
     """
     flags = summary.get("provenance_flags", [])
     scan_results = summary.get("scan_results", {})
+    tool_type = summary.get("tool_type", "")
 
     findings = evidence.get("findings", []) if evidence else []
 
@@ -391,7 +397,7 @@ def compute_trust_score(summary: dict, evidence: dict | None = None) -> dict:
         security_score, security_breakdown = score_security_from_counts(scan_results)
 
     # Provenance dimension
-    provenance_score, provenance_breakdown = score_provenance(flags)
+    provenance_score, provenance_breakdown = score_provenance(flags, tool_type)
 
     # Behavioral dimension
     if findings:

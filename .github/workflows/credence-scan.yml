@@ -1056,21 +1056,9 @@ jobs:
           if-no-files-found: ignore
           retention-days: 90
 
-      - name: Commit results to repo
-        if: steps.clone.outputs.clone_failed != 'true'
-        run: |
-          git config user.name "credence-bot"
-          git config user.email "credence-bot@users.noreply.github.com"
-          git add scan-results/
-          git add registry/index.json
-          if [ "${{ steps.deliberation.outputs.publish }}" = "true" ]; then
-            git add registry/ registry.json
-          fi
-          git diff --cached --quiet && echo "No changes to commit" && exit 0
-          git commit -m "scan: ${{ steps.parse.outputs.server_name }} @ ${{ env.TARGET_COMMIT }}"
-          git push
-
       # ── POST RESULTS TO ISSUE ─────────────────────────
+      # Must run BEFORE git push — the push can trigger other workflows
+      # which invalidates the GITHUB_TOKEN, causing 401 on issue API calls.
 
       - name: Post results to issue
         if: steps.clone.outputs.clone_failed != 'true'
@@ -1205,6 +1193,20 @@ jobs:
               issue_number: context.issue.number,
               labels: labels
             });
+
+      - name: Commit results to repo
+        if: steps.clone.outputs.clone_failed != 'true'
+        run: |
+          git config user.name "credence-bot"
+          git config user.email "credence-bot@users.noreply.github.com"
+          git add scan-results/
+          git add registry/index.json
+          if [ "${{ steps.deliberation.outputs.publish }}" = "true" ]; then
+            git add registry/ registry.json
+          fi
+          git diff --cached --quiet && echo "No changes to commit" && exit 0
+          git commit -m "scan: ${{ steps.parse.outputs.server_name }} @ ${{ env.TARGET_COMMIT }}"
+          git push
 
   # ── JOB 3: MANUAL PUBLISH ────────────────────────
   publish:

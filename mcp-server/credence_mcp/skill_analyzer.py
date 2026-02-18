@@ -77,6 +77,32 @@ CHMOD_EXEC = re.compile(r'chmod\s+\+x')
 CONTENT_EXTENSIONS = {'.md', '.sh', '.py', '.js', '.ts', '.bash', '.zsh', '.ps1', '.bat', '.cmd'}
 SKIP_DIRS = {'.git', 'node_modules', '__pycache__', '.venv', 'venv'}
 
+# Documentation files: findings are instructional, not executable
+DOC_EXTENSIONS = {'.md'}
+
+# Test directories: attack strings in test fixtures are expected test data
+TEST_DIRS = {'__tests__', 'test', 'tests', 'spec', 'test_data', 'testdata', 'fixtures'}
+
+# Severity downgrade map for documentation and test contexts
+# Maps original severity -> reduced severity
+_DOC_SEVERITY = {"critical": "medium", "high": "low", "medium": "info"}
+_TEST_SEVERITY = {"critical": "medium", "high": "low", "medium": "info"}
+
+
+def _contextual_severity(severity: str, rel_path: str) -> str:
+    """Downgrade severity for findings in documentation or test files."""
+    path = Path(rel_path)
+
+    # Check if file is in a test directory
+    if any(part in TEST_DIRS for part in path.parts):
+        return _TEST_SEVERITY.get(severity, severity)
+
+    # Check if file is documentation (markdown)
+    if path.suffix.lower() in DOC_EXTENSIONS:
+        return _DOC_SEVERITY.get(severity, severity)
+
+    return severity
+
 
 # ── Finding builder ─────────────────────────────────────────────
 
@@ -225,7 +251,7 @@ def _scan_file_content(file_path: Path, rel_path: str) -> list[dict]:
         if ENCODED_PAYLOAD.search(line):
             findings.append(_make_finding(
                 f"SKILL_ENCODED_PAYLOAD-{rel_path}:{line_num}",
-                "high",
+                _contextual_severity("high", rel_path),
                 "Base64/hex-encoded payload in shell command",
                 "Shell command pipes encoded data through base64/decode/bash. "
                 "This pattern is used by malware to hide payloads from review.",
@@ -238,7 +264,7 @@ def _scan_file_content(file_path: Path, rel_path: str) -> list[dict]:
         if RAW_IP_URL.search(line):
             findings.append(_make_finding(
                 f"SKILL_EXTERNAL_URL-{rel_path}:{line_num}",
-                "high",
+                _contextual_severity("high", rel_path),
                 "curl/wget to raw IP address",
                 "Skill fetches content from a raw IP address. Legitimate tools "
                 "use domain names; raw IPs are commonly used by malware to avoid "
@@ -252,7 +278,7 @@ def _scan_file_content(file_path: Path, rel_path: str) -> list[dict]:
         if QUARANTINE_BYPASS.search(line):
             findings.append(_make_finding(
                 f"SKILL_QUARANTINE_BYPASS-{rel_path}:{line_num}",
-                "critical",
+                _contextual_severity("critical", rel_path),
                 "macOS quarantine bypass detected",
                 "Skill removes com.apple.quarantine extended attribute, bypassing "
                 "macOS Gatekeeper security. This is a key indicator of malware "
@@ -266,7 +292,7 @@ def _scan_file_content(file_path: Path, rel_path: str) -> list[dict]:
         if HIDDEN_INSTALL.search(line):
             findings.append(_make_finding(
                 f"SKILL_HIDDEN_INSTALL-{rel_path}:{line_num}",
-                "high",
+                _contextual_severity("high", rel_path),
                 "Package install in skill content",
                 "Skill installs packages (pip/npm/yarn/pnpm) directly. Package "
                 "installs should be declared in the manifest requirements, not "
@@ -280,7 +306,7 @@ def _scan_file_content(file_path: Path, rel_path: str) -> list[dict]:
         if PASSWORD_ARCHIVE.search(line):
             findings.append(_make_finding(
                 f"SKILL_PASSWORD_ARCHIVE-{rel_path}:{line_num}",
-                "high",
+                _contextual_severity("high", rel_path),
                 "Password-protected archive extraction",
                 "Skill extracts a password-protected archive. Password archives "
                 "are used to evade antivirus scanning — contents cannot be "
@@ -294,7 +320,7 @@ def _scan_file_content(file_path: Path, rel_path: str) -> list[dict]:
         if CHMOD_EXEC.search(line):
             findings.append(_make_finding(
                 f"SKILL_CHMOD_EXEC-{rel_path}:{line_num}",
-                "medium",
+                _contextual_severity("medium", rel_path),
                 "chmod +x on file",
                 "Skill makes a file executable. Combined with download commands, "
                 "this pattern enables execution of untrusted binaries.",

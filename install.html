@@ -329,7 +329,7 @@
 <div class="container">
     <div class="page-header">
         <h1>Install</h1>
-        <p>Install once, check every MCP server before you connect. One package gives you the MCP server (so your AI agent checks automatically), the CLI (for the terminal), and the pre-install hook (for CI).</p>
+        <p>Install once, check every MCP server before you connect. Choose your path: an OpenClaw skill (zero config), a pip package with CLI and MCP server, or both.</p>
     </div>
 
     <div style="padding: 12px 20px; background: var(--glow); border: 1px solid var(--orange-dim); border-radius: 6px; margin-bottom: 24px;">
@@ -347,6 +347,29 @@
         </div>
 
         <p style="font-size: 0.85rem; color: var(--text-muted);">After install, <code>credence</code> is available on your PATH and <code>python3 -m credence_mcp.server</code> starts the MCP server.</p>
+    </section>
+
+    <!-- Section 1b: OpenClaw Skill -->
+    <section class="section">
+        <div class="section-label">OpenClaw</div>
+        <h2>Install as a skill</h2>
+        <p>If you use <a href="https://openclaw.ai" style="color: var(--orange); text-decoration: none;">OpenClaw</a>, install Credence as a skill. Your agent will check every MCP server against the registry before installing it — no pip install or config needed.</p>
+
+        <div class="code-block">
+<pre>clawhub install pestafford/credence</pre>
+        </div>
+
+        <p>That's it. Once installed, the skill runs automatically whenever your agent installs a new MCP server. You can also check any server manually:</p>
+
+        <div class="code-block">
+<pre><span class="comment"># Ask your agent</span>
+/credence modelcontextprotocol/servers/filesystem
+
+<span class="comment"># Or just mention it</span>
+"Check the trust score for owner/mcp-server before we install it"</pre>
+        </div>
+
+        <p>The skill queries the public Credence registry — no API key, no account, no setup beyond the install command.</p>
     </section>
 
     <!-- Section 2: MCP Server -->
