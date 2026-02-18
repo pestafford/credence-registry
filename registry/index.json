@@ -4,9 +4,9 @@
   "registry_url": "https://credence.securingthesingularity.com",
   "maintainer": "Phil Stafford <phil@securingthesingularity.com>",
   "signing_public_key": "XdvqC/Q6TX90MpL37wdxfUtqOiS8qiQjK8JNJy+BOcM=",
-  "updated_at": "2026-02-16T01:55:20Z",
+  "updated_at": "2026-02-18T14:39:56Z",
   "stats": {
-    "total_scans": 5
+    "total_scans": 6
   },
   "servers": [
     {
@@ -44,6 +44,20 @@
       "scoring_version": "1.0.0",
       "attested_at": "2026-02-16T01:55:20Z",
       "attestation_file": "servers/isdaniel/mcp_weather_server.json"
+    },
+    {
+      "server_id": "openclaw/skills/agent-council",
+      "server_name": "itsahedge/agent-council",
+      "canonical_name": "",
+      "repo_url": "https://github.com/openclaw/skills",
+      "repo_owner": "openclaw",
+      "trust_score": 72,
+      "thinktank_verdict": "CONDITIONAL",
+      "scoring_version": "1.0.0",
+      "attested_at": "2026-02-18T14:39:56Z",
+      "attestation_file": "servers/openclaw/skills/agent-council.json",
+      "threat_type": "vulnerability",
+      "tool_type": "openclaw-skill"
     }
   ]
 }

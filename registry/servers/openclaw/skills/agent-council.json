@@ -1,0 +1,42 @@
+{
+  "server_id": "openclaw/skills/agent-council",
+  "server_name": "itsahedge/agent-council",
+  "canonical_name": "",
+  "repo_url": "https://github.com/openclaw/skills",
+  "attestation": {
+    "commit_sha": "b28efbce708646a425ad9472f595bc26e7d69a79",
+    "source_hash": "895fb073243c605dd3c559df7fb57e297f02498102a259a5386c403012e28237",
+    "source_hash_method": "merkle-tree-sha256",
+    "attested_at": "2026-02-18T14:39:56Z",
+    "pipeline_version": "0.2.0",
+    "scoring_version": "1.0.0",
+    "trust_score": 72,
+    "trust_dimensions": {
+      "security": 85,
+      "provenance": 85,
+      "behavioral": 100
+    },
+    "thinktank_verdict": "CONDITIONAL",
+    "author_identity": {
+      "repo_owner": "openclaw",
+      "identity_match": true,
+      "is_fork": false,
+      "provenance_flags": [
+        "ACCOUNT_YOUNG_LT_90_DAYS",
+        "NO_LOCKFILE"
+      ],
+      "maintainer_verified": false,
+      "verify_reason": "Third-party submission \u2014 submitter is not owner, collaborator, or contributor"
+    },
+    "lockfile_name": "none",
+    "lockfile_hash": "none",
+    "threat_type": "vulnerability",
+    "tool_type": "openclaw-skill",
+    "signature": {
+      "algorithm": "ed25519",
+      "value": "9G3X8p7on0AAFzWYowfbihPNBDbXRAYNK4qMj3bCSLUqCCq+k0R/HTbJOKLIGEe+5MdZJQvcLsOgPO+Ca5UCDQ==",
+      "canonical_hash": "2e832a3319cc1d5073521cd6bb8b73e5b2a75076e3065f681d27bd2cf5769ef5"
+    }
+  },
+  "attestation_url": "https://github.com/pestafford/credence-registry/tree/main/scan-results/b28efbce"
+}
