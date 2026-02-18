@@ -1,0 +1,64 @@
+name: Version Check
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'mcp-server/credence_mcp/**'
+
+jobs:
+  version-bump-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: Check version was bumped
+        run: |
+          CURRENT=$(python3 -c "
+          import re, pathlib
+          text = pathlib.Path('mcp-server/credence_mcp/__init__.py').read_text()
+          print(re.search(r'__version__\s*=\s*\"(.+?)\"', text).group(1))
+          ")
+
+          PREVIOUS=$(git show HEAD~1:mcp-server/credence_mcp/__init__.py 2>/dev/null | python3 -c "
+          import sys, re
+          text = sys.stdin.read()
+          m = re.search(r'__version__\s*=\s*\"(.+?)\"', text)
+          print(m.group(1) if m else '')
+          " || echo "")
+
+          echo "Current version:  $CURRENT"
+          echo "Previous version: $PREVIOUS"
+
+          if [ "$CURRENT" = "$PREVIOUS" ]; then
+            echo "::error::mcp-server/credence_mcp/ changed but __version__ was not bumped ($CURRENT). Bump the version in __init__.py and pyproject.toml."
+            exit 1
+          fi
+
+          echo "Version bumped: $PREVIOUS -> $CURRENT"
+
+      - name: Check version.json in sync
+        run: |
+          PKG_VERSION=$(python3 -c "
+          import re, pathlib
+          text = pathlib.Path('mcp-server/credence_mcp/__init__.py').read_text()
+          print(re.search(r'__version__\s*=\s*\"(.+?)\"', text).group(1))
+          ")
+
+          JSON_VERSION=$(python3 -c "
+          import json, pathlib
+          data = json.loads(pathlib.Path('version.json').read_text())
+          print(data.get('mcp_server', ''))
+          ")
+
+          echo "Package version:     $PKG_VERSION"
+          echo "version.json value:  $JSON_VERSION"
+
+          if [ "$PKG_VERSION" != "$JSON_VERSION" ]; then
+            echo "::error::version.json mcp_server ($JSON_VERSION) does not match __init__.py __version__ ($PKG_VERSION). Update version.json to match."
+            exit 1
+          fi
+
+          echo "version.json is in sync."

@@ -41,6 +41,10 @@ PUBLIC_KEY_URL = os.getenv(
     "CREDENCE_PUBLIC_KEY_URL",
     "https://raw.githubusercontent.com/pestafford/credence-registry/main/credence_key.pub"
 )
+VERSION_URL = os.getenv(
+    "CREDENCE_VERSION_URL",
+    "https://credence.securingthesingularity.com/version.json"
+)
 
 # ── Server Init ──────────────────────────────────────────────────
 
@@ -106,6 +110,37 @@ async def _fetch_public_key():
     except Exception:
         pass
     return None
+
+
+_version_notice = None
+_version_checked = False
+
+
+async def _check_version() -> str:
+    """Check for newer version. Returns notice string or empty. Never throws."""
+    global _version_notice, _version_checked
+    if _version_checked:
+        return _version_notice or ""
+    _version_checked = True
+    try:
+        from credence_mcp import __version__
+        async with httpx.AsyncClient(timeout=5.0) as client:
+            resp = await client.get(VERSION_URL)
+            resp.raise_for_status()
+            data = resp.json()
+            latest = data.get("mcp_server", __version__)
+            if latest != __version__:
+                _version_notice = (
+                    f"\n\n---\nUpdate available: Credence {latest} "
+                    f"(you have {__version__}). "
+                    "Run: pip install --upgrade git+https://github.com/"
+                    "pestafford/credence-registry.git#subdirectory=mcp-server"
+                )
+                return _version_notice
+    except Exception:
+        pass
+    _version_notice = ""
+    return ""
 
 
 async def _verify_server_signature(attestation: dict) -> dict:
@@ -322,7 +357,7 @@ async def credence_check_server(params: CheckServerInput) -> str:
     if threat_type:
         result["threat_type"] = threat_type
 
-    return json.dumps(result)
+    return json.dumps(result) + await _check_version()
 
 
 def _build_human_message(risk, recommendation, verdict, flags, trust_score, threat_type=None):
@@ -684,7 +719,7 @@ async def credence_audit_config(params: dict = {}) -> str:
         "unattested": unattested,
         "servers": results,
         "message": _build_audit_message(attested, flagged, unattested, len(results))
-    })
+    }) + await _check_version()
 
 
 def _build_audit_message(attested, flagged, unattested, total):

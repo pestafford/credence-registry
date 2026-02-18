@@ -88,6 +88,23 @@ def _verify_signature(attestation: dict) -> tuple[bool | None, str]:
     except Exception as e:
         return None, f"verification error: {e}"
 
+def _check_version_sync():
+    """Print update notice if newer version available. Never throws."""
+    try:
+        from credence_mcp import __version__
+        resp = httpx.get(
+            "https://credence.securingthesingularity.com/version.json",
+            timeout=3.0,
+        )
+        resp.raise_for_status()
+        latest = resp.json().get("mcp_server", __version__)
+        if latest != __version__:
+            print(f"\n  Update available: Credence {latest} (you have {__version__})")
+            print("  Run: pip install --upgrade git+https://github.com/pestafford/credence-registry.git#subdirectory=mcp-server\n")
+    except Exception:
+        pass
+
+
 # ── Colors ───────────────────────────────────────────────────────
 
 class C:
@@ -673,6 +690,7 @@ def _alert(message: str):
 # ── Entry Point ──────────────────────────────────────────────────
 
 def main():
+    _check_version_sync()
     parser = argparse.ArgumentParser(
         prog="credence",
         description="Credence — Install-time trust verification for MCP servers",
