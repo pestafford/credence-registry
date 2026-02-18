@@ -1,4 +1,4 @@
-name: Credence Pipeline — Scan MCP Server
+name: Credence Pipeline — Scan Tool
 
 on:
   issues:
@@ -220,7 +220,7 @@ jobs:
               body: `**Scan started**\n\nAnalyzing: \`${{ steps.parse.outputs.repo_url }}\`${pathLine}\nCommit: \`${{ steps.parse.outputs.commit_sha || 'latest' }}\`\n\nStages: Collect → Scan → Score → Attest\n\n_Results will be posted here when complete._`
             });
 
-      - name: Clone target server
+      - name: Clone target repository
         id: clone
         continue-on-error: true
         run: |
@@ -851,7 +851,7 @@ jobs:
 
           if [ "$THREAT_TYPE" = "adversarial" ]; then
             HOLD_TITLE="## Disclosure Hold — Adversarial (24h auto-publish)"
-            HOLD_NOTE="This server was classified as **adversarial** — the code is working as the author intended. It will be auto-published after a 24-hour sanity-check window."
+            HOLD_NOTE="This tool was classified as **adversarial** — the code is working as the author intended. It will be auto-published after a 24-hour sanity-check window."
           else
             HOLD_TITLE="## Disclosure Hold — Manual Review Required"
             HOLD_NOTE="To publish after disclosure: use the **Publish held scan** workflow dispatch with scan ID \`$(echo "${{ env.TARGET_COMMIT }}" | cut -c1-8)\`."
@@ -1105,7 +1105,7 @@ jobs:
               // ── DISCLOSURE HOLD ──
               let holdMessage;
               if (threatType === 'adversarial') {
-                holdMessage = `Scan complete. This server has been classified as **adversarial** — the patterns detected indicate intentional malicious behavior.
+                holdMessage = `Scan complete. This tool has been classified as **adversarial** — the patterns detected indicate intentional malicious behavior.
 
             Results will be auto-published after a 24-hour sanity-check window. If you believe this classification is incorrect, open a dispute issue referencing this scan.`;
               } else {
@@ -1357,4 +1357,4 @@ jobs:
         run: |
           echo "## Auto-Publish Adversarial Holds" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "Published: ${{ steps.auto_publish.outputs.published || '0' }} server(s)" >> $GITHUB_STEP_SUMMARY
+          echo "Published: ${{ steps.auto_publish.outputs.published || '0' }} tool(s)" >> $GITHUB_STEP_SUMMARY
