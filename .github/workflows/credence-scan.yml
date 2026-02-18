@@ -587,33 +587,11 @@ jobs:
         if: steps.clone.outputs.clone_failed != 'true'
         id: mcp_analysis
         run: |
-          cd $SCAN_DIR
-
-          # Find tool definitions - look for common MCP patterns
-          echo "Scanning for MCP tool definitions..."
-          TOOL_FILES=$(grep -rl "tool\|Tool\|ListToolsResult\|server.tool" --include="*.py" --include="*.ts" --include="*.js" --include="*.json" . 2>/dev/null | head -20)
-
-          TOOL_REPORT='{"tool_files_found": 0, "descriptions_analyzed": 0, "warnings": []}'
-
-          if [ -n "$TOOL_FILES" ]; then
-            FILE_COUNT=$(echo "$TOOL_FILES" | wc -l)
-            TOOL_REPORT=$(echo "$TOOL_REPORT" | jq --arg c "$FILE_COUNT" '.tool_files_found = ($c | tonumber)')
-
-            # Check for suspicious patterns in tool descriptions
-            SUSPICIOUS=$(grep -rn "ignore previous\|system prompt\|<script\|eval(\|exec(\|__import__\|subprocess\|os.system" $TOOL_FILES 2>/dev/null || true)
-            if [ -n "$SUSPICIOUS" ]; then
-              TOOL_REPORT=$(echo "$TOOL_REPORT" | jq '.warnings += ["SUSPICIOUS_PATTERNS_IN_TOOL_FILES"]')
-            fi
-
-            # Check for dynamic description loading
-            DYNAMIC=$(grep -rn "fetch\|requests.get\|urllib\|http.get\|axios" $TOOL_FILES 2>/dev/null | grep -i "description\|tool" || true)
-            if [ -n "$DYNAMIC" ]; then
-              TOOL_REPORT=$(echo "$TOOL_REPORT" | jq '.warnings += ["DYNAMIC_DESCRIPTION_LOADING"]')
-            fi
+          python3 -m credence_mcp.mcp_tool_analyzer "$SCAN_DIR" /tmp/mcp-tool-analysis.json || true
+          if [ -f /tmp/mcp-tool-analysis.json ]; then
+            echo "MCP tool analysis complete:"
+            cat /tmp/mcp-tool-analysis.json
           fi
-
-          echo "$TOOL_REPORT" > /tmp/mcp-tool-analysis.json
-          cat /tmp/mcp-tool-analysis.json
 
       - name: Analyze OpenClaw skill metadata
         if: steps.clone.outputs.clone_failed != 'true'
@@ -657,7 +635,7 @@ jobs:
           BANDIT_COUNT=$(jq '.results | length' /tmp/bandit-results.json 2>/dev/null || echo 0)
           TRIVY_VULNS=$(jq '[.Results[]?.Vulnerabilities // [] | length] | add // 0' /tmp/trivy-results.json 2>/dev/null || echo 0)
           GITLEAKS_COUNT=$(jq 'length' /tmp/gitleaks-results.json 2>/dev/null || echo 0)
-          MCP_WARNINGS=$(jq '.warnings | length' /tmp/mcp-tool-analysis.json 2>/dev/null || echo 0)
+          MCP_WARNINGS=$(jq '.warning_count // 0' /tmp/mcp-tool-analysis.json 2>/dev/null || echo 0)
           MCP_CRITICAL=$(jq '.critical_count // 0' /tmp/mcp-tool-analysis.json 2>/dev/null || echo 0)
           SKILL_WARNINGS=$(jq '.warning_count // 0' /tmp/skill-analysis.json 2>/dev/null || echo 0)
           SKILL_CRITICAL=$(jq '.critical_count // 0' /tmp/skill-analysis.json 2>/dev/null || echo 0)

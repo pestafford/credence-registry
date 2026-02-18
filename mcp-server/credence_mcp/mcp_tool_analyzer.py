@@ -146,6 +146,13 @@ PERMISSION_PATTERNS = {
     'crypto_keys': [
         r'private.?key|secret.?key|api.?key|token|password|credential',
         r'ssh.*key|pgp|gpg|encrypt|decrypt|signing.?key',
+        r'wallet\.dat|keystore|mnemonic|seed.?phrase',
+    ],
+    'financial': [
+        r'@solana/web3\.js|solders|ethers|web3(?:\.py)?|brownie|hardhat|anchor|spl-token',
+        r'sendTransaction|send_transaction|signTransaction|sign_transaction|transfer\s*\(',
+        r'jupiter|raydium|uniswap|pancakeswap|orca|serum|metaplex',
+        r'(?:wallet|address|recipient)\s*[=:]\s*["\'](?:[1-9A-HJ-NP-Za-km-z]{32,50}|0x[0-9a-fA-F]{40})',
     ],
 }
 
@@ -797,6 +804,70 @@ def check_version_gates(content: str, file_path: str, repo_path: Path) -> list[T
     return findings
 
 
+# ── Crypto / Financial Operations ─────────────────────────────────
+
+_CRYPTO_PATTERNS = [
+    (
+        re.compile(
+            r'(?:sendTransaction|send_transaction|signAndSend|sign_and_send|'
+            r'transfer\s*\(|\.send\s*\(.*(?:lamports|value|amount))',
+            re.IGNORECASE,
+        ),
+        "CRYPTO_TRANSACTION_SEND",
+        "Crypto transaction send/transfer operation detected",
+    ),
+    (
+        re.compile(
+            r'(?:~/|/home/|expanduser|%USERPROFILE%|\.bob-p2p)'
+            r'.*(?:wallet\.dat|keystore|private.?key|seed\.txt|mnemonic|\.keys)',
+            re.IGNORECASE,
+        ),
+        "CRYPTO_KEY_FILE_ACCESS",
+        "Access to crypto key/wallet file in home directory",
+    ),
+    (
+        re.compile(
+            r'(?:buy_?token|sell_?token|purchase_?token|'
+            r'(?:jupiter|raydium|uniswap|pancakeswap|orca).*(?:swap|exchange|route))',
+            re.IGNORECASE,
+        ),
+        "CRYPTO_TOKEN_PURCHASE",
+        "Crypto token purchase/swap operation detected",
+    ),
+    (
+        re.compile(
+            r'(?:wallet|address|recipient|dest(?:ination)?|to_addr)\s*[=:]\s*["\']'
+            r'(?:[1-9A-HJ-NP-Za-km-z]{32,50}|0x[0-9a-fA-F]{40})["\']',
+        ),
+        "CRYPTO_HARDCODED_ADDRESS",
+        "Hardcoded crypto wallet address in assignment context",
+    ),
+]
+
+
+def check_crypto_operations(content: str, file_path: str, repo_path: Path) -> list[ToolFinding]:
+    """Detect cryptocurrency/financial operations in MCP tool code."""
+    findings = []
+    rel_path = str(Path(file_path).relative_to(repo_path)) if repo_path else file_path
+
+    for line_num, line in enumerate(content.split('\n'), 1):
+        for pattern, label, description in _CRYPTO_PATTERNS:
+            if pattern.search(line):
+                findings.append(ToolFinding(
+                    tool_name="*",
+                    file_path=rel_path,
+                    line_number=line_num,
+                    finding_type="TPA",
+                    severity="high",
+                    description=f"{description}. {label} — "
+                               f"financial operations in MCP tools require explicit "
+                               f"user consent and should match the tool's declared purpose.",
+                    evidence=line.strip()[:150]
+                ))
+                break  # One finding per line max
+    return findings
+
+
 # ── Main Analysis ────────────────────────────────────────────────
 
 def analyze_repo(repo_path: str) -> dict:
@@ -843,6 +914,7 @@ def analyze_repo(repo_path: str) -> dict:
         all_findings.extend(check_dynamic_descriptions(content, str(tf), repo))
         all_findings.extend(check_schema_poisoning(content, str(tf), repo))
         all_findings.extend(check_version_gates(content, str(tf), repo))
+        all_findings.extend(check_crypto_operations(content, str(tf), repo))
 
         # Permission analysis
         perms = check_permissions(content, str(tf), repo)

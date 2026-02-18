@@ -33,6 +33,7 @@ Usage (Python):
 
 import json
 import queue
+import re
 import subprocess
 import sys
 import threading
@@ -98,6 +99,8 @@ def build_request(
             package_metadata = json.dumps(raw) if isinstance(raw, dict) else str(raw)
 
     # ── Assemble request ──
+    built_tool_analysis = _build_tool_analysis(tool_analysis)
+
     request = {
         "request_id": summary.get("commit_sha", str(uuid.uuid4())),
         "submitted_at": datetime.now(timezone.utc).isoformat(),
@@ -116,7 +119,11 @@ def build_request(
 
         "evidence": _build_evidence(evidence),
 
-        "tool_analysis": _build_tool_analysis(tool_analysis),
+        "tool_analysis": built_tool_analysis,
+
+        "capability_analysis": _build_capability_analysis(
+            built_tool_analysis, readme, package_metadata,
+        ),
 
         "hashes": {
             "source_hash": summary.get("source_hash", ""),
@@ -186,6 +193,119 @@ def _build_tool_analysis(tool_analysis: dict | None) -> dict:
         "description_hashes": tool_analysis.get("description_hashes", {}),
         "permissions_summary": tool_analysis.get("permissions_summary", {}),
         "findings": tool_analysis.get("findings", []),
+    }
+
+
+# ── Capability-vs-Purpose Mismatch ────────────────────────────────
+
+# Keywords that indicate a declared purpose relates to a given scope.
+# If a scope is detected but none of its keywords appear in the purpose text,
+# the mismatch is flagged.
+_SCOPE_KEYWORDS = {
+    'crypto_keys': re.compile(
+        r'crypt|wallet|key\s*manage|sign|pgp|gpg|ssh|secret|vault', re.IGNORECASE,
+    ),
+    'financial': re.compile(
+        r'crypt|financ|payment|wallet|token|swap|trad|defi|blockchain|solana|ethereum|nft',
+        re.IGNORECASE,
+    ),
+    'execution': re.compile(
+        r'exec|run|shell|terminal|command|script|process|sandbox|deploy', re.IGNORECASE,
+    ),
+}
+
+# Scopes considered high-risk for mismatch analysis
+_HIGH_RISK_SCOPES = {'crypto_keys', 'financial', 'execution'}
+
+
+def _extract_declared_purpose(readme: str, package_metadata: str) -> str:
+    """
+    Extract the declared purpose from package metadata and README.
+
+    Priority: package.json description > pyproject.toml description > README first paragraph.
+    """
+    # Try package.json description
+    if package_metadata:
+        try:
+            meta = json.loads(package_metadata) if isinstance(package_metadata, str) else package_metadata
+            desc = ""
+            if isinstance(meta, dict):
+                desc = meta.get("description", "")
+            if desc:
+                return desc
+        except (json.JSONDecodeError, TypeError):
+            pass
+
+        # Try pyproject.toml raw content
+        if isinstance(package_metadata, str) and "description" in package_metadata:
+            m = re.search(r'description\s*=\s*["\']([^"\']+)["\']', package_metadata)
+            if m:
+                return m.group(1)
+
+    # Fall back to README first prose paragraph (skip badges, headers, HTML)
+    if readme:
+        for line in readme.split('\n'):
+            stripped = line.strip()
+            # Skip empty, headers, badges, HTML tags
+            if not stripped:
+                continue
+            if stripped.startswith('#'):
+                continue
+            if stripped.startswith('[![') or stripped.startswith('!['):
+                continue
+            if stripped.startswith('<'):
+                continue
+            if stripped.startswith('---') or stripped.startswith('==='):
+                continue
+            # Found a prose line
+            if len(stripped) > 20:
+                return stripped
+    return ""
+
+
+def _build_capability_analysis(
+    tool_analysis: dict,
+    readme: str,
+    package_metadata: str,
+) -> dict:
+    """
+    Build the capability-vs-purpose analysis section for the deliberation request.
+
+    Compares detected permission scopes against the tool's declared purpose to
+    identify mismatches that may indicate deceptive functionality.
+    """
+    declared_purpose = _extract_declared_purpose(readme, package_metadata)
+    permissions_summary = tool_analysis.get("permissions_summary", {})
+
+    # Build detected capabilities (bool per scope)
+    detected_capabilities = {
+        scope: (permissions_summary.get(scope, 0) > 0)
+        for scope in ['filesystem', 'network', 'execution', 'crypto_keys',
+                       'financial', 'database', 'environment']
+    }
+
+    # Filter for high-risk capabilities that are actually detected
+    high_risk_capabilities = [
+        scope for scope in _HIGH_RISK_SCOPES
+        if detected_capabilities.get(scope, False)
+    ]
+
+    # Compute mismatches
+    mismatches = []
+    if declared_purpose:
+        for scope in high_risk_capabilities:
+            keywords = _SCOPE_KEYWORDS.get(scope)
+            if keywords and not keywords.search(declared_purpose):
+                mismatches.append(
+                    f"Detected '{scope}' capabilities but declared purpose "
+                    f"does not mention related functionality."
+                )
+
+    return {
+        "declared_purpose": declared_purpose,
+        "detected_capabilities": detected_capabilities,
+        "high_risk_capabilities": high_risk_capabilities,
+        "mismatches": mismatches,
     }
 
 

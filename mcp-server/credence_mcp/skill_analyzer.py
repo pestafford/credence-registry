@@ -73,6 +73,40 @@ PASSWORD_ARCHIVE = re.compile(
 )
 CHMOD_EXEC = re.compile(r'chmod\s+\+x')
 
+# ── Crypto / financial attack patterns ─────────────────────────
+
+# Hardcoded wallet addresses in assignment context (not just mentioned in comments)
+CRYPTO_WALLET_ADDRESS = re.compile(
+    r'(?:wallet|address|recipient|dest(?:ination)?|to_addr|account)\s*[=:]\s*["\']'
+    r'(?:'
+    r'[1-9A-HJ-NP-Za-km-z]{32,50}'     # Solana base58 / Bitcoin
+    r'|0x[0-9a-fA-F]{40}'               # Ethereum
+    r')["\']',
+)
+
+# Creating key/wallet files in home directories
+CRYPTO_PRIVATE_KEY_STORAGE = re.compile(
+    r'(?:~/|~\\|/home/|%USERPROFILE%|expanduser)'
+    r'.*(?:\.bob-p2p|wallet\.dat|keystore|\.keys|private.?key|seed\.txt|mnemonic)',
+    re.IGNORECASE,
+)
+
+# Importing crypto/blockchain SDKs
+CRYPTO_SDK_IMPORT = re.compile(
+    r'(?:from\s+|import\s+|require\s*\(\s*["\']|from\s+["\'])'
+    r'(?:@solana/web3\.js|solders|solana|ethers|web3(?:\.py)?|brownie|hardhat|anchor|'
+    r'spl-token|@project-serum|@metaplex|@coral-xyz)',
+    re.IGNORECASE,
+)
+
+# Transfer/send/swap/buy token function calls, DEX interactions
+CRYPTO_TRANSACTION = re.compile(
+    r'(?:transfer|sendTransaction|send_transaction|swap|buy_?token|sell_?token|'
+    r'signTransaction|sign_transaction|signAndSend|sign_and_send|'
+    r'(?:jupiter|raydium|uniswap|pancakeswap|orca).*(?:swap|exchange|route))',
+    re.IGNORECASE,
+)
+
 # Files to scan for content attack patterns
 CONTENT_EXTENSIONS = {'.md', '.sh', '.py', '.js', '.ts', '.bash', '.zsh', '.ps1', '.bat', '.cmd'}
 SKIP_DIRS = {'.git', 'node_modules', '__pycache__', '.venv', 'venv'}
@@ -330,6 +364,63 @@ def _scan_file_content(file_path: Path, rel_path: str) -> list[dict]:
                 "chmod +x on file",
                 "Skill makes a file executable. Combined with download commands, "
                 "this pattern enables execution of untrusted binaries.",
+                file=rel_path,
+                line=line_num,
+                evidence=line.strip()[:200],
+            ))
+
+        # Hardcoded crypto wallet address
+        if CRYPTO_WALLET_ADDRESS.search(line):
+            findings.append(_make_finding(
+                f"SKILL_CRYPTO_WALLET-{rel_path}:{line_num}",
+                _contextual_severity("high", rel_path),
+                "Hardcoded crypto wallet address",
+                "Skill contains a hardcoded cryptocurrency wallet address in an "
+                "assignment context. Legitimate tools do not embed destination "
+                "wallet addresses — this is a drain/exfiltration indicator.",
+                file=rel_path,
+                line=line_num,
+                evidence=line.strip()[:200],
+            ))
+
+        # Private key / wallet file creation in home directories
+        if CRYPTO_PRIVATE_KEY_STORAGE.search(line):
+            findings.append(_make_finding(
+                f"SKILL_CRYPTO_KEY_STORAGE-{rel_path}:{line_num}",
+                _contextual_severity("high", rel_path),
+                "Crypto key/wallet file in home directory",
+                "Skill creates or accesses key/wallet files in the user's home "
+                "directory. This pattern is used to store stolen keys or seed "
+                "phrases for later exfiltration.",
+                file=rel_path,
+                line=line_num,
+                evidence=line.strip()[:200],
+            ))
+
+        # Crypto SDK import
+        if CRYPTO_SDK_IMPORT.search(line):
+            findings.append(_make_finding(
+                f"SKILL_CRYPTO_SDK-{rel_path}:{line_num}",
+                _contextual_severity("medium", rel_path),
+                "Crypto/blockchain SDK import",
+                "Skill imports a cryptocurrency or blockchain SDK. While not "
+                "inherently malicious, this capability should match the tool's "
+                "declared purpose.",
+                file=rel_path,
+                line=line_num,
+                evidence=line.strip()[:200],
+                category="skill-behavioral",
+            ))
+
+        # Crypto transaction / transfer calls
+        if CRYPTO_TRANSACTION.search(line):
+            findings.append(_make_finding(
+                f"SKILL_CRYPTO_TRANSACTION-{rel_path}:{line_num}",
+                _contextual_severity("high", rel_path),
+                "Crypto transaction/transfer operation",
+                "Skill performs cryptocurrency transactions (transfer, swap, buy, "
+                "sign). Combined with hardcoded addresses, this enables wallet "
+                "drain attacks.",
                 file=rel_path,
                 line=line_num,
                 evidence=line.strip()[:200],
