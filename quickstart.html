@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Quick Start — Credence</title>
-    <meta name="description" content="Two minutes to check every MCP server you have. Scan your existing servers and protect future installs with Credence.">
+    <meta name="description" content="Two minutes to check every AI tool you have. Scan your existing tools and protect future installs with Credence.">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
@@ -390,8 +390,8 @@
 
 <div class="container">
     <div class="page-header">
-        <h1>Two minutes to check every MCP server you have</h1>
-        <p>Scan the servers you already have installed, then set up protection for future installs. Requires <a href="install.html" class="inline-link">Credence installed</a> as an MCP server or CLI.</p>
+        <h1>Two minutes to check every AI tool you have</h1>
+        <p>Scan the tools you already have installed, then set up protection for future installs. Requires <a href="install.html" class="inline-link">Credence installed</a> as an MCP server, CLI, or OpenClaw skill.</p>
     </div>
 
     <!-- Step 1: Scan existing servers -->
@@ -409,7 +409,7 @@
 
             <div class="prompt-block" id="agent-prompt-block">
                 <button class="copy-btn" onclick="copyText('agent-prompt')">Copy</button>
-                <p id="agent-prompt">I have Credence installed as an MCP server. Please use the credence_audit_config tool to check all MCP servers in my config. For each server, tell me:
+                <p id="agent-prompt">I have Credence installed as an MCP server. Please use the credence_audit_config tool to check all tools in my config. For each one, tell me:
 - Whether it's attested by Credence
 - Its trust score and verdict
 - Any flags or concerns
@@ -424,16 +424,16 @@ List the unattested servers separately so I can submit them for scanning.</p>
 <pre><span style="color: var(--orange);">Agent</span>
 I've audited your MCP config. Here's the summary:
 
-<span style="font-weight:600;">Attested servers (3):</span>
+<span style="font-weight:600;">Attested tools (3):</span>
   <span style="color:#6B9E4F;">&#10004;</span> filesystem         <span class="key">88</span>/100  VERIFIED
   <span style="color:#6B9E4F;">&#10004;</span> brave-search       <span class="key">74</span>/100  VERIFIED
   <span style="color:var(--orange);">&#9888;</span> slack              <span class="key">52</span>/100  CONDITIONAL — review recommended
 
-<span style="font-weight:600;">Unattested servers (2):</span>
+<span style="font-weight:600;">Unattested tools (2):</span>
   <span style="color:var(--text-muted);">?</span> custom-db-server   Not in registry
   <span style="color:var(--text-muted);">?</span> internal-tools     Not in registry
 
-The unattested servers haven't been scanned by Credence yet.
+The unattested tools haven't been scanned by Credence yet.
 You can submit them for analysis.</pre>
             </div>
         </div>
@@ -451,7 +451,7 @@ You can submit them for analysis.</pre>
             <div class="result-preview">
 <pre><span class="comment">$ credence audit</span>
 
-  Auditing 5 servers in ~/.config/Claude/claude_desktop_config.json
+  Auditing 5 tools in ~/.config/Claude/claude_desktop_config.json
 
   <span style="color:#6B9E4F;">&#10004;</span> filesystem              <span class="key">88</span>/100  VERIFIED
   <span style="color:#6B9E4F;">&#10004;</span> brave-search            <span class="key">74</span>/100  VERIFIED
@@ -460,7 +460,7 @@ You can submit them for analysis.</pre>
   <span style="color:var(--text-muted);">?</span> internal-tools          Not attested
 
   3 attested · 2 unattested · 0 rejected
-  Exit code: 4 (unattested servers found)</pre>
+  Exit code: 4 (unattested tools found)</pre>
             </div>
         </div>
     </section>
@@ -469,7 +469,7 @@ You can submit them for analysis.</pre>
     <section class="section">
         <div class="section-label">Step 2</div>
         <h2>Protect future installs</h2>
-        <p>Set it up once so every new MCP server gets checked automatically.</p>
+        <p>Set it up once so every new AI tool gets checked automatically.</p>
 
         <div class="option-tabs">
             <button class="option-tab active" onclick="showTab('protect', 'guard')">Guard command</button>
@@ -492,7 +492,7 @@ credence guard owner/mcp-server -- npm install @owner/mcp-server</pre>
         </div>
 
         <div id="protect-alias" class="option-content">
-            <p>Add a shell alias so trust checks happen automatically whenever you install an MCP server.</p>
+            <p>Add a shell alias so trust checks happen automatically whenever you install an AI tool.</p>
 
             <div class="code-block">
 <pre><span class="comment"># Add to ~/.bashrc or ~/.zshrc</span>
@@ -504,11 +504,11 @@ mcp-install() {
 mcp-install owner/mcp-server claude mcp add my-server</pre>
             </div>
 
-            <p style="font-size: 0.85rem; color: var(--text-muted);">The first argument is the server identifier for the Credence lookup. Everything after is the install command that runs only if the server is attested.</p>
+            <p style="font-size: 0.85rem; color: var(--text-muted);">The first argument is the tool identifier for the Credence lookup. Everything after is the install command that runs only if the tool is attested.</p>
         </div>
 
         <div id="protect-watch" class="option-content">
-            <p>Run <code>credence watch</code> in the background. It monitors your MCP client config and alerts you when a new unattested server appears.</p>
+            <p>Run <code>credence watch</code> in the background. It monitors your MCP client config and alerts you when a new unattested tool appears.</p>
 
             <div class="code-block">
 <pre><span class="comment"># Start watching (runs until you stop it)</span>
@@ -518,7 +518,7 @@ credence watch
 credence watch --config ~/Library/Application\ Support/Claude/claude_desktop_config.json</pre>
             </div>
 
-            <p style="font-size: 0.85rem; color: var(--text-muted);">Best for Claude Desktop, which doesn't have a hook mechanism for installs. The watcher detects config changes and prints alerts for unattested servers.</p>
+            <p style="font-size: 0.85rem; color: var(--text-muted);">Best for Claude Desktop, which doesn't have a hook mechanism for installs. The watcher detects config changes and prints alerts for unattested tools.</p>
         </div>
     </section>
 
@@ -526,7 +526,7 @@ credence watch --config ~/Library/Application\ Support/Claude/claude_desktop_con
     <section class="section">
         <div class="section-label">Step 3</div>
         <h2>Make it permanent</h2>
-        <p>The commands above work one at a time. These configurations make Credence check every MCP server automatically — across restarts, new terminals, and new projects.</p>
+        <p>The commands above work one at a time. These configurations make Credence check every AI tool automatically — across restarts, new terminals, and new projects.</p>
 
         <div class="option-tabs">
             <button class="option-tab active" onclick="showTab('persist', 'mcp')">MCP server</button>
@@ -555,11 +555,11 @@ claude mcp add credence -- python3 -m credence_mcp.server</pre>
             <p style="font-size: 0.85rem; color: var(--text-muted);">That's it. Your agent can now call <code>credence_check_server</code>, <code>credence_audit_config</code>, and <code>credence_verify_hash</code> in any session. See the <a href="install.html" class="inline-link">install guide</a> for the full list of tools.</p>
 
             <h3 class="sub">Optional: make it a standing instruction</h3>
-            <p>If your client supports system prompts or project instructions, tell the agent to always check Credence before connecting to new servers:</p>
+            <p>If your client supports system prompts or project instructions, tell the agent to always check Credence before connecting to new tools:</p>
 
             <div class="prompt-block">
                 <button class="copy-btn" onclick="copyText('claudemd-prompt')">Copy</button>
-                <p id="claudemd-prompt">Before installing or connecting to any MCP server, use credence_check_server to verify its trust status. Do not proceed if the server is not attested or has a score below 70.</p>
+                <p id="claudemd-prompt">Before installing or connecting to any AI tool, use credence_check_server to verify its trust status. Do not proceed if the tool is not attested or has a score below 70.</p>
             </div>
 
             <p style="font-size: 0.85rem; color: var(--text-muted);">For Claude Code, add to <code>~/.claude/CLAUDE.md</code> (all projects) or <code>./CLAUDE.md</code> (single project). For other clients, add to your system prompt or project instructions.</p>
@@ -630,22 +630,22 @@ EOF
 systemctl --user enable --now credence-watch</pre>
             </div>
 
-            <p style="font-size: 0.85rem; color: var(--text-muted);">Alerts you when a new unattested server appears in your config. See the <a href="install.html#persistent" class="inline-link">install guide</a> for full service configuration.</p>
+            <p style="font-size: 0.85rem; color: var(--text-muted);">Alerts you when a new unattested tool appears in your config. See the <a href="install.html#persistent" class="inline-link">install guide</a> for full service configuration.</p>
         </div>
     </section>
 
     <!-- Step 4: Submit unattested servers -->
     <section class="section">
         <div class="section-label">Step 4</div>
-        <h2>Submit unattested servers</h2>
-        <p>Unattested doesn't mean unsafe — it means the server hasn't been scanned yet. If your audit found unattested servers, submit them for analysis and they'll go through the full Credence pipeline: identity verification, code scanning, adversarial deliberation, and signed attestation.</p>
+        <h2>Submit unattested tools</h2>
+        <p>Unattested doesn't mean unsafe — it means the tool hasn't been scanned yet. If your audit found unattested tools, submit them for analysis and they'll go through the full Credence pipeline: identity verification, code scanning, adversarial deliberation, and signed attestation.</p>
 
         <div class="pipeline">
             <div class="pipe-card">
                 <span class="pipe-num">01</span>
                 <div>
-                    <h3>Submit the server</h3>
-                    <p>Use the <a href="index.html#submit" class="inline-link">submission form</a> with the repository URL and server name. It creates a GitHub Issue to track the scan.</p>
+                    <h3>Submit the tool</h3>
+                    <p>Use the <a href="index.html#submit" class="inline-link">submission form</a> with the repository URL and tool name. It creates a GitHub Issue to track the scan.</p>
                 </div>
             </div>
             <div class="pipe-card">
@@ -659,7 +659,7 @@ systemctl --user enable --now credence-watch</pre>
                 <span class="pipe-num">03</span>
                 <div>
                     <h3>Re-run your audit</h3>
-                    <p>Once the attestation is published, re-run <code>credence audit</code> and the server will show up with a trust score.</p>
+                    <p>Once the attestation is published, re-run <code>credence audit</code> and the tool will show up with a trust score.</p>
                 </div>
             </div>
         </div>

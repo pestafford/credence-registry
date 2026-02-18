@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Install — Credence</title>
-    <meta name="description" content="Install the Credence MCP server, CLI, and pre-install hook. Check trust status before installing MCP servers.">
+    <meta name="description" content="Install Credence: CLI, MCP server, or OpenClaw skill. Check trust status before installing AI tools.">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
@@ -329,11 +329,11 @@
 <div class="container">
     <div class="page-header">
         <h1>Install</h1>
-        <p>Install once, check every MCP server before you connect. Choose your path: an OpenClaw skill (zero config), a pip package with CLI and MCP server, or both.</p>
+        <p>Install once, check every AI tool before you connect. Choose your path: an OpenClaw skill (zero config), a pip package with CLI and MCP server, or both.</p>
     </div>
 
     <div style="padding: 12px 20px; background: var(--glow); border: 1px solid var(--orange-dim); border-radius: 6px; margin-bottom: 24px;">
-        <p style="font-family: 'IBM Plex Mono', monospace; font-size: 0.85rem; color: var(--text-secondary); margin: 0;">New here? <a href="quickstart.html" style="color: var(--orange); text-decoration: none; font-weight: 500;">Start with the quick start guide &rarr;</a> Scan your existing servers in two minutes.</p>
+        <p style="font-family: 'IBM Plex Mono', monospace; font-size: 0.85rem; color: var(--text-secondary); margin: 0;">New here? <a href="quickstart.html" style="color: var(--orange); text-decoration: none; font-weight: 500;">Start with the quick start guide &rarr;</a> Scan your existing tools in two minutes.</p>
     </div>
 
     <!-- Section 1: Install -->
@@ -353,13 +353,13 @@
     <section class="section">
         <div class="section-label">OpenClaw</div>
         <h2>Install as a skill</h2>
-        <p>If you use <a href="https://openclaw.ai" style="color: var(--orange); text-decoration: none;">OpenClaw</a>, install Credence as a skill. Your agent will check every MCP server against the registry before installing it — no pip install or config needed.</p>
+        <p>If you use <a href="https://openclaw.ai" style="color: var(--orange); text-decoration: none;">OpenClaw</a>, install Credence as a skill. Your agent will check every AI tool against the registry before installing it — no pip install or config needed.</p>
 
         <div class="code-block">
 <pre>clawhub install pestafford/credence</pre>
         </div>
 
-        <p>That's it. Once installed, the skill runs automatically whenever your agent installs a new MCP server. You can also check any server manually:</p>
+        <p>That's it. Once installed, the skill runs automatically whenever your agent installs a new tool. You can also check any tool manually:</p>
 
         <div class="code-block">
 <pre><span class="comment"># Ask your agent</span>
@@ -376,7 +376,7 @@
     <section class="section">
         <div class="section-label">MCP Server</div>
         <h2>Add Credence to your AI agent</h2>
-        <p>Credence runs as an MCP server so your AI agent can check trust status before connecting to unknown servers. The agent calls Credence tools through the same protocol it uses for everything else.</p>
+        <p>Credence runs as an MCP server so your AI agent can check trust status before connecting to unknown tools. The agent calls Credence tools through the same protocol it uses for everything else.</p>
 
         <h3 class="sub">Claude Desktop</h3>
         <p>Add to your <code>claude_desktop_config.json</code>:</p>
@@ -412,7 +412,7 @@ python3 -m credence_mcp.server --transport http --port 8400</pre>
                 <span class="pipe-num">&#9670;</span>
                 <div>
                     <h3>credence_check_server</h3>
-                    <p>Check whether an MCP server has a Credence attestation and what its trust status is. Use this before installing or connecting to a server you haven't used before.</p>
+                    <p>Check whether an AI tool has a Credence attestation and what its trust status is. Use this before installing or connecting to a tool you haven't used before.</p>
                 </div>
             </div>
             <div class="pipe-card">
@@ -433,14 +433,14 @@ python3 -m credence_mcp.server --transport http --port 8400</pre>
                 <span class="pipe-num">&#9670;</span>
                 <div>
                     <h3>credence_list_servers</h3>
-                    <p>List all attested servers in the registry, with optional minimum score filter.</p>
+                    <p>List all attested tools in the registry, with optional minimum score filter.</p>
                 </div>
             </div>
             <div class="pipe-card">
                 <span class="pipe-num">&#9670;</span>
                 <div>
                     <h3>credence_audit_config</h3>
-                    <p>Audit all MCP servers in your client config. Checks each server against the registry and reports any that are unattested, flagged, or rejected.</p>
+                    <p>Audit all tools in your MCP client config. Checks each one against the registry and reports any that are unattested, flagged, or rejected.</p>
                 </div>
             </div>
         </div>
@@ -450,25 +450,25 @@ python3 -m credence_mcp.server --transport http --port 8400</pre>
     <section class="section">
         <div class="section-label">CLI</div>
         <h2>Command reference</h2>
-        <p>All commands accept server identifiers in these formats: <code>https://github.com/owner/repo</code>, <code>owner/repo</code>, or the server name from the registry.</p>
+        <p>All commands accept tool identifiers in these formats: <code>https://github.com/owner/repo</code>, <code>owner/repo</code>, or the tool name from the registry.</p>
 
         <div class="code-block">
-<pre><span class="comment"># Check trust status of a single server</span>
+<pre><span class="comment"># Check trust status of a tool</span>
 credence check &lt;server&gt;
 
 <span class="comment"># Hash local code and verify against attestation</span>
 credence verify &lt;server&gt; [--path .]
 
-<span class="comment"># List all attested servers</span>
+<span class="comment"># List all attested tools</span>
 credence list [--min-score N]
 
-<span class="comment"># Audit all servers in your MCP client config</span>
+<span class="comment"># Audit all tools in your MCP client config</span>
 credence audit [--config PATH]
 
 <span class="comment"># Gate an install on a trust check</span>
 credence guard &lt;server&gt; [-- cmd]
 
-<span class="comment"># Watch config for changes, alert on unattested servers</span>
+<span class="comment"># Watch config for changes, alert on unattested tools</span>
 credence watch [--config PATH]</pre>
         </div>
 
@@ -483,7 +483,7 @@ $ credence check owner/mcp-server
 <span class="comment"># Verify local clone matches attestation</span>
 $ credence verify owner/mcp-server --path ./my-local-clone
 
-<span class="comment"># List servers scoring 70+</span>
+<span class="comment"># List tools scoring 70+</span>
 $ credence list --min-score 70
 
 <span class="comment"># Audit your Claude Desktop config</span>
@@ -536,9 +536,9 @@ $ credence guard owner/mcp-server -- claude mcp add my-server</pre>
         <p>Use <code>credence guard</code> and exit codes to gate installs in CI pipelines, shell scripts, and orchestration tools.</p>
 
         <h3 class="sub">Guard an install</h3>
-        <p><code>credence guard</code> checks trust status first. If the server is attested and not rejected, it runs the command after <code>--</code>. Otherwise it exits without running anything.</p>
+        <p><code>credence guard</code> checks trust status first. If the tool is attested and not rejected, it runs the command after <code>--</code>. Otherwise it exits without running anything.</p>
         <div class="code-block">
-<pre><span class="comment"># Only install if the server is attested</span>
+<pre><span class="comment"># Only install if the tool is attested</span>
 credence guard modelcontextprotocol/servers/filesystem -- claude mcp add filesystem-server</pre>
         </div>
 
@@ -567,20 +567,20 @@ fi</pre>
     <section class="section" id="persistent">
         <div class="section-label">Persistent Protection</div>
         <h2>Always-on trust checks</h2>
-        <p>Configure Credence once so every new MCP server gets checked automatically — across reboots, new terminals, and new projects.</p>
+        <p>Configure Credence once so every new AI tool gets checked automatically — across reboots, new terminals, and new projects.</p>
 
         <h3 class="sub">MCP server (AI agent users)</h3>
         <p>If you added Credence as an MCP server (see <a href="#" onclick="window.scrollTo({top: document.querySelector('.section:nth-of-type(2)').offsetTop - 20, behavior: 'smooth'}); return false;" class="inline-link" style="color: var(--orange);">above</a>), you're already set. The Credence tools are available in every session, regardless of which MCP client you use — Claude Desktop, Claude Code, Cursor, Windsurf, Cline, or any other stdio-compatible client.</p>
         <p>To make the agent check automatically without being asked, add a standing instruction to your client's system prompt or project instructions:</p>
         <div class="code-block">
-<pre>Before installing or connecting to any MCP server,
+<pre>Before installing or connecting to any AI tool,
 use credence_check_server to verify its trust status.
-Do not proceed if the server is not attested or has a score below 70.</pre>
+Do not proceed if the tool is not attested or has a score below 70.</pre>
         </div>
         <p style="font-size: 0.85rem; color: var(--text-muted);">Where this goes depends on your client: <code>CLAUDE.md</code> for Claude Code, <code>.cursorrules</code> for Cursor, system prompt settings for others. Adjust the score threshold to your risk tolerance.</p>
 
         <h3 class="sub">Shell function (CLI users)</h3>
-        <p>Add to your shell profile so <code>mcp-install</code> is always available. The first argument is the server identifier; everything after is the install command that runs only if the server is attested.</p>
+        <p>Add to your shell profile so <code>mcp-install</code> is always available. The first argument is the tool identifier; everything after is the install command that runs only if the tool is attested.</p>
         <div class="code-block">
 <pre><span class="comment"># Add to ~/.bashrc or ~/.zshrc</span>
 mcp-install() {
@@ -593,7 +593,7 @@ mcp-install owner/mcp-server pip install mcp-server</pre>
         </div>
 
         <h3 class="sub">Background watcher (system service)</h3>
-        <p>Run <code>credence watch</code> as a system service so it starts on boot and monitors your MCP client config file for changes. Works with any MCP client — alerts you when a new unattested server appears.</p>
+        <p>Run <code>credence watch</code> as a system service so it starts on boot and monitors your MCP client config file for changes. Works with any MCP client — alerts you when a new unattested tool appears.</p>
 
         <h3 class="sub" style="margin-top: 16px; font-size: 0.85rem;">macOS (launchd)</h3>
         <p>Save the plist, then load it:</p>
@@ -651,7 +651,7 @@ systemctl --user enable --now credence-watch
 systemctl --user status credence-watch</pre>
         </div>
 
-        <p style="font-size: 0.85rem; color: var(--text-muted);">The watcher monitors your MCP client config for changes. When a new server appears, it checks the registry and alerts you if the server is unattested, flagged, or rejected.</p>
+        <p style="font-size: 0.85rem; color: var(--text-muted);">The watcher monitors your MCP client config for changes. When a new tool appears, it checks the registry and alerts you if the tool is unattested, flagged, or rejected.</p>
     </section>
 
     <!-- Section 6: Configuration -->

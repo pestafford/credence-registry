@@ -425,7 +425,7 @@
             <div class="faq-item">
                 <div class="faq-question">What if a tool is compromised after attestation?</div>
                 <div class="faq-answer">
-                    <p>The attestation only covers the exact commit that was scanned. If the code changes, the source fingerprint won't match. The Credence CLI's <code>credence watch</code> command monitors your MCP client config for newly added servers and alerts you if they don't have a current attestation. But if a previously-attested server pushes a malicious update to the same commit hash (which would require compromising git itself), Credence won't catch that.</p>
+                    <p>The attestation only covers the exact commit that was scanned. If the code changes, the source fingerprint won't match. The Credence CLI's <code>credence watch</code> command monitors your MCP client config for newly added servers and alerts you if they don't have a current attestation. But if a previously-attested tool pushes a malicious update to the same commit hash (which would require compromising git itself), Credence won't catch that.</p>
                 </div>
             </div>
 

@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Credence — Check MCP servers before you install</title>
-    <meta name="description" content="Check any MCP server before you install it. Credence scans the source, verifies the author, and publishes a signed trust score you can check from your AI agent, the CLI, or CI.">
+    <title>Credence — Check AI tools before you install</title>
+    <meta name="description" content="Check any AI tool before you install it. Credence scans the source, verifies the author, and publishes a signed trust score you can check from your AI agent, the CLI, or CI.">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
@@ -843,9 +843,9 @@
         <div class="hero-tagline">Know what your agents trust.</div>
         <h1>The trust layer for<br class="mobile-break"> <span class="rotating-wrapper"><span class="rotating-words"><span>AI tools</span><span>MCP servers</span><span>OpenClaw skills</span><span>AI tools</span></span></span></h1>
         <p style="font-size: 0.88rem; color: var(--text-muted); margin-bottom: 12px;">AI agents connect to external tools and data sources. Most are unvetted.</p>
-        <p class="subtitle">Check any MCP server or OpenClaw skill before you install it. Credence scans the source, verifies the author, and publishes a signed trust score you can query from your AI agent, the terminal, or CI.</p>
+        <p class="subtitle">Check any AI tool before you install it. Credence scans the source, verifies the author, and publishes a signed trust score you can query from your AI agent, the terminal, or CI.</p>
         <div class="hero-ctas">
-            <a href="registry.html" class="btn btn-primary">Check a server</a>
+            <a href="registry.html" class="btn btn-primary">Check a tool</a>
             <a href="#submit" class="btn btn-secondary">Submit yours</a>
         </div>
         <div class="status-badge">
@@ -862,7 +862,7 @@
             <div class="persona-card">
                 <div class="persona-icon">&gt;_</div>
                 <h3>Check before you install</h3>
-                <p>Look up any MCP server's trust score before you install it. Works from your AI agent or the terminal.</p>
+                <p>Look up any AI tool's trust score before you install it. Works from your AI agent or the terminal.</p>
                 <a href="registry.html" class="persona-cta">Browse the registry &rarr;</a>
             </div>
             <div class="persona-card">
@@ -884,9 +884,9 @@
 <section class="section" style="padding: 20px 0 40px; border-top: none;">
     <div class="container">
         <div class="section-label">The Problem</div>
-        <h2>No way to know if an MCP server is safe before you install it</h2>
-        <p>Right now, people decide whether to install an MCP server based on GitHub stars, README quality, and gut feel. There's no <code style="color: var(--orange); background: var(--code-bg); padding: 2px 6px; border-radius: 3px; font-size: 0.85rem;">npm audit</code> for MCP. No Sigstore. No Dependabot. You have no way to verify that a server does what it claims — or that it hasn't been cloned and poisoned by someone else.</p>
-        <p>This isn't hypothetical. Straiker's STAR Labs recently <a href="https://www.straiker.ai/blog/smartloader-clones-oura-ring-mcp-to-deploy-supply-chain-attack" style="color: var(--orange); text-decoration: none;">documented a supply chain attack</a> that cloned a real MCP server, created fake GitHub accounts, and published the poisoned version to MCP registries. There was nothing to distinguish the real server from the fake one. Credence fixes that.</p>
+        <h2>No way to know if an AI tool is safe before you install it</h2>
+        <p>Right now, people decide whether to install an AI tool based on GitHub stars, README quality, and gut feel. There's no <code style="color: var(--orange); background: var(--code-bg); padding: 2px 6px; border-radius: 3px; font-size: 0.85rem;">npm audit</code> for AI tools. No Sigstore. No Dependabot. You have no way to verify that a tool does what it claims — or that it hasn't been cloned and poisoned by someone else.</p>
+        <p>This isn't hypothetical. Straiker's STAR Labs recently <a href="https://www.straiker.ai/blog/smartloader-clones-oura-ring-mcp-to-deploy-supply-chain-attack" style="color: var(--orange); text-decoration: none;">documented a supply chain attack</a> that cloned a real MCP server, created fake GitHub accounts, and published the poisoned version to tool registries. There was nothing to distinguish the real tool from the fake one. Credence fixes that.</p>
     </div>
 </section>
 
@@ -894,7 +894,7 @@
     <div class="container">
         <div class="section-label">What it looks like</div>
         <h2>Don't trust the README</h2>
-        <p>Once Credence is installed, your AI agent can check any MCP server's trust score before connecting to it. Or use the CLI from the terminal. Either way, one step between you and a bad install.</p>
+        <p>Once Credence is installed, your AI agent can check any tool's trust score before connecting to it. Or use the CLI from the terminal. Either way, one step between you and a bad install.</p>
 
         <div class="experience-panels">
             <div class="experience-panel">
@@ -1165,7 +1165,7 @@ are an unconfirmed trust signal.
                 <span class="pipe-num">⬡</span>
                 <div>
                     <h3>MCP Server</h3>
-                    <p>Add Credence as an MCP server in Claude Desktop, Claude Code, or any MCP client. Your AI agent calls <code style="color: var(--orange); background: var(--code-bg); padding: 2px 6px; border-radius: 3px; font-size: 0.8rem;">credence_check_server</code> before connecting to unknown servers. Attestation data flows through the same protocol your agent already speaks. <a href="quickstart.html" style="color: var(--orange); text-decoration: none;">Quick start guide &rarr;</a></p>
+                    <p>Add Credence as an MCP server in Claude Desktop, Claude Code, or any MCP client. Your AI agent calls <code style="color: var(--orange); background: var(--code-bg); padding: 2px 6px; border-radius: 3px; font-size: 0.8rem;">credence_check_server</code> before connecting to unknown tools. Attestation data flows through the same protocol your agent already speaks. <a href="quickstart.html" style="color: var(--orange); text-decoration: none;">Quick start guide &rarr;</a></p>
                 </div>
             </div>
             <div class="pipe-card">
@@ -1211,7 +1211,7 @@ $ credence check modelcontextprotocol/servers/filesystem
     <div class="container">
         <div class="section-label">Submit</div>
         <h2>Request an attestation</h2>
-        <p>Submit an MCP server for Credence analysis. We'll clone the repo, run the pipeline, and publish the attestation. Submissions are tracked as GitHub Issues — you can follow progress there.</p>
+        <p>Submit an AI tool for Credence analysis. We'll clone the repo, run the pipeline, and publish the attestation. Submissions are tracked as GitHub Issues — you can follow progress there.</p>
 
         <div class="submit-form">
             <div class="form-group">
@@ -1292,7 +1292,7 @@ $ credence check modelcontextprotocol/servers/filesystem
             </div>
         </div>
 
-        <p style="margin-top: 24px; font-size: 0.85rem; color: var(--text-muted);">Credence is a security tool, not a shaming tool. The goal is fewer vulnerable MCP servers in production — not public callouts.</p>
+        <p style="margin-top: 24px; font-size: 0.85rem; color: var(--text-muted);">Credence is a security tool, not a shaming tool. The goal is fewer vulnerable AI tools in production — not public callouts.</p>
     </div>
 </section>
 
@@ -1398,7 +1398,7 @@ $ credence check modelcontextprotocol/servers/filesystem
                 View on GitHub
             </a>
             <a href="install.html" class="btn btn-secondary">
-                Install the MCP server
+                Install Credence
             </a>
             <a href="papers/adversarial-trust-layer.html" class="btn btn-secondary">
                 Read the position paper
@@ -1588,14 +1588,14 @@ $ credence check modelcontextprotocol/servers/filesystem
 
                 // Progress line
                 var progressEl = document.getElementById('progress-line');
-                progressEl.innerHTML = totalScanned + ' of ~17,000 MCP servers scanned. Adding more every week. <a href="https://glama.ai/mcp/servers" target="_blank" rel="noopener">Ecosystem count via Glama</a>.';
+                progressEl.innerHTML = totalScanned + ' of ~17,000 AI tools scanned. Adding more every week. <a href="https://glama.ai/mcp/servers" target="_blank" rel="noopener">Ecosystem count via Glama</a>.';
                 progressEl.style.display = 'block';
             })
             .catch(function() {
                 document.getElementById('dashboard-empty').style.display = 'block';
                 // Show progress line even with no data
                 var progressEl = document.getElementById('progress-line');
-                progressEl.innerHTML = '~17,000 MCP servers in the wild. We\'re scanning as fast as we can. <a href="https://glama.ai/mcp/servers" target="_blank" rel="noopener">Ecosystem count via Glama</a>.';
+                progressEl.innerHTML = '~17,000 AI tools in the wild. We\'re scanning as fast as we can. <a href="https://glama.ai/mcp/servers" target="_blank" rel="noopener">Ecosystem count via Glama</a>.';
                 progressEl.style.display = 'block';
             });
     }
