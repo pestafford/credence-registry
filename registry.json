@@ -4,7 +4,7 @@
   "registry_url": "https://credence.securingthesingularity.com",
   "maintainer": "Phil Stafford <phil@securingthesingularity.com>",
   "signing_public_key": "XdvqC/Q6TX90MpL37wdxfUtqOiS8qiQjK8JNJy+BOcM=",
-  "updated_at": "2026-02-19T19:37:56Z",
+  "updated_at": "2026-02-19T19:58:31Z",
   "servers": [
     {
       "server_id": "modelcontextprotocol/servers/filesystem",
@@ -128,10 +128,10 @@
         "commit_sha": "98458464b22387db7cb28361894339f2466342d2",
         "source_hash": "895fb073243c605dd3c559df7fb57e297f02498102a259a5386c403012e28237",
         "source_hash_method": "merkle-tree-sha256",
-        "attested_at": "2026-02-19T19:37:56Z",
+        "attested_at": "2026-02-19T19:58:31Z",
         "pipeline_version": "0.2.0",
         "scoring_version": "1.0.0",
-        "trust_score": 88,
+        "trust_score": 86,
         "trust_dimensions": {
           "security": 85,
           "provenance": 90,
@@ -151,12 +151,12 @@
         },
         "lockfile_name": "none",
         "lockfile_hash": "none",
-        "risk_summary": "This OpenClaw Discord channel management skill presents a low-risk profile with three medium-severity SAST findings that are contextually appropriate false positives for a Discord API integration. Provenance flags (ACCOUNT_YOUNG_LT_90_DAYS at 47 days, NO_LOCKFILE) are non-compounding and ecosystem-expected. A minor score reduction from 92 reflects the genuine analytical gap that SKILL.md content was not explicitly confirmed as examined in the evidence, though zero critical or high findings across all scan categories supports approval.",
+        "risk_summary": "The itsahedge/agent-council OpenClaw skill presents a clean content profile with no encoded payloads, no curl-pipe-bash patterns, and no credential harvesting instructions. The three medium-severity Semgrep findings are contextual false positives for a legitimate Discord API integration tool. Residual risk is limited to the young account age (47 days), unverified bundled executable scripts (create-agent.sh), and the absence of integrity checksums \u2014 all advisory-level concerns that do not rise to blocking severity without code-level corroboration of malicious intent.",
         "tool_type": "openclaw-skill",
         "signature": {
           "algorithm": "ed25519",
-          "value": "dGsEAGR42jno3TxAGArkMI6p2HvMDhlleI+1WjTE2c4f6sim556ycvet+MQ8pkPUacNEzcsJQm7nLopcEPSDAg==",
-          "canonical_hash": "c2d3a4c96613c29c4c89cd6ce69d1a31130112e618cc8ab7cefd24ec7ca59a9c"
+          "value": "4DKQAV6Z0ekeKesxlkO4zHbBVeQJox9BBzo7X81gxWuqxIU0nLo0ZPaUj1KDJDGMGVQfqunYvfmVlP1Y+wElCQ==",
+          "canonical_hash": "8727c8e29ca797f072c406bd925e7f5bc28ffe9bebff77f4306b42d29f72aea6"
         }
       },
       "attestation_url": "https://github.com/pestafford/credence-registry/tree/main/scan-results/98458464"

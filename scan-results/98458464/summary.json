@@ -16,16 +16,16 @@
   ],
   "lockfile_name": "none",
   "lockfile_hash": "none",
-  "scan_timestamp": "2026-02-19T19:36:12Z",
+  "scan_timestamp": "2026-02-19T19:56:47Z",
   "pipeline_version": "0.2.0",
   "thinktank_verdict": "APPROVED",
-  "trust_score": 88,
+  "trust_score": 86,
   "trust_dimensions": {
     "security": 85,
     "provenance": 90,
     "behavioral": 100
   },
   "scoring_version": "1.0.0",
-  "deliberation_session": "887c8e03-bd9",
-  "risk_summary": "This OpenClaw Discord channel management skill presents a low-risk profile with three medium-severity SAST findings that are contextually appropriate false positives for a Discord API integration. Provenance flags (ACCOUNT_YOUNG_LT_90_DAYS at 47 days, NO_LOCKFILE) are non-compounding and ecosystem-expected. A minor score reduction from 92 reflects the genuine analytical gap that SKILL.md content was not explicitly confirmed as examined in the evidence, though zero critical or high findings across all scan categories supports approval."
+  "deliberation_session": "e331494b-7d2",
+  "risk_summary": "The itsahedge/agent-council OpenClaw skill presents a clean content profile with no encoded payloads, no curl-pipe-bash patterns, and no credential harvesting instructions. The three medium-severity Semgrep findings are contextual false positives for a legitimate Discord API integration tool. Residual risk is limited to the young account age (47 days), unverified bundled executable scripts (create-agent.sh), and the absence of integrity checksums — all advisory-level concerns that do not rise to blocking severity without code-level corroboration of malicious intent."
 }
