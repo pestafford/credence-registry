@@ -508,6 +508,11 @@ def process_response(response: dict, scan_summary: dict) -> dict:
     if session_id:
         scan_summary["deliberation_session"] = session_id
 
+    # ── risk_summary: user-facing reason for the verdict ──
+    risk_summary = response.get("risk_summary", "")
+    if risk_summary:
+        scan_summary["risk_summary"] = risk_summary
+
     # ── threat_type: adversarial vs vulnerability classification ──
     threat_type = response.get("threat_type")
     if threat_type in ("adversarial", "vulnerability"):

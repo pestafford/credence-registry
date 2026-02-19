@@ -47,6 +47,10 @@ def build_attestation(summary: dict) -> dict:
         "lockfile_hash": summary.get("lockfile_hash", "none"),
     }
 
+    risk_summary = summary.get("risk_summary")
+    if risk_summary:
+        att["risk_summary"] = risk_summary
+
     threat_type = summary.get("threat_type")
     if threat_type:
         att["threat_type"] = threat_type
@@ -143,6 +147,10 @@ def _build_index_entry(server_id: str, server_name: str, canonical_name: str,
         "attested_at": attestation.get("attested_at", ""),
         "attestation_file": f"servers/{server_id}.json",
     }
+
+    risk_summary = attestation.get("risk_summary")
+    if risk_summary:
+        entry["risk_summary"] = risk_summary
 
     threat_type = attestation.get("threat_type")
     if threat_type:
