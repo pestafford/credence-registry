@@ -4,9 +4,9 @@
   "registry_url": "https://credence.securingthesingularity.com",
   "maintainer": "Phil Stafford <phil@securingthesingularity.com>",
   "signing_public_key": "XdvqC/Q6TX90MpL37wdxfUtqOiS8qiQjK8JNJy+BOcM=",
-  "updated_at": "2026-02-19T19:13:31Z",
+  "updated_at": "2026-02-19T19:37:56Z",
   "stats": {
-    "total_scans": 16
+    "total_scans": 17
   },
   "servers": [
     {
@@ -51,12 +51,12 @@
       "canonical_name": "",
       "repo_url": "https://github.com/openclaw/skills",
       "repo_owner": "openclaw",
-      "trust_score": 68,
-      "thinktank_verdict": "CONDITIONAL",
+      "trust_score": 88,
+      "thinktank_verdict": "APPROVED",
       "scoring_version": "1.0.0",
-      "attested_at": "2026-02-19T19:13:31Z",
+      "attested_at": "2026-02-19T19:37:56Z",
       "attestation_file": "servers/openclaw/skills/agent-council.json",
-      "risk_summary": "This MCP server presents no evidence of active malicious code — all three SAST findings are false positives in Discord utility scripts — but carries meaningful provenance uncertainty from a 47-day-old account, an unexplained submitter/repository identity mismatch, no dependency lockfile, and an external runtime content dependency on the unvetted clawdhub.com platform. The code visible in the repository is clean, but the actual skill content executed at runtime may originate from an unreviewed third-party service, creating a supply chain gap that warrants human investigation before deployment in sensitive agent contexts.",
+      "risk_summary": "This OpenClaw Discord channel management skill presents a low-risk profile with three medium-severity SAST findings that are contextually appropriate false positives for a Discord API integration. Provenance flags (ACCOUNT_YOUNG_LT_90_DAYS at 47 days, NO_LOCKFILE) are non-compounding and ecosystem-expected. A minor score reduction from 92 reflects the genuine analytical gap that SKILL.md content was not explicitly confirmed as examined in the evidence, though zero critical or high findings across all scan categories supports approval.",
       "tool_type": "openclaw-skill"
     },
     {

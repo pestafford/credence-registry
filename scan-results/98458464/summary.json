@@ -1,0 +1,31 @@
+{
+  "server_name": "itsahedge/agent-council",
+  "canonical_name": "",
+  "server_path": "skills/itsahedge/agent-council",
+  "tool_type": "openclaw-skill",
+  "maintainer_verified": false,
+  "verify_reason": "Third-party submission — submitter is not owner, collaborator, or contributor",
+  "repo_url": "https://github.com/openclaw/skills",
+  "commit_sha": "98458464b22387db7cb28361894339f2466342d2",
+  "source_hash": "895fb073243c605dd3c559df7fb57e297f02498102a259a5386c403012e28237",
+  "source_hash_method": "merkle-tree-sha256",
+  "is_fork": false,
+  "provenance_flags": [
+    "ACCOUNT_YOUNG_LT_90_DAYS",
+    "NO_LOCKFILE"
+  ],
+  "lockfile_name": "none",
+  "lockfile_hash": "none",
+  "scan_timestamp": "2026-02-19T19:36:12Z",
+  "pipeline_version": "0.2.0",
+  "thinktank_verdict": "APPROVED",
+  "trust_score": 88,
+  "trust_dimensions": {
+    "security": 85,
+    "provenance": 90,
+    "behavioral": 100
+  },
+  "scoring_version": "1.0.0",
+  "deliberation_session": "887c8e03-bd9",
+  "risk_summary": "This OpenClaw Discord channel management skill presents a low-risk profile with three medium-severity SAST findings that are contextually appropriate false positives for a Discord API integration. Provenance flags (ACCOUNT_YOUNG_LT_90_DAYS at 47 days, NO_LOCKFILE) are non-compounding and ecosystem-expected. A minor score reduction from 92 reflects the genuine analytical gap that SKILL.md content was not explicitly confirmed as examined in the evidence, though zero critical or high findings across all scan categories supports approval."
+}
