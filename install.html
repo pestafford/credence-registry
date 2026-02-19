@@ -432,7 +432,7 @@
 <pre>clawhub install pestafford/credence</pre>
             </div>
 
-            <p>That's it. Once installed, the skill runs automatically whenever your agent installs a new tool. You can also check any tool yourself:</p>
+            <p>Now you can check any tool on demand:</p>
 
             <div class="code-block">
 <pre><span class="comment"># Use the slash command</span>
@@ -444,8 +444,8 @@
 
             <p style="font-size: 0.85rem; color: var(--text-muted);">The skill queries the public Credence registry. No API key, no account, no setup beyond the install command.</p>
 
-            <h3 class="sub">Optional: make it automatic</h3>
-            <p>Tell your agent to always check Credence before installing anything. Add this as a standing instruction in your client:</p>
+            <h3 class="sub">Make checks automatic</h3>
+            <p>The install gives you the skill, but your agent won't use it by default. Add a standing instruction so it checks every tool before installing:</p>
 
             <div class="prompt-block">
                 <button class="copy-btn" onclick="copyText('user-standing-instruction-claw')">Copy</button>
@@ -466,7 +466,7 @@
 <pre>pip install git+https://github.com/pestafford/credence-registry.git#subdirectory=mcp-server</pre>
             </div>
 
-            <p>Then add it to your client:</p>
+            <p>Then add it to your client's config so it loads on startup:</p>
 
             <h3 class="sub">Claude Desktop</h3>
             <p>Add to your <code>claude_desktop_config.json</code>:</p>
@@ -488,8 +488,8 @@
 
             <p style="font-size: 0.85rem; color: var(--text-muted);">Works with any MCP client: Cursor, Windsurf, Cline, or anything that supports stdio transport.</p>
 
-            <h3 class="sub">Optional: make it automatic</h3>
-            <p>Tell your agent to always check Credence before installing anything. Add this as a standing instruction in your client:</p>
+            <h3 class="sub">Make checks automatic</h3>
+            <p>The config above makes Credence available to your agent, but it won't use it unless you ask. Add a standing instruction so it checks every tool before installing:</p>
 
             <div class="prompt-block">
                 <button class="copy-btn" onclick="copyText('user-standing-instruction-mcp')">Copy</button>
