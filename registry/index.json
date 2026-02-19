@@ -4,9 +4,9 @@
   "registry_url": "https://credence.securingthesingularity.com",
   "maintainer": "Phil Stafford <phil@securingthesingularity.com>",
   "signing_public_key": "XdvqC/Q6TX90MpL37wdxfUtqOiS8qiQjK8JNJy+BOcM=",
-  "updated_at": "2026-02-19T18:57:40Z",
+  "updated_at": "2026-02-19T19:13:31Z",
   "stats": {
-    "total_scans": 15
+    "total_scans": 16
   },
   "servers": [
     {
@@ -51,12 +51,12 @@
       "canonical_name": "",
       "repo_url": "https://github.com/openclaw/skills",
       "repo_owner": "openclaw",
-      "trust_score": 72,
+      "trust_score": 68,
       "thinktank_verdict": "CONDITIONAL",
       "scoring_version": "1.0.0",
-      "attested_at": "2026-02-19T18:57:40Z",
+      "attested_at": "2026-02-19T19:13:31Z",
       "attestation_file": "servers/openclaw/skills/agent-council.json",
-      "risk_summary": "This MCP server presents no confirmed malicious code indicators — all three SAST findings are false positives for standard Discord API utility scripts — but carries unresolved provenance concerns including a 47-day-old account, absent dependency lockfile, an unexplained submitter/repository identity mismatch (itsahedge/agent-council vs openclaw/skills), and an opaque external service dependency on clawdhub.com whose runtime role in skill delivery has not been audited. The preliminary score of 92/100 is inflated relative to the actual provenance clarity; a conditional approval with human review of the identity chain and clawdhub.com dependency is warranted before production deployment.",
+      "risk_summary": "This MCP server presents no evidence of active malicious code — all three SAST findings are false positives in Discord utility scripts — but carries meaningful provenance uncertainty from a 47-day-old account, an unexplained submitter/repository identity mismatch, no dependency lockfile, and an external runtime content dependency on the unvetted clawdhub.com platform. The code visible in the repository is clean, but the actual skill content executed at runtime may originate from an unreviewed third-party service, creating a supply chain gap that warrants human investigation before deployment in sensitive agent contexts.",
       "tool_type": "openclaw-skill"
     },
     {
