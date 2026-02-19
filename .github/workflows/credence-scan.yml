@@ -767,7 +767,7 @@ jobs:
           rm -rf .deliberations/ /tmp/deliberation-transcript/
 
           python3 -m credence_mcp.deliberation_adapter run /tmp/ /tmp/scan-summary.json \
-            --repo /tmp/target-server \
+            --repo "$SCAN_DIR" \
             --timeout 300 \
             --server-cmd "deliberation-mcp"
 

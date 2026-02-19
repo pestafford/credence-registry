@@ -87,10 +87,12 @@ def build_request(
 
     # ── Optional: repo context ──
     readme = ""
+    skill_md = ""
     package_metadata = ""
     if repo_dir:
         repo_path = Path(repo_dir)
         readme = _load_text(repo_path / "README.md")
+        skill_md = _load_text(repo_path / "SKILL.md")
         raw = (
             _load_json(repo_path / "package.json")
             or _load_toml_raw(repo_path / "pyproject.toml")
@@ -111,6 +113,7 @@ def build_request(
             "commit_sha": summary.get("commit_sha", ""),
             "tool_type": summary.get("tool_type", "mcp-server"),
             "readme": readme,
+            "skill_md": skill_md,
             "package_metadata": package_metadata,
         },
 
