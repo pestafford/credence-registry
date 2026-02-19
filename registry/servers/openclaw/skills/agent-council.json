@@ -4,13 +4,13 @@
   "canonical_name": "",
   "repo_url": "https://github.com/openclaw/skills",
   "attestation": {
-    "commit_sha": "c36af2af4c095e0e85d53f573b1a98f10414fc9b",
+    "commit_sha": "d1e802681abe9e1322bb9a2c28c85d899e9bc1d3",
     "source_hash": "895fb073243c605dd3c559df7fb57e297f02498102a259a5386c403012e28237",
     "source_hash_method": "merkle-tree-sha256",
-    "attested_at": "2026-02-19T18:15:13Z",
+    "attested_at": "2026-02-19T18:57:40Z",
     "pipeline_version": "0.2.0",
     "scoring_version": "1.0.0",
-    "trust_score": 68,
+    "trust_score": 72,
     "trust_dimensions": {
       "security": 85,
       "provenance": 90,
@@ -30,13 +30,13 @@
     },
     "lockfile_name": "none",
     "lockfile_hash": "none",
-    "risk_summary": "This MCP server presents clean code-level findings (three medium SAST false positives in Discord utility scripts) but carries unresolved provenance concerns: a 47-day-old account owner, no dependency lockfile, an unexplained identity mismatch between the submission name and repository, and an external canonical source (clawdhub.com) that was not assessed. No confirmed malicious patterns were identified, but the actual MCP tool surface was not fully characterized, warranting conditional approval pending provenance clarification.",
+    "risk_summary": "This MCP server presents no confirmed malicious code indicators \u2014 all three SAST findings are false positives for standard Discord API utility scripts \u2014 but carries unresolved provenance concerns including a 47-day-old account, absent dependency lockfile, an unexplained submitter/repository identity mismatch (itsahedge/agent-council vs openclaw/skills), and an opaque external service dependency on clawdhub.com whose runtime role in skill delivery has not been audited. The preliminary score of 92/100 is inflated relative to the actual provenance clarity; a conditional approval with human review of the identity chain and clawdhub.com dependency is warranted before production deployment.",
     "tool_type": "openclaw-skill",
     "signature": {
       "algorithm": "ed25519",
-      "value": "J+8xLSO+mfon3+t+D0iLd6e8uIxD0w8lCYTP9BFmv3d/NCv4s1wqKxLmSHFIrc5RGWl/ICWK+08g1qPrfDeeAQ==",
-      "canonical_hash": "58e7bd94d112fcab2d30dd24567be77d3161351f615cd7bc682cfa73d5f640f0"
+      "value": "0SHlx2w8mTgS/E72eMGr4urQto/oaO0pBa6Wbz7nS2hHxJGaJ0+Su5L3IfeG4XpitvKaAJC3Wm7R+LYiaJFpDQ==",
+      "canonical_hash": "3c57b5bff2b5e7f332289ca5d947ceae1f759634d142d2db1458eb12f6ebe8e4"
     }
   },
-  "attestation_url": "https://github.com/pestafford/credence-registry/tree/main/scan-results/c36af2af"
+  "attestation_url": "https://github.com/pestafford/credence-registry/tree/main/scan-results/d1e80268"
 }

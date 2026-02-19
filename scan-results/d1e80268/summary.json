@@ -1,0 +1,31 @@
+{
+  "server_name": "itsahedge/agent-council",
+  "canonical_name": "",
+  "server_path": "skills/itsahedge/agent-council",
+  "tool_type": "openclaw-skill",
+  "maintainer_verified": false,
+  "verify_reason": "Third-party submission — submitter is not owner, collaborator, or contributor",
+  "repo_url": "https://github.com/openclaw/skills",
+  "commit_sha": "d1e802681abe9e1322bb9a2c28c85d899e9bc1d3",
+  "source_hash": "895fb073243c605dd3c559df7fb57e297f02498102a259a5386c403012e28237",
+  "source_hash_method": "merkle-tree-sha256",
+  "is_fork": false,
+  "provenance_flags": [
+    "ACCOUNT_YOUNG_LT_90_DAYS",
+    "NO_LOCKFILE"
+  ],
+  "lockfile_name": "none",
+  "lockfile_hash": "none",
+  "scan_timestamp": "2026-02-19T18:56:00Z",
+  "pipeline_version": "0.2.0",
+  "thinktank_verdict": "CONDITIONAL",
+  "trust_score": 72,
+  "trust_dimensions": {
+    "security": 85,
+    "provenance": 90,
+    "behavioral": 100
+  },
+  "scoring_version": "1.0.0",
+  "deliberation_session": "003c1100-53c",
+  "risk_summary": "This MCP server presents no confirmed malicious code indicators — all three SAST findings are false positives for standard Discord API utility scripts — but carries unresolved provenance concerns including a 47-day-old account, absent dependency lockfile, an unexplained submitter/repository identity mismatch (itsahedge/agent-council vs openclaw/skills), and an opaque external service dependency on clawdhub.com whose runtime role in skill delivery has not been audited. The preliminary score of 92/100 is inflated relative to the actual provenance clarity; a conditional approval with human review of the identity chain and clawdhub.com dependency is warranted before production deployment."
+}
