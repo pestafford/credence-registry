@@ -714,7 +714,7 @@ jobs:
         run: |
           # Collect all scanner results into /tmp/ for the normalizer.
           # The normalizer looks for known filenames in a directory.
-          python3 -m credence_mcp.report_normalizer /tmp/ /tmp/evidence.json
+          python3 -m credence_mcp.report_normalizer /tmp/ /tmp/evidence.json --source-dir "$SCAN_DIR"
 
       # ── STAGE 4b: TRUST SCORE ────────────────────────
 

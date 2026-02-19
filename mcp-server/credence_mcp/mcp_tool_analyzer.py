@@ -186,6 +186,7 @@ class ToolFinding:
     severity: str      # critical, high, medium, low, info
     description: str
     evidence: str = ""
+    source_context: dict = field(default_factory=dict)
 
 
 @dataclass
@@ -207,6 +208,20 @@ class AnalysisReport:
     permissions_summary: dict = field(default_factory=dict)
     warning_count: int = 0
     critical_count: int = 0
+
+
+def _make_snippet(content: str, line_num: int, context: int = 2) -> dict:
+    """Build a source_context snippet around the given line number."""
+    if line_num <= 0:
+        return {}
+    lines = content.split('\n')
+    start = max(0, line_num - 1 - context)
+    end = min(len(lines), line_num + context)
+    return {
+        "lines": [[i + 1, lines[i][:500]] for i in range(start, end)],
+        "flagged_line": line_num,
+        "source": "file_read",
+    }
 
 
 # ── Analysis Functions ───────────────────────────────────────────
@@ -352,7 +367,8 @@ def check_unicode(content: str, file_path: str) -> list[ToolFinding]:
                     finding_type="UNICODE",
                     severity="high",
                     description=f"Invisible Unicode character: {name} (U+{ord(char):04X}) found {count} time(s)",
-                    evidence=repr(line.strip()[:120])
+                    evidence=repr(line.strip()[:120]),
+                    source_context=_make_snippet(content, line_num),
                 ))
     return findings
 
@@ -426,7 +442,8 @@ def check_dynamic_descriptions(content: str, file_path: str, repo_path: Path) ->
                     severity="high",
                     description=f"Dynamic description loading detected: {label}. "
                                f"Tool descriptions should be static — dynamic loading enables rug pulls.",
-                    evidence=line.strip()[:150]
+                    evidence=line.strip()[:150],
+                    source_context=_make_snippet(content, line_num),
                 ))
     return findings
 
@@ -454,7 +471,8 @@ def check_schema_poisoning(content: str, file_path: str, repo_path: Path) -> lis
             finding_type="SCHEMA",
             severity="medium",
             description="additionalProperties set to true — allows hidden fields in input",
-            evidence=""
+            evidence="",
+            source_context=_make_snippet(content, line_num),
         ))
 
     # Check for overly permissive type: "any" or no type constraint
@@ -494,7 +512,8 @@ def check_schema_poisoning(content: str, file_path: str, repo_path: Path) -> lis
                 severity="medium",
                 description=f"Parameter name '{param_name}' contains injection-oriented term combination. "
                            f"May be designed to trick agents into injecting attacker-controlled text.",
-                evidence=line.strip()[:150]
+                evidence=line.strip()[:150],
+                source_context=_make_snippet(content, i),
             ))
 
     # Required array containing non-parameter / instruction entries
@@ -517,7 +536,8 @@ def check_schema_poisoning(content: str, file_path: str, repo_path: Path) -> lis
                     severity="high",
                     description=f"Required array contains suspicious entry: '{entry[:60]}'. "
                                f"Normal parameter names don't contain spaces or exceed 40 chars.",
-                    evidence=entry[:100]
+                    evidence=entry[:100],
+                    source_context=_make_snippet(content, line_num),
                 ))
 
     # Parameter descriptions with embedded directives
@@ -539,7 +559,8 @@ def check_schema_poisoning(content: str, file_path: str, repo_path: Path) -> lis
                     severity="high",
                     description=f"Parameter description contains injection pattern: {inj_label}. "
                                f"Input schema descriptions can influence agent behavior.",
-                    evidence=desc_text[:150]
+                    evidence=desc_text[:150],
+                    source_context=_make_snippet(content, line_num),
                 ))
                 break  # One finding per param description is enough
 
@@ -559,7 +580,8 @@ def check_schema_poisoning(content: str, file_path: str, repo_path: Path) -> lis
                     severity="medium",
                     description=f"Enum value contains suspicious content: '{val[:60]}'. "
                                f"Enum values should be short identifiers, not instruction text.",
-                    evidence=val[:100]
+                    evidence=val[:100],
+                    source_context=_make_snippet(content, line_num),
                 ))
 
     return findings
@@ -781,7 +803,8 @@ def check_version_gates(content: str, file_path: str, repo_path: Path) -> list[T
                             description=f"Conditional tool registration detected: {gate_label}. "
                                        f"Tool behavior that changes based on version, time, or "
                                        f"environment variables can enable post-attestation rug pulls.",
-                            evidence=line.strip()[:150]
+                            evidence=line.strip()[:150],
+                            source_context=_make_snippet(content, i + 1),
                         ))
                         break  # One finding per gate line
                 break  # One gate pattern match per line
@@ -798,7 +821,8 @@ def check_version_gates(content: str, file_path: str, repo_path: Path) -> list[T
                 description="Conditional ternary tool definition detected. "
                            "Tool names or descriptions that change at runtime "
                            "can enable post-attestation rug pulls.",
-                evidence=line.strip()[:150]
+                evidence=line.strip()[:150],
+                source_context=_make_snippet(content, i),
             ))
 
     return findings
@@ -862,7 +886,8 @@ def check_crypto_operations(content: str, file_path: str, repo_path: Path) -> li
                     description=f"{description}. {label} — "
                                f"financial operations in MCP tools require explicit "
                                f"user consent and should match the tool's declared purpose.",
-                    evidence=line.strip()[:150]
+                    evidence=line.strip()[:150],
+                    source_context=_make_snippet(content, line_num),
                 ))
                 break  # One finding per line max
     return findings

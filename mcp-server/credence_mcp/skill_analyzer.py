@@ -149,9 +149,10 @@ def _make_finding(
     line: int = 0,
     evidence: str = "",
     category: str = "skill",
+    source_context: dict | None = None,
 ) -> dict:
     """Create a finding dict in the standard Credence format."""
-    return {
+    result = {
         "id": finding_id,
         "scanner": "skill-analyzer",
         "severity": severity,
@@ -162,6 +163,9 @@ def _make_finding(
         "description": description,
         "evidence": evidence,
     }
+    if source_context:
+        result["source_context"] = source_context
+    return result
 
 
 # ── Manifest analysis ───────────────────────────────────────────
@@ -286,6 +290,16 @@ def _scan_file_content(file_path: Path, rel_path: str) -> list[dict]:
         return findings
 
     lines = content.split('\n')
+
+    def _snippet(center_line: int, context: int = 2) -> dict:
+        start = max(0, center_line - 1 - context)
+        end = min(len(lines), center_line + context)
+        return {
+            "lines": [[i + 1, lines[i][:500]] for i in range(start, end)],
+            "flagged_line": center_line,
+            "source": "file_read",
+        }
+
     for line_num, line in enumerate(lines, 1):
         # Encoded payload
         if ENCODED_PAYLOAD.search(line):
@@ -298,6 +312,7 @@ def _scan_file_content(file_path: Path, rel_path: str) -> list[dict]:
                 file=rel_path,
                 line=line_num,
                 evidence=line.strip()[:200],
+                source_context=_snippet(line_num),
             ))
 
         # Raw IP URL
@@ -312,6 +327,7 @@ def _scan_file_content(file_path: Path, rel_path: str) -> list[dict]:
                 file=rel_path,
                 line=line_num,
                 evidence=line.strip()[:200],
+                source_context=_snippet(line_num),
             ))
 
         # Quarantine bypass
@@ -326,6 +342,7 @@ def _scan_file_content(file_path: Path, rel_path: str) -> list[dict]:
                 file=rel_path,
                 line=line_num,
                 evidence=line.strip()[:200],
+                source_context=_snippet(line_num),
             ))
 
         # Hidden package install
@@ -340,6 +357,7 @@ def _scan_file_content(file_path: Path, rel_path: str) -> list[dict]:
                 file=rel_path,
                 line=line_num,
                 evidence=line.strip()[:200],
+                source_context=_snippet(line_num),
             ))
 
         # Password-protected archive
@@ -354,6 +372,7 @@ def _scan_file_content(file_path: Path, rel_path: str) -> list[dict]:
                 file=rel_path,
                 line=line_num,
                 evidence=line.strip()[:200],
+                source_context=_snippet(line_num),
             ))
 
         # chmod +x on downloaded files
@@ -367,6 +386,7 @@ def _scan_file_content(file_path: Path, rel_path: str) -> list[dict]:
                 file=rel_path,
                 line=line_num,
                 evidence=line.strip()[:200],
+                source_context=_snippet(line_num),
             ))
 
         # Hardcoded crypto wallet address
@@ -381,6 +401,7 @@ def _scan_file_content(file_path: Path, rel_path: str) -> list[dict]:
                 file=rel_path,
                 line=line_num,
                 evidence=line.strip()[:200],
+                source_context=_snippet(line_num),
             ))
 
         # Private key / wallet file creation in home directories
@@ -395,6 +416,7 @@ def _scan_file_content(file_path: Path, rel_path: str) -> list[dict]:
                 file=rel_path,
                 line=line_num,
                 evidence=line.strip()[:200],
+                source_context=_snippet(line_num),
             ))
 
         # Crypto SDK import
@@ -410,6 +432,7 @@ def _scan_file_content(file_path: Path, rel_path: str) -> list[dict]:
                 line=line_num,
                 evidence=line.strip()[:200],
                 category="skill-behavioral",
+                source_context=_snippet(line_num),
             ))
 
         # Crypto transaction / transfer calls
@@ -424,6 +447,7 @@ def _scan_file_content(file_path: Path, rel_path: str) -> list[dict]:
                 file=rel_path,
                 line=line_num,
                 evidence=line.strip()[:200],
+                source_context=_snippet(line_num),
             ))
 
     return findings

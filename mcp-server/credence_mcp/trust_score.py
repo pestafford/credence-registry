@@ -50,6 +50,24 @@ CATEGORY_CAP = {
     "cve": 30,
 }
 
+# ── File-context down-weighting ──────────────────────────────────────
+
+FILE_CONTEXT_MULTIPLIER = 0.3
+
+
+def _is_low_signal_context(finding: dict) -> bool:
+    """Check if finding is in test/pattern/example directory."""
+    ctx = finding.get("file_context")
+    if not ctx:
+        return False
+    return (
+        ctx.get("in_test_dir", False)
+        or ctx.get("file_is_test", False)
+        or ctx.get("in_pattern_dir", False)
+        or ctx.get("file_is_pattern_definition", False)
+    )
+
+
 # ── Provenance dimension ─────────────────────────────────────────────
 
 # Flat deductions per flag (calibrated against OURA attack, SLSA-aligned)
@@ -122,6 +140,7 @@ def score_security(findings: list[dict]) -> tuple[int, dict]:
     """
     # Accumulate raw deductions per category
     raw_deductions = {"secrets": 0.0, "skill": 0.0, "sast": 0.0, "mcpb": 0.0, "cve": 0.0}
+    file_context_downweighted = 0
 
     for f in findings:
         cat = f.get("category", "")
@@ -133,7 +152,11 @@ def score_security(findings: list[dict]) -> tuple[int, dict]:
 
         weight = SEVERITY_WEIGHT.get(sev, 0)
         multiplier = CATEGORY_MULTIPLIER.get(cat, 1.0)
-        raw_deductions[cat] += weight * multiplier
+        deduction = weight * multiplier
+        if _is_low_signal_context(f):
+            deduction *= FILE_CONTEXT_MULTIPLIER
+            file_context_downweighted += 1
+        raw_deductions[cat] += deduction
 
     # Apply caps
     capped = {}
@@ -148,6 +171,7 @@ def score_security(findings: list[dict]) -> tuple[int, dict]:
         "raw_deductions": {k: round(v, 1) for k, v in raw_deductions.items()},
         "capped_deductions": {k: round(v, 1) for k, v in capped.items()},
         "total_deduction": round(total_deduction, 1),
+        "file_context_downweighted": file_context_downweighted,
     }
 
     return score, breakdown
@@ -281,10 +305,14 @@ def score_behavioral(findings: list[dict]) -> tuple[int, dict]:
 
     total_deduction = 0.0
     finding_impacts = []
+    file_context_downweighted = 0
 
     for f in behavioral_findings:
         sev = f.get("severity", "info")
         weight = SEVERITY_WEIGHT.get(sev, 0)
+        if _is_low_signal_context(f):
+            weight *= FILE_CONTEXT_MULTIPLIER
+            file_context_downweighted += 1
         total_deduction += weight
         finding_impacts.append({
             "title": f.get("title", ""),
@@ -298,6 +326,7 @@ def score_behavioral(findings: list[dict]) -> tuple[int, dict]:
         "behavioral_findings_count": len(behavioral_findings),
         "finding_impacts": finding_impacts,
         "total_deduction": round(total_deduction, 1),
+        "file_context_downweighted": file_context_downweighted,
     }
 
     return score, breakdown

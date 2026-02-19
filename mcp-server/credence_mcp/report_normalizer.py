@@ -7,12 +7,14 @@ ESLint, and MCP Tool Analyzer and normalizes to a single evidence.json with
 consistent schema. This is the input for deliberation-mcp adversarial analysis.
 
 Usage:
-    python report_normalizer.py /path/to/scan-results/ [output.json]
+    python report_normalizer.py /path/to/scan-results/ [output.json] [--source-dir /path/to/repo]
 """
 
+import argparse
 import json
+import re
 import sys
-from pathlib import Path
+from pathlib import Path, PurePosixPath
 from typing import Optional
 
 
@@ -25,7 +27,7 @@ def normalize_semgrep(path: Path) -> list[dict]:
 
     findings = []
     for r in data.get("results", []):
-        findings.append({
+        finding = {
             "id": f"semgrep-{r.get('check_id', 'unknown')}-{r.get('path', '')}:{r.get('start', {}).get('line', 0)}",
             "scanner": "semgrep",
             "severity": _map_severity(r.get("extra", {}).get("severity", "WARNING")),
@@ -35,7 +37,15 @@ def normalize_semgrep(path: Path) -> list[dict]:
             "title": r.get("check_id", "").split(".")[-1],
             "description": r.get("extra", {}).get("message", ""),
             "cwe": r.get("extra", {}).get("metadata", {}).get("cwe", []),
-        })
+        }
+        snippet = r.get("extra", {}).get("lines", "")
+        if snippet:
+            finding["source_context"] = {
+                "lines": [[r.get("start", {}).get("line", 0), snippet.rstrip()]],
+                "flagged_line": r.get("start", {}).get("line", 0),
+                "source": "scanner",
+            }
+        findings.append(finding)
     return findings
 
 
@@ -48,7 +58,7 @@ def normalize_bandit(path: Path) -> list[dict]:
 
     findings = []
     for r in data.get("results", []):
-        findings.append({
+        finding = {
             "id": f"bandit-{r.get('test_id', 'unknown')}-{r.get('filename', '')}:{r.get('line_number', 0)}",
             "scanner": "bandit",
             "severity": _map_severity(r.get("issue_severity", "LOW")),
@@ -58,7 +68,15 @@ def normalize_bandit(path: Path) -> list[dict]:
             "title": r.get("test_name", ""),
             "description": r.get("issue_text", ""),
             "confidence": r.get("issue_confidence", ""),
-        })
+        }
+        snippet = r.get("code", "")
+        if snippet:
+            finding["source_context"] = {
+                "lines": [[r.get("line_number", 0), snippet.strip()]],
+                "flagged_line": r.get("line_number", 0),
+                "source": "scanner",
+            }
+        findings.append(finding)
     return findings
 
 
@@ -102,7 +120,15 @@ def normalize_gitleaks(path: Path) -> list[dict]:
 
     findings = []
     for r in data:
-        findings.append({
+        # Redact secret: show only first4...last4
+        secret = r.get("Secret", "")
+        if len(secret) > 8:
+            redacted = f"[secret: {secret[:4]}...{secret[-4:]}]"
+        elif secret:
+            redacted = "[secret: ****]"
+        else:
+            redacted = ""
+        finding = {
             "id": f"gitleaks-{r.get('RuleID', 'unknown')}-{r.get('File', '')}:{r.get('StartLine', 0)}",
             "scanner": "gitleaks",
             "severity": "critical",
@@ -113,7 +139,14 @@ def normalize_gitleaks(path: Path) -> list[dict]:
             "description": r.get("Description", ""),
             "secret_type": r.get("RuleID", ""),
             "commit": r.get("Commit", ""),
-        })
+        }
+        if redacted:
+            finding["source_context"] = {
+                "lines": [[r.get("StartLine", 0), redacted]],
+                "flagged_line": r.get("StartLine", 0),
+                "source": "scanner_redacted",
+            }
+        findings.append(finding)
     return findings
 
 
@@ -195,7 +228,7 @@ def normalize_eslint(path: Path) -> list[dict]:
         filepath = file_result.get("filePath", "")
         for msg in file_result.get("messages", []):
             if msg.get("severity", 0) >= 1:
-                findings.append({
+                finding = {
                     "id": f"eslint-{msg.get('ruleId', 'unknown')}",
                     "scanner": "eslint",
                     "severity": "medium" if msg.get("severity") == 2 else "low",
@@ -204,7 +237,15 @@ def normalize_eslint(path: Path) -> list[dict]:
                     "line": msg.get("line", 0),
                     "title": msg.get("ruleId", "unknown"),
                     "description": msg.get("message", ""),
-                })
+                }
+                source_line = msg.get("source", "")
+                if source_line:
+                    finding["source_context"] = {
+                        "lines": [[msg.get("line", 0), source_line.rstrip()]],
+                        "flagged_line": msg.get("line", 0),
+                        "source": "scanner",
+                    }
+                findings.append(finding)
     return findings
 
 
@@ -217,7 +258,7 @@ def normalize_mcp_tools(path: Path) -> list[dict]:
 
     findings = []
     for f in data.get("findings", []):
-        findings.append({
+        finding = {
             "id": f"mcp-{f.get('finding_type', 'unknown')}-{f.get('tool_name', '*')}",
             "scanner": "mcp-tool-analyzer",
             "severity": f.get("severity", "medium"),
@@ -227,7 +268,10 @@ def normalize_mcp_tools(path: Path) -> list[dict]:
             "title": f"{f.get('finding_type', 'UNKNOWN')}: {f.get('tool_name', '*')}",
             "description": f.get("description", ""),
             "evidence": f.get("evidence", ""),
-        })
+        }
+        if f.get("source_context"):
+            finding["source_context"] = f["source_context"]
+        findings.append(finding)
     return findings
 
 
@@ -240,7 +284,7 @@ def normalize_skill_analyzer(path: Path) -> list[dict]:
 
     findings = []
     for f in data.get("findings", []):
-        findings.append({
+        finding = {
             "id": f.get("id", "unknown"),
             "scanner": "skill-analyzer",
             "severity": f.get("severity", "medium"),
@@ -250,7 +294,10 @@ def normalize_skill_analyzer(path: Path) -> list[dict]:
             "title": f.get("title", ""),
             "description": f.get("description", ""),
             "evidence": f.get("evidence", ""),
-        })
+        }
+        if f.get("source_context"):
+            finding["source_context"] = f["source_context"]
+        findings.append(finding)
     return findings
 
 
@@ -263,7 +310,7 @@ def normalize_mcpb_analyzer(path: Path) -> list[dict]:
 
     findings = []
     for f in data.get("findings", []):
-        findings.append({
+        finding = {
             "id": f.get("id", "unknown"),
             "scanner": "mcpb-analyzer",
             "severity": f.get("severity", "medium"),
@@ -273,7 +320,10 @@ def normalize_mcpb_analyzer(path: Path) -> list[dict]:
             "title": f.get("title", ""),
             "description": f.get("description", ""),
             "evidence": f.get("evidence", ""),
-        })
+        }
+        if f.get("source_context"):
+            finding["source_context"] = f["source_context"]
+        findings.append(finding)
     return findings
 
 
@@ -293,9 +343,73 @@ def _map_severity(raw: str) -> str:
     return "info"
 
 
+_TEST_DIRS = frozenset({'__tests__', 'test', 'tests', 'spec', 'test_data', 'testdata', 'fixtures'})
+_PATTERN_DIRS = frozenset({'patterns', 'rules', 'detectors', 'signatures'})
+_TEST_FILE_RE = re.compile(r'(?:^test_|\.test\.|\.spec\.|_test\.)', re.IGNORECASE)
+
+
+def _compute_file_context(file_path: str) -> dict:
+    """Compute structural metadata tags for a finding's file path."""
+    if not file_path:
+        return {}
+    path = PurePosixPath(file_path)
+    parts_lower = {p.lower() for p in path.parts}
+    in_test = bool(parts_lower & _TEST_DIRS)
+    is_test = bool(_TEST_FILE_RE.search(path.name))
+    in_pattern = bool(parts_lower & _PATTERN_DIRS)
+    return {
+        "in_test_dir": in_test,
+        "file_is_test": is_test,
+        "in_pattern_dir": in_pattern,
+        "file_is_pattern_definition": in_pattern and not is_test,
+    }
+
+
+def enrich_source_context(findings: list[dict], source_dir: str) -> None:
+    """Read actual source files and add/replace 5-line snippets on findings.
+
+    Mutates findings in place. Skips findings without file/line,
+    binary files, and unreadable files.
+    """
+    source_path = Path(source_dir)
+    file_cache: dict[str, list[str] | None] = {}
+
+    for f in findings:
+        file_rel = f.get("file", "")
+        line = f.get("line", 0)
+        if not file_rel or line <= 0:
+            continue
+
+        # Cache file contents
+        if file_rel not in file_cache:
+            full_path = source_path / file_rel
+            try:
+                raw = full_path.read_bytes()
+                # Skip binary files (null byte in first 8KB)
+                if b'\x00' in raw[:8192]:
+                    file_cache[file_rel] = None
+                else:
+                    file_cache[file_rel] = raw.decode('utf-8', errors='replace').split('\n')
+            except Exception:
+                file_cache[file_rel] = None
+
+        lines = file_cache[file_rel]
+        if lines is None:
+            continue
+
+        # 5-line window (1-based line number)
+        start = max(0, line - 1 - 2)
+        end = min(len(lines), line + 2)
+        f["source_context"] = {
+            "lines": [[i + 1, lines[i][:500]] for i in range(start, end)],
+            "flagged_line": line,
+            "source": "file_read",
+        }
+
+
 # ── Main ─────────────────────────────────────────────────────────
 
-def normalize_all(scan_dir: str) -> dict:
+def normalize_all(scan_dir: str, source_dir: str | None = None) -> dict:
     """Normalize all scanner outputs in a directory to unified evidence format."""
     d = Path(scan_dir)
 
@@ -366,6 +480,16 @@ def normalize_all(scan_dir: str) -> dict:
     unique = list(location_best.values())
     unique.sort(key=lambda f: severity_order.get(f.get("severity", "info"), 5))
 
+    # Enrich with file_context tags
+    for f in unique:
+        ctx = _compute_file_context(f.get("file", ""))
+        if ctx:
+            f["file_context"] = ctx
+
+    # Enrich with source code snippets from actual files
+    if source_dir:
+        enrich_source_context(unique, source_dir)
+
     # Summary
     by_severity = {}
     by_category = {}
@@ -390,23 +514,30 @@ def normalize_all(scan_dir: str) -> dict:
 
 
 def main():
-    if len(sys.argv) < 2:
-        print(f"Usage: {sys.argv[0]} /path/to/scan-results/ [output.json]")
-        sys.exit(1)
+    parser = argparse.ArgumentParser(
+        description="Normalize scanner outputs to unified evidence format."
+    )
+    parser.add_argument("scan_dir", help="Directory containing scanner result files")
+    parser.add_argument(
+        "output", nargs="?", default="/tmp/evidence.json",
+        help="Output path (default: /tmp/evidence.json)",
+    )
+    parser.add_argument(
+        "--source-dir",
+        help="Path to scanned repo for 5-line source enrichment",
+    )
+    args = parser.parse_args()
 
-    scan_dir = sys.argv[1]
-    output_path = sys.argv[2] if len(sys.argv) > 2 else "/tmp/evidence.json"
+    evidence = normalize_all(args.scan_dir, source_dir=args.source_dir)
 
-    evidence = normalize_all(scan_dir)
-
-    with open(output_path, 'w') as f:
+    with open(args.output, 'w') as f:
         json.dump(evidence, f, indent=2)
 
     print(f"Total findings: {evidence['total_findings']}")
     print(f"By severity:    {evidence['by_severity']}")
     print(f"By category:    {evidence['by_category']}")
     print(f"Scanners:       {evidence['scanners_run']}")
-    print(f"\nOutput: {output_path}")
+    print(f"\nOutput: {args.output}")
 
 
 if __name__ == "__main__":
