@@ -1,0 +1,31 @@
+{
+  "server_name": "itsahedge/agent-council",
+  "canonical_name": "",
+  "server_path": "skills/itsahedge/agent-council",
+  "tool_type": "openclaw-skill",
+  "maintainer_verified": false,
+  "verify_reason": "Third-party submission — submitter is not owner, collaborator, or contributor",
+  "repo_url": "https://github.com/openclaw/skills",
+  "commit_sha": "c36af2af4c095e0e85d53f573b1a98f10414fc9b",
+  "source_hash": "895fb073243c605dd3c559df7fb57e297f02498102a259a5386c403012e28237",
+  "source_hash_method": "merkle-tree-sha256",
+  "is_fork": false,
+  "provenance_flags": [
+    "ACCOUNT_YOUNG_LT_90_DAYS",
+    "NO_LOCKFILE"
+  ],
+  "lockfile_name": "none",
+  "lockfile_hash": "none",
+  "scan_timestamp": "2026-02-19T18:13:25Z",
+  "pipeline_version": "0.2.0",
+  "thinktank_verdict": "CONDITIONAL",
+  "trust_score": 68,
+  "trust_dimensions": {
+    "security": 85,
+    "provenance": 90,
+    "behavioral": 100
+  },
+  "scoring_version": "1.0.0",
+  "deliberation_session": "97967499-9f4",
+  "risk_summary": "This MCP server presents clean code-level findings (three medium SAST false positives in Discord utility scripts) but carries unresolved provenance concerns: a 47-day-old account owner, no dependency lockfile, an unexplained identity mismatch between the submission name and repository, and an external canonical source (clawdhub.com) that was not assessed. No confirmed malicious patterns were identified, but the actual MCP tool surface was not fully characterized, warranting conditional approval pending provenance clarification."
+}
