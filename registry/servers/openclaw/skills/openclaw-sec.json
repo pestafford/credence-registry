@@ -4,13 +4,13 @@
   "canonical_name": "openclaw-sec",
   "repo_url": "https://github.com/openclaw/skills",
   "attestation": {
-    "commit_sha": "073c4e685105cb37cc5aa60461fe48a45a375581",
+    "commit_sha": "959d137eb081def053377ea1ef5bd57d55e874b7",
     "source_hash": "8657a20a87b6cb55ab78e32f2bdbc9e8ad89ba8cc97e27bbaf77effefec492b4",
     "source_hash_method": "merkle-tree-sha256",
-    "attested_at": "2026-02-19T16:00:30Z",
+    "attested_at": "2026-02-19T16:18:11Z",
     "pipeline_version": "0.2.0",
     "scoring_version": "1.0.0",
-    "trust_score": 65,
+    "trust_score": 74,
     "trust_dimensions": {
       "security": 49,
       "provenance": 90,
@@ -33,9 +33,9 @@
     "tool_type": "openclaw-skill",
     "signature": {
       "algorithm": "ed25519",
-      "value": "jrZ6QLf6k3vcdXCVxB9+QHECpI9soK0borx9uJFHtcUFs2mEMfDLes00qIE9Kkuo5G2uos+eOrHRPXMRbs/sCw==",
-      "canonical_hash": "c1dc953ca3ed5b2ce8dbbc747c8a6e86c2184dc26897d8ee25fe9d20183913ee"
+      "value": "7EdfquowgeD7efXGq9YZQexImcNNiTopbWO/b2sOXsfQaCAfDp1U6hZ2D2vXwbdvCZKbb9UgqhJTZLh4bCIhAw==",
+      "canonical_hash": "9cee447d8f9755f77b4241985afaa47f03020e161a771a242eed354a866054e5"
     }
   },
-  "attestation_url": "https://github.com/pestafford/credence-registry/tree/main/scan-results/073c4e68"
+  "attestation_url": "https://github.com/pestafford/credence-registry/tree/main/scan-results/959d137e"
 }

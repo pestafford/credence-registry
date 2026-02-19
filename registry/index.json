@@ -4,9 +4,9 @@
   "registry_url": "https://credence.securingthesingularity.com",
   "maintainer": "Phil Stafford <phil@securingthesingularity.com>",
   "signing_public_key": "XdvqC/Q6TX90MpL37wdxfUtqOiS8qiQjK8JNJy+BOcM=",
-  "updated_at": "2026-02-19T16:00:30Z",
+  "updated_at": "2026-02-19T16:18:11Z",
   "stats": {
-    "total_scans": 10
+    "total_scans": 11
   },
   "servers": [
     {
@@ -65,10 +65,10 @@
       "canonical_name": "openclaw-sec",
       "repo_url": "https://github.com/openclaw/skills",
       "repo_owner": "openclaw",
-      "trust_score": 65,
+      "trust_score": 74,
       "thinktank_verdict": "CONDITIONAL",
       "scoring_version": "1.0.0",
-      "attested_at": "2026-02-19T16:00:30Z",
+      "attested_at": "2026-02-19T16:18:11Z",
       "attestation_file": "servers/openclaw/skills/openclaw-sec.json",
       "threat_type": "vulnerability",
       "tool_type": "openclaw-skill"
