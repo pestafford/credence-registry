@@ -513,9 +513,11 @@ def process_response(response: dict, scan_summary: dict) -> dict:
     if risk_summary:
         scan_summary["risk_summary"] = risk_summary
 
-    # ── threat_type: adversarial vs vulnerability classification ──
+    # ── threat_type: only publish "adversarial" (active attack pattern) ──
+    # "vulnerability" is not published — findings already carry the detail,
+    # and the flag without a cited claim is misleading.
     threat_type = response.get("threat_type")
-    if threat_type in ("adversarial", "vulnerability"):
+    if threat_type == "adversarial":
         scan_summary["threat_type"] = threat_type
 
     return scan_summary
