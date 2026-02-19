@@ -4,15 +4,15 @@
   "canonical_name": "openclaw-sec",
   "repo_url": "https://github.com/openclaw/skills",
   "attestation": {
-    "commit_sha": "e905a10aa39bf01eb752fe82d542d3c5bd5a9ea8",
+    "commit_sha": "073c4e685105cb37cc5aa60461fe48a45a375581",
     "source_hash": "8657a20a87b6cb55ab78e32f2bdbc9e8ad89ba8cc97e27bbaf77effefec492b4",
     "source_hash_method": "merkle-tree-sha256",
-    "attested_at": "2026-02-18T23:11:33Z",
+    "attested_at": "2026-02-19T16:00:30Z",
     "pipeline_version": "0.2.0",
     "scoring_version": "1.0.0",
-    "trust_score": 47,
+    "trust_score": 65,
     "trust_dimensions": {
-      "security": 30,
+      "security": 49,
       "provenance": 90,
       "behavioral": 100
     },
@@ -29,13 +29,13 @@
     },
     "lockfile_name": "package-lock.json",
     "lockfile_hash": "5f107ca13a13d755ff33902bb739d2e52ee0618675c3da89b3ea8f8187edd412",
-    "threat_type": "adversarial",
+    "threat_type": "vulnerability",
     "tool_type": "openclaw-skill",
     "signature": {
       "algorithm": "ed25519",
-      "value": "Nk020mrJ5kNkulf4h1ykGj0CCGs0XRXjMnec7sNzZ9x6hORKbEYL9V8FcSFgq/W7sEG3tNkF+IrZm/6YMYTBDw==",
-      "canonical_hash": "c06a3ef3dba236f69a9de2dab55890963cc733714485d126b6ba4eb53e396dd4"
+      "value": "jrZ6QLf6k3vcdXCVxB9+QHECpI9soK0borx9uJFHtcUFs2mEMfDLes00qIE9Kkuo5G2uos+eOrHRPXMRbs/sCw==",
+      "canonical_hash": "c1dc953ca3ed5b2ce8dbbc747c8a6e86c2184dc26897d8ee25fe9d20183913ee"
     }
   },
-  "attestation_url": "https://github.com/pestafford/credence-registry/tree/main/scan-results/e905a10a"
+  "attestation_url": "https://github.com/pestafford/credence-registry/tree/main/scan-results/073c4e68"
 }
