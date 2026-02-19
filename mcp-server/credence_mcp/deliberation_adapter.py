@@ -109,6 +109,7 @@ def build_request(
             "name": summary.get("server_name", ""),
             "repo_url": summary.get("repo_url", ""),
             "commit_sha": summary.get("commit_sha", ""),
+            "tool_type": summary.get("tool_type", "mcp-server"),
             "readme": readme,
             "package_metadata": package_metadata,
         },
