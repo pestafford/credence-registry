@@ -1,0 +1,30 @@
+{
+  "server_name": "paolorollo/openclaw-sec",
+  "canonical_name": "openclaw-sec",
+  "server_path": "skills/paolorollo/openclaw-sec",
+  "tool_type": "openclaw-skill",
+  "maintainer_verified": false,
+  "verify_reason": "Third-party submission — submitter is not owner, collaborator, or contributor",
+  "repo_url": "https://github.com/openclaw/skills",
+  "commit_sha": "dd9246b8b35a56694c35f58b77a65a85d5b10419",
+  "source_hash": "8657a20a87b6cb55ab78e32f2bdbc9e8ad89ba8cc97e27bbaf77effefec492b4",
+  "source_hash_method": "merkle-tree-sha256",
+  "is_fork": false,
+  "provenance_flags": [
+    "ACCOUNT_YOUNG_LT_90_DAYS"
+  ],
+  "lockfile_name": "package-lock.json",
+  "lockfile_hash": "5f107ca13a13d755ff33902bb739d2e52ee0618675c3da89b3ea8f8187edd412",
+  "scan_timestamp": "2026-02-19T20:10:51Z",
+  "pipeline_version": "0.2.0",
+  "thinktank_verdict": "CONDITIONAL",
+  "trust_score": 78,
+  "trust_dimensions": {
+    "security": 49,
+    "provenance": 90,
+    "behavioral": 100
+  },
+  "scoring_version": "1.0.0",
+  "deliberation_session": "ab824f3e-c84",
+  "risk_summary": "openclaw-sec is a substantive security detection library whose high-severity SAST findings are overwhelmingly false positives arising from scanner context collapse — the tool's own detection patterns and test fixtures are being flagged as live credentials and malicious code. The primary residual risk is the unaudited hook installation mechanism (user-prompt-submit-hook.ts, tool-call-hook.ts, install-hooks.sh), which installs persistent hooks intercepting all agent interactions and whose source code is not present in the scan evidence. A 47-day-old account publishing a security tool with persistent hook capabilities warrants conditional approval pending hook code review."
+}

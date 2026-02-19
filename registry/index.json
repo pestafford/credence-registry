@@ -4,9 +4,9 @@
   "registry_url": "https://credence.securingthesingularity.com",
   "maintainer": "Phil Stafford <phil@securingthesingularity.com>",
   "signing_public_key": "XdvqC/Q6TX90MpL37wdxfUtqOiS8qiQjK8JNJy+BOcM=",
-  "updated_at": "2026-02-19T19:58:31Z",
+  "updated_at": "2026-02-19T20:12:57Z",
   "stats": {
-    "total_scans": 17
+    "total_scans": 18
   },
   "servers": [
     {
@@ -65,12 +65,12 @@
       "canonical_name": "openclaw-sec",
       "repo_url": "https://github.com/openclaw/skills",
       "repo_owner": "openclaw",
-      "trust_score": 73,
+      "trust_score": 78,
       "thinktank_verdict": "CONDITIONAL",
       "scoring_version": "1.0.0",
-      "attested_at": "2026-02-19T16:51:23Z",
+      "attested_at": "2026-02-19T20:12:57Z",
       "attestation_file": "servers/openclaw/skills/openclaw-sec.json",
-      "threat_type": "vulnerability",
+      "risk_summary": "openclaw-sec is a substantive security detection library whose high-severity SAST findings are overwhelmingly false positives arising from scanner context collapse — the tool's own detection patterns and test fixtures are being flagged as live credentials and malicious code. The primary residual risk is the unaudited hook installation mechanism (user-prompt-submit-hook.ts, tool-call-hook.ts, install-hooks.sh), which installs persistent hooks intercepting all agent interactions and whose source code is not present in the scan evidence. A 47-day-old account publishing a security tool with persistent hook capabilities warrants conditional approval pending hook code review.",
       "tool_type": "openclaw-skill"
     }
   ]

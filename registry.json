@@ -4,7 +4,7 @@
   "registry_url": "https://credence.securingthesingularity.com",
   "maintainer": "Phil Stafford <phil@securingthesingularity.com>",
   "signing_public_key": "XdvqC/Q6TX90MpL37wdxfUtqOiS8qiQjK8JNJy+BOcM=",
-  "updated_at": "2026-02-19T19:58:31Z",
+  "updated_at": "2026-02-19T20:12:57Z",
   "servers": [
     {
       "server_id": "modelcontextprotocol/servers/filesystem",
@@ -167,13 +167,13 @@
       "canonical_name": "openclaw-sec",
       "repo_url": "https://github.com/openclaw/skills",
       "attestation": {
-        "commit_sha": "2c488aad03d9e71592b9f2c6af7f7b653da32641",
+        "commit_sha": "dd9246b8b35a56694c35f58b77a65a85d5b10419",
         "source_hash": "8657a20a87b6cb55ab78e32f2bdbc9e8ad89ba8cc97e27bbaf77effefec492b4",
         "source_hash_method": "merkle-tree-sha256",
-        "attested_at": "2026-02-19T16:51:23Z",
+        "attested_at": "2026-02-19T20:12:57Z",
         "pipeline_version": "0.2.0",
         "scoring_version": "1.0.0",
-        "trust_score": 73,
+        "trust_score": 78,
         "trust_dimensions": {
           "security": 49,
           "provenance": 90,
@@ -192,15 +192,15 @@
         },
         "lockfile_name": "package-lock.json",
         "lockfile_hash": "5f107ca13a13d755ff33902bb739d2e52ee0618675c3da89b3ea8f8187edd412",
-        "threat_type": "vulnerability",
+        "risk_summary": "openclaw-sec is a substantive security detection library whose high-severity SAST findings are overwhelmingly false positives arising from scanner context collapse \u2014 the tool's own detection patterns and test fixtures are being flagged as live credentials and malicious code. The primary residual risk is the unaudited hook installation mechanism (user-prompt-submit-hook.ts, tool-call-hook.ts, install-hooks.sh), which installs persistent hooks intercepting all agent interactions and whose source code is not present in the scan evidence. A 47-day-old account publishing a security tool with persistent hook capabilities warrants conditional approval pending hook code review.",
         "tool_type": "openclaw-skill",
         "signature": {
           "algorithm": "ed25519",
-          "value": "HNYAMGxpwr7WDMOaM2igqkQ09IEk373jOoLOTiRhRGTfoTCR+Jh3t26ijJe2xdyhNOs7R/ybJJlxjExnnFChCw==",
-          "canonical_hash": "cea9254ae06e39dd82f5b21759e75b76a20f5d84f13f83f970ab616429a7652b"
+          "value": "+zqGzFhjmaNuEqG9QR0jTatYiRKhumEjYK3t8bcHz+4a/3JqFk7NF6kSVF2X+kHz4rHnbzE7XA9Gq6ahD9hTAg==",
+          "canonical_hash": "50ed04d68a56d9e64b11ab1931fe4f49e6065f976154c43e1721af81670858ce"
         }
       },
-      "attestation_url": "https://github.com/pestafford/credence-registry/tree/main/scan-results/2c488aad"
+      "attestation_url": "https://github.com/pestafford/credence-registry/tree/main/scan-results/dd9246b8"
     }
   ]
 }
