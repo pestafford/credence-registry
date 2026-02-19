@@ -218,9 +218,9 @@ def _make_snippet(content: str, line_num: int, context: int = 2) -> dict:
     start = max(0, line_num - 1 - context)
     end = min(len(lines), line_num + context)
     return {
-        "lines": [[i + 1, lines[i][:500]] for i in range(start, end)],
-        "flagged_line": line_num,
-        "source": "file_read",
+        "start_line": start + 1,
+        "end_line": end,
+        "snippet": "\n".join(lines[i][:500] for i in range(start, end)),
     }
 
 

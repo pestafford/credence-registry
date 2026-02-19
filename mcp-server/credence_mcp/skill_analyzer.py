@@ -295,9 +295,9 @@ def _scan_file_content(file_path: Path, rel_path: str) -> list[dict]:
         start = max(0, center_line - 1 - context)
         end = min(len(lines), center_line + context)
         return {
-            "lines": [[i + 1, lines[i][:500]] for i in range(start, end)],
-            "flagged_line": center_line,
-            "source": "file_read",
+            "start_line": start + 1,
+            "end_line": end,
+            "snippet": "\n".join(lines[i][:500] for i in range(start, end)),
         }
 
     for line_num, line in enumerate(lines, 1):

@@ -40,10 +40,11 @@ def normalize_semgrep(path: Path) -> list[dict]:
         }
         snippet = r.get("extra", {}).get("lines", "")
         if snippet:
+            line_num = r.get("start", {}).get("line", 0)
             finding["source_context"] = {
-                "lines": [[r.get("start", {}).get("line", 0), snippet.rstrip()]],
-                "flagged_line": r.get("start", {}).get("line", 0),
-                "source": "scanner",
+                "start_line": line_num,
+                "end_line": line_num,
+                "snippet": snippet.rstrip(),
             }
         findings.append(finding)
     return findings
@@ -71,10 +72,11 @@ def normalize_bandit(path: Path) -> list[dict]:
         }
         snippet = r.get("code", "")
         if snippet:
+            line_num = r.get("line_number", 0)
             finding["source_context"] = {
-                "lines": [[r.get("line_number", 0), snippet.strip()]],
-                "flagged_line": r.get("line_number", 0),
-                "source": "scanner",
+                "start_line": line_num,
+                "end_line": line_num,
+                "snippet": snippet.strip(),
             }
         findings.append(finding)
     return findings
@@ -141,10 +143,11 @@ def normalize_gitleaks(path: Path) -> list[dict]:
             "commit": r.get("Commit", ""),
         }
         if redacted:
+            line_num = r.get("StartLine", 0)
             finding["source_context"] = {
-                "lines": [[r.get("StartLine", 0), redacted]],
-                "flagged_line": r.get("StartLine", 0),
-                "source": "scanner_redacted",
+                "start_line": line_num,
+                "end_line": line_num,
+                "snippet": redacted,
             }
         findings.append(finding)
     return findings
@@ -240,10 +243,11 @@ def normalize_eslint(path: Path) -> list[dict]:
                 }
                 source_line = msg.get("source", "")
                 if source_line:
+                    line_num = msg.get("line", 0)
                     finding["source_context"] = {
-                        "lines": [[msg.get("line", 0), source_line.rstrip()]],
-                        "flagged_line": msg.get("line", 0),
-                        "source": "scanner",
+                        "start_line": line_num,
+                        "end_line": line_num,
+                        "snippet": source_line.rstrip(),
                     }
                 findings.append(finding)
     return findings
@@ -400,10 +404,11 @@ def enrich_source_context(findings: list[dict], source_dir: str) -> None:
         # 5-line window (1-based line number)
         start = max(0, line - 1 - 2)
         end = min(len(lines), line + 2)
+        snippet = "\n".join(lines[i][:500] for i in range(start, end))
         f["source_context"] = {
-            "lines": [[i + 1, lines[i][:500]] for i in range(start, end)],
-            "flagged_line": line,
-            "source": "file_read",
+            "start_line": start + 1,
+            "end_line": end,
+            "snippet": snippet,
         }
 
 
