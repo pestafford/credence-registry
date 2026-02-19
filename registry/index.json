@@ -4,9 +4,9 @@
   "registry_url": "https://credence.securingthesingularity.com",
   "maintainer": "Phil Stafford <phil@securingthesingularity.com>",
   "signing_public_key": "XdvqC/Q6TX90MpL37wdxfUtqOiS8qiQjK8JNJy+BOcM=",
-  "updated_at": "2026-02-19T16:51:23Z",
+  "updated_at": "2026-02-19T17:15:10Z",
   "stats": {
-    "total_scans": 12
+    "total_scans": 13
   },
   "servers": [
     {
@@ -51,10 +51,10 @@
       "canonical_name": "",
       "repo_url": "https://github.com/openclaw/skills",
       "repo_owner": "openclaw",
-      "trust_score": 72,
+      "trust_score": 65,
       "thinktank_verdict": "CONDITIONAL",
       "scoring_version": "1.0.0",
-      "attested_at": "2026-02-18T14:39:56Z",
+      "attested_at": "2026-02-19T17:15:10Z",
       "attestation_file": "servers/openclaw/skills/agent-council.json",
       "threat_type": "vulnerability",
       "tool_type": "openclaw-skill"
