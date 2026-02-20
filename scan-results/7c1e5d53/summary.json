@@ -1,0 +1,31 @@
+{
+  "server_name": "itsahedge/agent-council",
+  "canonical_name": "",
+  "server_path": "skills/itsahedge/agent-council",
+  "tool_type": "openclaw-skill",
+  "maintainer_verified": false,
+  "verify_reason": "Third-party submission — submitter is not owner, collaborator, or contributor",
+  "repo_url": "https://github.com/openclaw/skills",
+  "commit_sha": "7c1e5d53f3664f433222ecc8ffd7aa39e5716222",
+  "source_hash": "895fb073243c605dd3c559df7fb57e297f02498102a259a5386c403012e28237",
+  "source_hash_method": "merkle-tree-sha256",
+  "is_fork": false,
+  "provenance_flags": [
+    "ACCOUNT_YOUNG_LT_90_DAYS",
+    "NO_LOCKFILE"
+  ],
+  "lockfile_name": "none",
+  "lockfile_hash": "none",
+  "scan_timestamp": "2026-02-20T02:43:09Z",
+  "pipeline_version": "0.2.0",
+  "thinktank_verdict": "APPROVED",
+  "trust_score": 87,
+  "trust_dimensions": {
+    "security": 85,
+    "provenance": 90,
+    "behavioral": 100
+  },
+  "scoring_version": "1.0.0",
+  "deliberation_session": "1aba9ea6-7b6",
+  "risk_summary": "The agent-council OpenClaw skill presents a low-to-moderate risk profile consistent with a legitimate multi-agent orchestration toolkit. All three Semgrep medium findings are false positives in context — standard urllib API calls to Discord's REST API — and the provenance flags (47-day account age, no lockfile) are non-compounding and expected in the young OpenClaw ecosystem. No encoded payloads, credential harvesting, silent persistence, or malicious instruction patterns were identified in the current version; residual risk is limited to standard supply chain hygiene concerns applicable to any network-capable open-source tool."
+}

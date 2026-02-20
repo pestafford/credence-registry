@@ -4,9 +4,9 @@
   "registry_url": "https://credence.securingthesingularity.com",
   "maintainer": "Phil Stafford <phil@securingthesingularity.com>",
   "signing_public_key": "XdvqC/Q6TX90MpL37wdxfUtqOiS8qiQjK8JNJy+BOcM=",
-  "updated_at": "2026-02-20T02:34:07Z",
+  "updated_at": "2026-02-20T02:45:40Z",
   "stats": {
-    "total_scans": 20
+    "total_scans": 21
   },
   "servers": [
     {
@@ -51,12 +51,12 @@
       "canonical_name": "",
       "repo_url": "https://github.com/openclaw/skills",
       "repo_owner": "openclaw",
-      "trust_score": 90,
+      "trust_score": 87,
       "thinktank_verdict": "APPROVED",
       "scoring_version": "1.0.0",
-      "attested_at": "2026-02-20T02:34:07Z",
+      "attested_at": "2026-02-20T02:45:40Z",
       "attestation_file": "servers/openclaw/skills/agent-council.json",
-      "risk_summary": "The agent-council skill presents a clean security profile with no confirmed malicious indicators: no encoded payloads, no curl-pipe-bash patterns, no credential harvesting, and no suspicious external domains. The three medium-severity SAST findings are contextual false positives representing standard Discord API calls via Python's standard library. The primary residual risk is the 47-day-old account age combined with broad system capabilities (cron setup, gateway configuration, multi-agent orchestration), which warrants monitoring of future updates but does not block approval of the current version.",
+      "risk_summary": "The agent-council OpenClaw skill presents a low-to-moderate risk profile consistent with a legitimate multi-agent orchestration toolkit. All three Semgrep medium findings are false positives in context — standard urllib API calls to Discord's REST API — and the provenance flags (47-day account age, no lockfile) are non-compounding and expected in the young OpenClaw ecosystem. No encoded payloads, credential harvesting, silent persistence, or malicious instruction patterns were identified in the current version; residual risk is limited to standard supply chain hygiene concerns applicable to any network-capable open-source tool.",
       "tool_type": "openclaw-skill"
     },
     {

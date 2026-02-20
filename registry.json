@@ -4,7 +4,7 @@
   "registry_url": "https://credence.securingthesingularity.com",
   "maintainer": "Phil Stafford <phil@securingthesingularity.com>",
   "signing_public_key": "XdvqC/Q6TX90MpL37wdxfUtqOiS8qiQjK8JNJy+BOcM=",
-  "updated_at": "2026-02-20T02:34:07Z",
+  "updated_at": "2026-02-20T02:45:40Z",
   "servers": [
     {
       "server_id": "modelcontextprotocol/servers/filesystem",
@@ -125,13 +125,13 @@
       "canonical_name": "",
       "repo_url": "https://github.com/openclaw/skills",
       "attestation": {
-        "commit_sha": "f18a9ab29ea38df8abc974e5bd0b4b6b0fff601d",
+        "commit_sha": "7c1e5d53f3664f433222ecc8ffd7aa39e5716222",
         "source_hash": "895fb073243c605dd3c559df7fb57e297f02498102a259a5386c403012e28237",
         "source_hash_method": "merkle-tree-sha256",
-        "attested_at": "2026-02-20T02:34:07Z",
+        "attested_at": "2026-02-20T02:45:40Z",
         "pipeline_version": "0.2.0",
         "scoring_version": "1.0.0",
-        "trust_score": 90,
+        "trust_score": 87,
         "trust_dimensions": {
           "security": 85,
           "provenance": 90,
@@ -151,15 +151,15 @@
         },
         "lockfile_name": "none",
         "lockfile_hash": "none",
-        "risk_summary": "The agent-council skill presents a clean security profile with no confirmed malicious indicators: no encoded payloads, no curl-pipe-bash patterns, no credential harvesting, and no suspicious external domains. The three medium-severity SAST findings are contextual false positives representing standard Discord API calls via Python's standard library. The primary residual risk is the 47-day-old account age combined with broad system capabilities (cron setup, gateway configuration, multi-agent orchestration), which warrants monitoring of future updates but does not block approval of the current version.",
+        "risk_summary": "The agent-council OpenClaw skill presents a low-to-moderate risk profile consistent with a legitimate multi-agent orchestration toolkit. All three Semgrep medium findings are false positives in context \u2014 standard urllib API calls to Discord's REST API \u2014 and the provenance flags (47-day account age, no lockfile) are non-compounding and expected in the young OpenClaw ecosystem. No encoded payloads, credential harvesting, silent persistence, or malicious instruction patterns were identified in the current version; residual risk is limited to standard supply chain hygiene concerns applicable to any network-capable open-source tool.",
         "tool_type": "openclaw-skill",
         "signature": {
           "algorithm": "ed25519",
-          "value": "2a4NI+NuJIeXr1eG4xrTkmibsoKEbEw9ZqZ6U2M5Y0Xf1l0qrCNn+i1kfQxD0sLRrhK8v+2ZXC8jKfAyxmsFAA==",
-          "canonical_hash": "c07d784844bb0b76ef75874995b5a6e59722f9e9f6340d5b8aa31d32b16fbe8e"
+          "value": "tm5yKxWBOKI5oWhRKCbC1v9naxTBv0bIDH3inUyuiQbzybroflqKestTw2LQiPYagvHDomgn6gSqg+/LxzahDg==",
+          "canonical_hash": "829b8f6e54f7b913f9ece68f11621e025d17439ec748ca47360d60664d76b42b"
         }
       },
-      "attestation_url": "https://github.com/pestafford/credence-registry/tree/main/scan-results/f18a9ab2"
+      "attestation_url": "https://github.com/pestafford/credence-registry/tree/main/scan-results/7c1e5d53"
     },
     {
       "server_id": "openclaw/skills/openclaw-sec",
