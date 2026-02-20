@@ -4,9 +4,9 @@
   "registry_url": "https://credence.securingthesingularity.com",
   "maintainer": "Phil Stafford <phil@securingthesingularity.com>",
   "signing_public_key": "XdvqC/Q6TX90MpL37wdxfUtqOiS8qiQjK8JNJy+BOcM=",
-  "updated_at": "2026-02-19T20:12:57Z",
+  "updated_at": "2026-02-20T01:23:56Z",
   "stats": {
-    "total_scans": 18
+    "total_scans": 19
   },
   "servers": [
     {
@@ -51,12 +51,12 @@
       "canonical_name": "",
       "repo_url": "https://github.com/openclaw/skills",
       "repo_owner": "openclaw",
-      "trust_score": 86,
+      "trust_score": 85,
       "thinktank_verdict": "APPROVED",
       "scoring_version": "1.0.0",
-      "attested_at": "2026-02-19T19:58:31Z",
+      "attested_at": "2026-02-20T01:23:56Z",
       "attestation_file": "servers/openclaw/skills/agent-council.json",
-      "risk_summary": "The itsahedge/agent-council OpenClaw skill presents a clean content profile with no encoded payloads, no curl-pipe-bash patterns, and no credential harvesting instructions. The three medium-severity Semgrep findings are contextual false positives for a legitimate Discord API integration tool. Residual risk is limited to the young account age (47 days), unverified bundled executable scripts (create-agent.sh), and the absence of integrity checksums — all advisory-level concerns that do not rise to blocking severity without code-level corroboration of malicious intent.",
+      "risk_summary": "The agent-council skill presents a low-risk profile with no confirmed malicious indicators. All three Semgrep findings are contextual false positives representing standard Discord API integration via urllib, and the provenance flags (47-day account age, no lockfile) are expected and non-compounding within the OpenClaw ecosystem. The primary residual concerns are the unreviewed create-agent.sh script internals and the theoretical supply chain risk from a young account with no integrity verification on executable scripts, both of which are advisory-level and do not constitute blocking findings against the current artifact.",
       "tool_type": "openclaw-skill"
     },
     {

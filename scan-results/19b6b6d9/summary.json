@@ -1,0 +1,31 @@
+{
+  "server_name": "itsahedge/agent-council",
+  "canonical_name": "",
+  "server_path": "skills/itsahedge/agent-council",
+  "tool_type": "openclaw-skill",
+  "maintainer_verified": false,
+  "verify_reason": "Third-party submission — submitter is not owner, collaborator, or contributor",
+  "repo_url": "https://github.com/openclaw/skills",
+  "commit_sha": "19b6b6d9cfea0efd0a2ee52f91db29772369d49e",
+  "source_hash": "895fb073243c605dd3c559df7fb57e297f02498102a259a5386c403012e28237",
+  "source_hash_method": "merkle-tree-sha256",
+  "is_fork": false,
+  "provenance_flags": [
+    "ACCOUNT_YOUNG_LT_90_DAYS",
+    "NO_LOCKFILE"
+  ],
+  "lockfile_name": "none",
+  "lockfile_hash": "none",
+  "scan_timestamp": "2026-02-20T01:22:10Z",
+  "pipeline_version": "0.2.0",
+  "thinktank_verdict": "APPROVED",
+  "trust_score": 85,
+  "trust_dimensions": {
+    "security": 85,
+    "provenance": 90,
+    "behavioral": 100
+  },
+  "scoring_version": "1.0.0",
+  "deliberation_session": "f680c63e-1c7",
+  "risk_summary": "The agent-council skill presents a low-risk profile with no confirmed malicious indicators. All three Semgrep findings are contextual false positives representing standard Discord API integration via urllib, and the provenance flags (47-day account age, no lockfile) are expected and non-compounding within the OpenClaw ecosystem. The primary residual concerns are the unreviewed create-agent.sh script internals and the theoretical supply chain risk from a young account with no integrity verification on executable scripts, both of which are advisory-level and do not constitute blocking findings against the current artifact."
+}
