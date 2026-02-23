@@ -1,0 +1,42 @@
+{
+  "server_id": "openclaw/skills/capability-evolver",
+  "server_name": "autogame-17/capability-evolver",
+  "canonical_name": "evolver",
+  "repo_url": "https://github.com/openclaw/skills",
+  "attestation": {
+    "commit_sha": "28845b08ead53a815a7cc45582d684d4f00f0a7e",
+    "source_hash": "0fc8a0eed67add8dcb6624b3e0f9093b64a686f8f65b48a41a61a8d3d405b225",
+    "source_hash_method": "merkle-tree-sha256",
+    "attested_at": "2026-02-23T13:59:58Z",
+    "pipeline_version": "0.2.0",
+    "scoring_version": "1.0.0",
+    "trust_score": 54,
+    "trust_dimensions": {
+      "security": 32,
+      "provenance": 90,
+      "behavioral": 100
+    },
+    "thinktank_verdict": "CONDITIONAL",
+    "author_identity": {
+      "repo_owner": "openclaw",
+      "identity_match": true,
+      "is_fork": false,
+      "provenance_flags": [
+        "ACCOUNT_YOUNG_LT_90_DAYS",
+        "NO_LOCKFILE"
+      ],
+      "maintainer_verified": false,
+      "verify_reason": "Third-party submission \u2014 submitter is not owner, collaborator, or contributor"
+    },
+    "lockfile_name": "none",
+    "lockfile_hash": "none",
+    "risk_summary": "This package is a sophisticated AI agent self-evolution framework with documented autonomous execution, programmatic npm install without audit flags, and a self-modification capability ('Mad Dog Mode') that represents genuinely elevated risk. The majority of SAST findings are false positives contextually appropriate to the tool's stated purpose, but two substantive concerns remain: the programmatic npm install with --no-audit in skills_monitor.js and an unverified split chain of custody between the 'openclaw' registry owner and the 'autogame-17' GitHub account that controls the update stream. No confirmed malicious payload, obfuscated code, or C2 indicators are present, but the architecture is weaponizable and the external trust anchor (autogame-17) has unverified provenance.",
+    "tool_type": "openclaw-skill",
+    "signature": {
+      "algorithm": "ed25519",
+      "value": "s7Y+78BgiCF3oQrtGf71GeXKhlwDA3nhbPHxxNc4bGcKn6wlNU46eCy/hruzZ1LkJ9wktff/InilZzlgmiTOBQ==",
+      "canonical_hash": "47f47c063eccc6140077f8cf6337e53e534a4effe092918a7f372c925e7223a2"
+    }
+  },
+  "attestation_url": "https://github.com/pestafford/credence-registry/tree/main/scan-results/28845b08"
+}

@@ -1,0 +1,31 @@
+{
+  "server_name": "autogame-17/capability-evolver",
+  "canonical_name": "evolver",
+  "server_path": "skills/autogame-17/capability-evolver",
+  "tool_type": "openclaw-skill",
+  "maintainer_verified": false,
+  "verify_reason": "Third-party submission — submitter is not owner, collaborator, or contributor",
+  "repo_url": "https://github.com/openclaw/skills",
+  "commit_sha": "28845b08ead53a815a7cc45582d684d4f00f0a7e",
+  "source_hash": "0fc8a0eed67add8dcb6624b3e0f9093b64a686f8f65b48a41a61a8d3d405b225",
+  "source_hash_method": "merkle-tree-sha256",
+  "is_fork": false,
+  "provenance_flags": [
+    "ACCOUNT_YOUNG_LT_90_DAYS",
+    "NO_LOCKFILE"
+  ],
+  "lockfile_name": "none",
+  "lockfile_hash": "none",
+  "scan_timestamp": "2026-02-23T13:57:09Z",
+  "pipeline_version": "0.2.0",
+  "thinktank_verdict": "CONDITIONAL",
+  "trust_score": 54,
+  "trust_dimensions": {
+    "security": 32,
+    "provenance": 90,
+    "behavioral": 100
+  },
+  "scoring_version": "1.0.0",
+  "deliberation_session": "60fb8939-1ab",
+  "risk_summary": "This package is a sophisticated AI agent self-evolution framework with documented autonomous execution, programmatic npm install without audit flags, and a self-modification capability ('Mad Dog Mode') that represents genuinely elevated risk. The majority of SAST findings are false positives contextually appropriate to the tool's stated purpose, but two substantive concerns remain: the programmatic npm install with --no-audit in skills_monitor.js and an unverified split chain of custody between the 'openclaw' registry owner and the 'autogame-17' GitHub account that controls the update stream. No confirmed malicious payload, obfuscated code, or C2 indicators are present, but the architecture is weaponizable and the external trust anchor (autogame-17) has unverified provenance."
+}

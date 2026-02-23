@@ -4,9 +4,9 @@
   "registry_url": "https://credence.securingthesingularity.com",
   "maintainer": "Phil Stafford <phil@securingthesingularity.com>",
   "signing_public_key": "XdvqC/Q6TX90MpL37wdxfUtqOiS8qiQjK8JNJy+BOcM=",
-  "updated_at": "2026-02-23T13:35:02Z",
+  "updated_at": "2026-02-23T13:59:58Z",
   "stats": {
-    "total_scans": 23
+    "total_scans": 24
   },
   "servers": [
     {
@@ -99,6 +99,20 @@
       "attested_at": "2026-02-23T13:35:02Z",
       "attestation_file": "servers/openclaw/skills/self-improving-agent.json",
       "risk_summary": "The pskoett/self-improving-agent OpenClaw skill presents a clean security profile with no critical, high, medium, or low findings. All four scanner findings are informational-severity SKILL_CHMOD_EXEC false positives located in a troubleshooting reference document, consistent with standard CLI tool installation practice. The only residual concern is a theoretical hook persistence supply chain risk requiring multiple simultaneous conditions, which does not rise to a blocking or advisory level.",
+      "tool_type": "openclaw-skill"
+    },
+    {
+      "server_id": "openclaw/skills/capability-evolver",
+      "server_name": "autogame-17/capability-evolver",
+      "canonical_name": "evolver",
+      "repo_url": "https://github.com/openclaw/skills",
+      "repo_owner": "openclaw",
+      "trust_score": 54,
+      "thinktank_verdict": "CONDITIONAL",
+      "scoring_version": "1.0.0",
+      "attested_at": "2026-02-23T13:59:58Z",
+      "attestation_file": "servers/openclaw/skills/capability-evolver.json",
+      "risk_summary": "This package is a sophisticated AI agent self-evolution framework with documented autonomous execution, programmatic npm install without audit flags, and a self-modification capability ('Mad Dog Mode') that represents genuinely elevated risk. The majority of SAST findings are false positives contextually appropriate to the tool's stated purpose, but two substantive concerns remain: the programmatic npm install with --no-audit in skills_monitor.js and an unverified split chain of custody between the 'openclaw' registry owner and the 'autogame-17' GitHub account that controls the update stream. No confirmed malicious payload, obfuscated code, or C2 indicators are present, but the architecture is weaponizable and the external trust anchor (autogame-17) has unverified provenance.",
       "tool_type": "openclaw-skill"
     }
   ]
