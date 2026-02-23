@@ -1204,22 +1204,69 @@ jobs:
 
       - name: Commit results to repo
         if: steps.clone.outputs.clone_failed != 'true'
+        env:
+          CREDENCE_SIGNING_KEY: ${{ secrets.CREDENCE_SIGNING_KEY }}
         run: |
           git config user.name "credence-bot"
           git config user.email "credence-bot@users.noreply.github.com"
-          git add scan-results/
-          git add registry/index.json
-          if [ "${{ steps.deliberation.outputs.publish }}" = "true" ]; then
-            git add registry/ registry.json
-          fi
-          git diff --cached --quiet && echo "No changes to commit" && exit 0
-          git commit -m "scan: ${{ steps.parse.outputs.server_name }} @ ${{ env.TARGET_COMMIT }}"
-          # Retry push with rebase to handle concurrent scans
+
+          PUBLISH="${{ steps.deliberation.outputs.publish }}"
+          COMMIT_MSG="scan: ${{ steps.parse.outputs.server_name }} @ ${{ env.TARGET_COMMIT }}"
+
+          # Back up scan artifacts to /tmp (survives git reset)
+          cp -r "$RESULTS_DIR" /tmp/scan-artifacts-backup
+
           for attempt in 1 2 3 4 5; do
-            git push && break
-            echo "Push failed (attempt $attempt), rebasing and retrying..."
-            git pull --rebase origin main
+            echo "=== Commit attempt $attempt ==="
+
+            if [ "$attempt" -gt 1 ]; then
+              # Reset working tree to latest remote HEAD
+              git fetch origin main
+              git reset --hard origin/main
+
+              # Restore our scan artifacts (unique per SCAN_ID, no conflicts)
+              mkdir -p "$RESULTS_DIR"
+              cp -r /tmp/scan-artifacts-backup/* "$RESULTS_DIR/"
+
+              # Re-run registry update against current registry state
+              if [ "$PUBLISH" = "true" ]; then
+                if [ -n "$CREDENCE_SIGNING_KEY" ]; then
+                  python3 -m credence_mcp.registry_update /tmp/scan-summary.json registry/ --key-env CREDENCE_SIGNING_KEY
+                else
+                  python3 -m credence_mcp.registry_update /tmp/scan-summary.json registry/
+                fi
+              fi
+
+              # Re-compute scan stats against current state
+              TOTAL_SCANS=$(ls -d scan-results/*/ 2>/dev/null | wc -l)
+              if [ -f registry/index.json ]; then
+                jq --argjson n "$TOTAL_SCANS" '.stats.total_scans = $n' registry/index.json > registry/index.tmp && mv registry/index.tmp registry/index.json
+              fi
+            fi
+
+            # Stage
+            git add scan-results/
+            git add registry/index.json
+            if [ "$PUBLISH" = "true" ]; then
+              git add registry/ registry.json
+            fi
+
+            # Commit (skip if nothing changed)
+            git diff --cached --quiet && echo "No changes to commit" && exit 0
+            git commit -m "$COMMIT_MSG"
+
+            # Push
+            if git push; then
+              echo "Push succeeded on attempt $attempt"
+              exit 0
+            fi
+
+            echo "Push rejected (attempt $attempt), will regenerate against latest remote..."
+            sleep $((attempt * 2))
           done
+
+          echo "::error::Failed to push after 5 attempts"
+          exit 1
 
   # ── JOB 3: MANUAL PUBLISH ────────────────────────
   publish:
