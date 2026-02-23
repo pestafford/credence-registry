@@ -1214,7 +1214,12 @@ jobs:
           fi
           git diff --cached --quiet && echo "No changes to commit" && exit 0
           git commit -m "scan: ${{ steps.parse.outputs.server_name }} @ ${{ env.TARGET_COMMIT }}"
-          git push
+          # Retry push with rebase to handle concurrent scans
+          for attempt in 1 2 3 4 5; do
+            git push && break
+            echo "Push failed (attempt $attempt), rebasing and retrying..."
+            git pull --rebase origin main
+          done
 
   # ── JOB 3: MANUAL PUBLISH ────────────────────────
   publish:
@@ -1290,7 +1295,11 @@ jobs:
           git add registry/ registry.json "$SCAN_DIR/"
           SERVER_NAME=$(jq -r '.server_name' "${{ steps.locate.outputs.summary_path }}")
           git commit -m "publish: ${SERVER_NAME} (manual disclosure clearance)"
-          git push
+          for attempt in 1 2 3; do
+            git push && break
+            echo "Push failed (attempt $attempt), rebasing and retrying..."
+            git pull --rebase origin main
+          done
 
       - name: Summary
         run: |
@@ -1399,7 +1408,11 @@ jobs:
             git config user.email "credence-bot@users.noreply.github.com"
             git add registry/ registry.json scan-results/
             git commit -m "auto-publish: ${PUBLISHED} adversarial hold(s) past 24h window"
-            git push
+            for attempt in 1 2 3; do
+              git push && break
+              echo "Push failed (attempt $attempt), rebasing and retrying..."
+              git pull --rebase origin main
+            done
           else
             echo "No adversarial holds eligible for auto-publish"
           fi
