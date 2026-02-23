@@ -1,0 +1,31 @@
+{
+  "server_name": "maximeprades/auto-updater",
+  "canonical_name": "",
+  "server_path": "skills/maximeprades/auto-updater",
+  "tool_type": "openclaw-skill",
+  "maintainer_verified": false,
+  "verify_reason": "Third-party submission — submitter is not owner, collaborator, or contributor",
+  "repo_url": "https://github.com/openclaw/skills",
+  "commit_sha": "439e3ca8baa8a67ae612eda280def1e1830ac4cd",
+  "source_hash": "e55745b3ce5c56c5038c8dec45f931b50a012e785987677e5424a11ab54d4473",
+  "source_hash_method": "merkle-tree-sha256",
+  "is_fork": false,
+  "provenance_flags": [
+    "ACCOUNT_YOUNG_LT_90_DAYS",
+    "NO_LOCKFILE"
+  ],
+  "lockfile_name": "none",
+  "lockfile_hash": "none",
+  "scan_timestamp": "2026-02-23T13:13:52Z",
+  "pipeline_version": "0.2.0",
+  "thinktank_verdict": "APPROVED",
+  "trust_score": 93,
+  "trust_dimensions": {
+    "security": 100,
+    "provenance": 90,
+    "behavioral": 100
+  },
+  "scoring_version": "1.0.0",
+  "deliberation_session": "8b871f33-337",
+  "risk_summary": "The auto-updater skill contains zero scanner findings, no malicious instruction patterns, and uses only official first-party Clawdbot/ClawdHub tooling with transparent, documented cron scheduling via the official platform API. The sole substantive concern — that a daily automated update mechanism creates a standing trust dependency on the clawdhub registry and clawdbot npm package — is an architectural property inherent to all auto-update mechanisms, not a vulnerability specific to this skill. Users should understand they are granting ongoing automated update authority to these upstream registries before enabling this skill."
+}

@@ -4,7 +4,7 @@
   "registry_url": "https://credence.securingthesingularity.com",
   "maintainer": "Phil Stafford <phil@securingthesingularity.com>",
   "signing_public_key": "XdvqC/Q6TX90MpL37wdxfUtqOiS8qiQjK8JNJy+BOcM=",
-  "updated_at": "2026-02-20T02:45:40Z",
+  "updated_at": "2026-02-23T13:15:49Z",
   "servers": [
     {
       "server_id": "modelcontextprotocol/servers/filesystem",
@@ -201,6 +201,48 @@
         }
       },
       "attestation_url": "https://github.com/pestafford/credence-registry/tree/main/scan-results/dd9246b8"
+    },
+    {
+      "server_id": "openclaw/skills/auto-updater",
+      "server_name": "maximeprades/auto-updater",
+      "canonical_name": "",
+      "repo_url": "https://github.com/openclaw/skills",
+      "attestation": {
+        "commit_sha": "439e3ca8baa8a67ae612eda280def1e1830ac4cd",
+        "source_hash": "e55745b3ce5c56c5038c8dec45f931b50a012e785987677e5424a11ab54d4473",
+        "source_hash_method": "merkle-tree-sha256",
+        "attested_at": "2026-02-23T13:15:49Z",
+        "pipeline_version": "0.2.0",
+        "scoring_version": "1.0.0",
+        "trust_score": 93,
+        "trust_dimensions": {
+          "security": 100,
+          "provenance": 90,
+          "behavioral": 100
+        },
+        "thinktank_verdict": "APPROVED",
+        "author_identity": {
+          "repo_owner": "openclaw",
+          "identity_match": true,
+          "is_fork": false,
+          "provenance_flags": [
+            "ACCOUNT_YOUNG_LT_90_DAYS",
+            "NO_LOCKFILE"
+          ],
+          "maintainer_verified": false,
+          "verify_reason": "Third-party submission \u2014 submitter is not owner, collaborator, or contributor"
+        },
+        "lockfile_name": "none",
+        "lockfile_hash": "none",
+        "risk_summary": "The auto-updater skill contains zero scanner findings, no malicious instruction patterns, and uses only official first-party Clawdbot/ClawdHub tooling with transparent, documented cron scheduling via the official platform API. The sole substantive concern \u2014 that a daily automated update mechanism creates a standing trust dependency on the clawdhub registry and clawdbot npm package \u2014 is an architectural property inherent to all auto-update mechanisms, not a vulnerability specific to this skill. Users should understand they are granting ongoing automated update authority to these upstream registries before enabling this skill.",
+        "tool_type": "openclaw-skill",
+        "signature": {
+          "algorithm": "ed25519",
+          "value": "WQWQFtfhauw0MMXPE+9jFHIZbrSsb7gJSM1lrKq7rT5VNzpzow0MiBEnfMksHYqwaflcVqghvcUXp7t2bB9QCA==",
+          "canonical_hash": "e1d7562329bcd144592bdda546bacd534a612e39554f5a1df109bd65a87191a8"
+        }
+      },
+      "attestation_url": "https://github.com/pestafford/credence-registry/tree/main/scan-results/439e3ca8"
     }
   ]
 }

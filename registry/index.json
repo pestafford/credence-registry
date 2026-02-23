@@ -4,9 +4,9 @@
   "registry_url": "https://credence.securingthesingularity.com",
   "maintainer": "Phil Stafford <phil@securingthesingularity.com>",
   "signing_public_key": "XdvqC/Q6TX90MpL37wdxfUtqOiS8qiQjK8JNJy+BOcM=",
-  "updated_at": "2026-02-20T02:45:40Z",
+  "updated_at": "2026-02-23T13:15:49Z",
   "stats": {
-    "total_scans": 21
+    "total_scans": 22
   },
   "servers": [
     {
@@ -71,6 +71,20 @@
       "attested_at": "2026-02-19T20:12:57Z",
       "attestation_file": "servers/openclaw/skills/openclaw-sec.json",
       "risk_summary": "openclaw-sec is a substantive security detection library whose high-severity SAST findings are overwhelmingly false positives arising from scanner context collapse — the tool's own detection patterns and test fixtures are being flagged as live credentials and malicious code. The primary residual risk is the unaudited hook installation mechanism (user-prompt-submit-hook.ts, tool-call-hook.ts, install-hooks.sh), which installs persistent hooks intercepting all agent interactions and whose source code is not present in the scan evidence. A 47-day-old account publishing a security tool with persistent hook capabilities warrants conditional approval pending hook code review.",
+      "tool_type": "openclaw-skill"
+    },
+    {
+      "server_id": "openclaw/skills/auto-updater",
+      "server_name": "maximeprades/auto-updater",
+      "canonical_name": "",
+      "repo_url": "https://github.com/openclaw/skills",
+      "repo_owner": "openclaw",
+      "trust_score": 93,
+      "thinktank_verdict": "APPROVED",
+      "scoring_version": "1.0.0",
+      "attested_at": "2026-02-23T13:15:49Z",
+      "attestation_file": "servers/openclaw/skills/auto-updater.json",
+      "risk_summary": "The auto-updater skill contains zero scanner findings, no malicious instruction patterns, and uses only official first-party Clawdbot/ClawdHub tooling with transparent, documented cron scheduling via the official platform API. The sole substantive concern — that a daily automated update mechanism creates a standing trust dependency on the clawdhub registry and clawdbot npm package — is an architectural property inherent to all auto-update mechanisms, not a vulnerability specific to this skill. Users should understand they are granting ongoing automated update authority to these upstream registries before enabling this skill.",
       "tool_type": "openclaw-skill"
     }
   ]
