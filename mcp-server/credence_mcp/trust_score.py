@@ -194,8 +194,6 @@ def score_security_from_counts(scan_results: dict) -> tuple[int, dict]:
         "semgrep_findings": ("sast", "medium"),
         "bandit_findings": ("sast", "medium"),
         "eslint_security_issues": ("sast", "medium"),
-        "skill_critical": ("skill", "high"),
-        "skill_warnings": ("skill", "medium"),
         "mcpb_critical": ("mcpb", "high"),
         "mcpb_warnings": ("mcpb", "medium"),
         "trivy_vulnerabilities": ("cve", "medium"),
@@ -339,8 +337,8 @@ def score_behavioral_from_counts(scan_results: dict) -> tuple[int, dict]:
     """
     # mcp_tool_critical maps to high severity (7.5) per analyzer classification
     # mcp_tool_warnings maps to medium severity (5)
-    critical_count = scan_results.get("mcp_tool_critical", 0) or 0
-    warning_count = scan_results.get("mcp_tool_warnings", 0) or 0
+    critical_count = (scan_results.get("mcp_tool_critical", 0) or 0) + (scan_results.get("skill_critical", 0) or 0)
+    warning_count = (scan_results.get("mcp_tool_warnings", 0) or 0) + (scan_results.get("skill_warnings", 0) or 0)
 
     critical_deduction = critical_count * SEVERITY_WEIGHT["high"]
     warning_deduction = warning_count * SEVERITY_WEIGHT["medium"]

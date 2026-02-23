@@ -292,7 +292,7 @@ def normalize_skill_analyzer(path: Path) -> list[dict]:
             "id": f.get("id", "unknown"),
             "scanner": "skill-analyzer",
             "severity": f.get("severity", "medium"),
-            "category": f.get("category", "skill"),
+            "category": f.get("category", "skill-behavioral"),
             "file": f.get("file", ""),
             "line": f.get("line", 0),
             "title": f.get("title", ""),

@@ -148,7 +148,7 @@ def _make_finding(
     file: str = "",
     line: int = 0,
     evidence: str = "",
-    category: str = "skill",
+    category: str = "skill-behavioral",
     source_context: dict | None = None,
 ) -> dict:
     """Create a finding dict in the standard Credence format."""
