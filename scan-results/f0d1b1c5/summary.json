@@ -1,0 +1,31 @@
+{
+  "server_name": "pskoett/self-improving-agent",
+  "canonical_name": "",
+  "server_path": "skills/pskoett/self-improving-agent",
+  "tool_type": "openclaw-skill",
+  "maintainer_verified": false,
+  "verify_reason": "Third-party submission — submitter is not owner, collaborator, or contributor",
+  "repo_url": "https://github.com/openclaw/skills",
+  "commit_sha": "f0d1b1c5008cb6c2b8e7424bf342b0565b3c2728",
+  "source_hash": "351efc4de23385c030229e254039c390f9633bd7818c2d2e1b7dbb8de1caeb9a",
+  "source_hash_method": "merkle-tree-sha256",
+  "is_fork": false,
+  "provenance_flags": [
+    "ACCOUNT_YOUNG_LT_90_DAYS",
+    "NO_LOCKFILE"
+  ],
+  "lockfile_name": "none",
+  "lockfile_hash": "none",
+  "scan_timestamp": "2026-02-23T13:33:05Z",
+  "pipeline_version": "0.2.0",
+  "thinktank_verdict": "APPROVED",
+  "trust_score": 95,
+  "trust_dimensions": {
+    "security": 100,
+    "provenance": 90,
+    "behavioral": 100
+  },
+  "scoring_version": "1.0.0",
+  "deliberation_session": "38f2b2ad-5df",
+  "risk_summary": "The pskoett/self-improving-agent OpenClaw skill presents a clean security profile with no critical, high, medium, or low findings. All four scanner findings are informational-severity SKILL_CHMOD_EXEC false positives located in a troubleshooting reference document, consistent with standard CLI tool installation practice. The only residual concern is a theoretical hook persistence supply chain risk requiring multiple simultaneous conditions, which does not rise to a blocking or advisory level."
+}

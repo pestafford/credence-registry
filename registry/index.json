@@ -4,9 +4,9 @@
   "registry_url": "https://credence.securingthesingularity.com",
   "maintainer": "Phil Stafford <phil@securingthesingularity.com>",
   "signing_public_key": "XdvqC/Q6TX90MpL37wdxfUtqOiS8qiQjK8JNJy+BOcM=",
-  "updated_at": "2026-02-23T13:15:49Z",
+  "updated_at": "2026-02-23T13:35:02Z",
   "stats": {
-    "total_scans": 22
+    "total_scans": 23
   },
   "servers": [
     {
@@ -85,6 +85,20 @@
       "attested_at": "2026-02-23T13:15:49Z",
       "attestation_file": "servers/openclaw/skills/auto-updater.json",
       "risk_summary": "The auto-updater skill contains zero scanner findings, no malicious instruction patterns, and uses only official first-party Clawdbot/ClawdHub tooling with transparent, documented cron scheduling via the official platform API. The sole substantive concern — that a daily automated update mechanism creates a standing trust dependency on the clawdhub registry and clawdbot npm package — is an architectural property inherent to all auto-update mechanisms, not a vulnerability specific to this skill. Users should understand they are granting ongoing automated update authority to these upstream registries before enabling this skill.",
+      "tool_type": "openclaw-skill"
+    },
+    {
+      "server_id": "openclaw/skills/self-improving-agent",
+      "server_name": "pskoett/self-improving-agent",
+      "canonical_name": "",
+      "repo_url": "https://github.com/openclaw/skills",
+      "repo_owner": "openclaw",
+      "trust_score": 95,
+      "thinktank_verdict": "APPROVED",
+      "scoring_version": "1.0.0",
+      "attested_at": "2026-02-23T13:35:02Z",
+      "attestation_file": "servers/openclaw/skills/self-improving-agent.json",
+      "risk_summary": "The pskoett/self-improving-agent OpenClaw skill presents a clean security profile with no critical, high, medium, or low findings. All four scanner findings are informational-severity SKILL_CHMOD_EXEC false positives located in a troubleshooting reference document, consistent with standard CLI tool installation practice. The only residual concern is a theoretical hook persistence supply chain risk requiring multiple simultaneous conditions, which does not rise to a blocking or advisory level.",
       "tool_type": "openclaw-skill"
     }
   ]

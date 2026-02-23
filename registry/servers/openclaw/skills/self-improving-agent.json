@@ -1,0 +1,42 @@
+{
+  "server_id": "openclaw/skills/self-improving-agent",
+  "server_name": "pskoett/self-improving-agent",
+  "canonical_name": "",
+  "repo_url": "https://github.com/openclaw/skills",
+  "attestation": {
+    "commit_sha": "f0d1b1c5008cb6c2b8e7424bf342b0565b3c2728",
+    "source_hash": "351efc4de23385c030229e254039c390f9633bd7818c2d2e1b7dbb8de1caeb9a",
+    "source_hash_method": "merkle-tree-sha256",
+    "attested_at": "2026-02-23T13:35:02Z",
+    "pipeline_version": "0.2.0",
+    "scoring_version": "1.0.0",
+    "trust_score": 95,
+    "trust_dimensions": {
+      "security": 100,
+      "provenance": 90,
+      "behavioral": 100
+    },
+    "thinktank_verdict": "APPROVED",
+    "author_identity": {
+      "repo_owner": "openclaw",
+      "identity_match": true,
+      "is_fork": false,
+      "provenance_flags": [
+        "ACCOUNT_YOUNG_LT_90_DAYS",
+        "NO_LOCKFILE"
+      ],
+      "maintainer_verified": false,
+      "verify_reason": "Third-party submission \u2014 submitter is not owner, collaborator, or contributor"
+    },
+    "lockfile_name": "none",
+    "lockfile_hash": "none",
+    "risk_summary": "The pskoett/self-improving-agent OpenClaw skill presents a clean security profile with no critical, high, medium, or low findings. All four scanner findings are informational-severity SKILL_CHMOD_EXEC false positives located in a troubleshooting reference document, consistent with standard CLI tool installation practice. The only residual concern is a theoretical hook persistence supply chain risk requiring multiple simultaneous conditions, which does not rise to a blocking or advisory level.",
+    "tool_type": "openclaw-skill",
+    "signature": {
+      "algorithm": "ed25519",
+      "value": "8eq4RDx0OeORXdR0ED+Ff8d4XKS3l+ThHFdEvYY8z0ggNMWfs9TBN5odMmvVKLL4i7Sxd84cZnBrscOBssjeBA==",
+      "canonical_hash": "11a508ab0f972204ae92e3b0a8f685a88266a9fd4093585248d1ec38f9984653"
+    }
+  },
+  "attestation_url": "https://github.com/pestafford/credence-registry/tree/main/scan-results/f0d1b1c5"
+}
