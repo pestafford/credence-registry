@@ -4,9 +4,9 @@
   "registry_url": "https://credence.securingthesingularity.com",
   "maintainer": "Phil Stafford <phil@securingthesingularity.com>",
   "signing_public_key": "XdvqC/Q6TX90MpL37wdxfUtqOiS8qiQjK8JNJy+BOcM=",
-  "updated_at": "2026-02-23T13:59:58Z",
+  "updated_at": "2026-03-04T20:36:06Z",
   "stats": {
-    "total_scans": 24
+    "total_scans": 25
   },
   "servers": [
     {
@@ -114,6 +114,20 @@
       "attestation_file": "servers/openclaw/skills/capability-evolver.json",
       "risk_summary": "This package is a sophisticated AI agent self-evolution framework with documented autonomous execution, programmatic npm install without audit flags, and a self-modification capability ('Mad Dog Mode') that represents genuinely elevated risk. The majority of SAST findings are false positives contextually appropriate to the tool's stated purpose, but two substantive concerns remain: the programmatic npm install with --no-audit in skills_monitor.js and an unverified split chain of custody between the 'openclaw' registry owner and the 'autogame-17' GitHub account that controls the update stream. No confirmed malicious payload, obfuscated code, or C2 indicators are present, but the architecture is weaponizable and the external trust anchor (autogame-17) has unverified provenance.",
       "tool_type": "openclaw-skill"
+    },
+    {
+      "server_id": "obra/superpowers",
+      "server_name": "obra/superpowers",
+      "canonical_name": "",
+      "repo_url": "https://github.com/obra/superpowers",
+      "repo_owner": "obra",
+      "trust_score": 84,
+      "thinktank_verdict": "CONDITIONAL",
+      "scoring_version": "1.0.0",
+      "attested_at": "2026-03-04T20:36:06Z",
+      "attestation_file": "servers/obra/superpowers.json",
+      "risk_summary": "obra/superpowers is a legitimate, long-standing open-source MCP server with strong provenance signals (17-year-old account, 18 contributors) and zero critical or high findings. All 8 medium-severity findings are path-traversal scanner alerts consistent with the tool's stated purpose as a filesystem-navigating skill loader, though an unresolved question about whether skill name inputs are sanitized before reaching path.join() calls warrants a targeted code review. The absence of a lockfile represents a minor supply chain hygiene gap that should be addressed.",
+      "tool_type": "mcp-server"
     }
   ]
 }

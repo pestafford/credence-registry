@@ -4,7 +4,7 @@
   "registry_url": "https://credence.securingthesingularity.com",
   "maintainer": "Phil Stafford <phil@securingthesingularity.com>",
   "signing_public_key": "XdvqC/Q6TX90MpL37wdxfUtqOiS8qiQjK8JNJy+BOcM=",
-  "updated_at": "2026-02-23T13:59:58Z",
+  "updated_at": "2026-03-04T20:36:06Z",
   "servers": [
     {
       "server_id": "modelcontextprotocol/servers/filesystem",
@@ -327,6 +327,47 @@
         }
       },
       "attestation_url": "https://github.com/pestafford/credence-registry/tree/main/scan-results/28845b08"
+    },
+    {
+      "server_id": "obra/superpowers",
+      "server_name": "obra/superpowers",
+      "canonical_name": "",
+      "repo_url": "https://github.com/obra/superpowers",
+      "attestation": {
+        "commit_sha": "e4a2375cb705ca5800f0833528ce36a3faf9017a",
+        "source_hash": "e3abbd19434ad13ba901c83bb83ec3e0ad50dd680f4917f5c3c1e707420892c1",
+        "source_hash_method": "merkle-tree-sha256",
+        "attested_at": "2026-03-04T20:36:06Z",
+        "pipeline_version": "0.2.0",
+        "scoring_version": "1.0.0",
+        "trust_score": 84,
+        "trust_dimensions": {
+          "security": 70,
+          "provenance": 95,
+          "behavioral": 100
+        },
+        "thinktank_verdict": "CONDITIONAL",
+        "author_identity": {
+          "repo_owner": "obra",
+          "identity_match": true,
+          "is_fork": false,
+          "provenance_flags": [
+            "NO_LOCKFILE"
+          ],
+          "maintainer_verified": false,
+          "verify_reason": "Third-party submission \u2014 submitter is not owner, collaborator, or contributor"
+        },
+        "lockfile_name": "none",
+        "lockfile_hash": "none",
+        "risk_summary": "obra/superpowers is a legitimate, long-standing open-source MCP server with strong provenance signals (17-year-old account, 18 contributors) and zero critical or high findings. All 8 medium-severity findings are path-traversal scanner alerts consistent with the tool's stated purpose as a filesystem-navigating skill loader, though an unresolved question about whether skill name inputs are sanitized before reaching path.join() calls warrants a targeted code review. The absence of a lockfile represents a minor supply chain hygiene gap that should be addressed.",
+        "tool_type": "mcp-server",
+        "signature": {
+          "algorithm": "ed25519",
+          "value": "89/RJwRsgpMgftGP9HTfBElzv+vsako2I3MgvJ7IUribW6mdoK356FMM9nwGcv+UlOiLVJzSF8xR2BfunV/1Cw==",
+          "canonical_hash": "ed8967c0397c42c8bef9c7611a579d754f9ca972ff52adb4928e2050334d4d82"
+        }
+      },
+      "attestation_url": "https://github.com/pestafford/credence-registry/tree/main/scan-results/e4a2375c"
     }
   ]
 }
